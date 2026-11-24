@@ -1,0 +1,189 @@
+{
+  "$defs": {
+    "Artifact": {
+      "properties": {
+        "artifact_id": {
+          "format": "uuid",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "attempt_id": {
+          "format": "uuid",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "checksum": {
+          "$ref": "#/$defs/Checksum"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "expires_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expires At"
+        },
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "media_type": {
+          "title": "Media Type",
+          "type": "string"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "producer": {
+          "title": "Producer",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1",
+          "default": "0.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "size_bytes": {
+          "title": "Size Bytes",
+          "type": "integer"
+        },
+        "task_run_id": {
+          "format": "uuid",
+          "title": "Task Run Id",
+          "type": "string"
+        },
+        "uri": {
+          "title": "Uri",
+          "type": "string"
+        },
+        "workflow_run_id": {
+          "format": "uuid",
+          "title": "Workflow Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "workflow_run_id",
+        "task_run_id",
+        "attempt_id",
+        "kind",
+        "name",
+        "media_type",
+        "uri",
+        "size_bytes",
+        "checksum",
+        "producer",
+        "created_at"
+      ],
+      "title": "Artifact",
+      "type": "object"
+    },
+    "Checksum": {
+      "properties": {
+        "algorithm": {
+          "const": "SHA256",
+          "default": "SHA256",
+          "title": "Algorithm",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "title": "Checksum",
+      "type": "object"
+    },
+    "HarnessCorrelation": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt_id": {
+          "format": "uuid",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "request_id": {
+          "format": "uuid",
+          "title": "Request Id",
+          "type": "string"
+        },
+        "task_run_id": {
+          "format": "uuid",
+          "title": "Task Run Id",
+          "type": "string"
+        },
+        "workflow_run_id": {
+          "format": "uuid",
+          "title": "Workflow Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "request_id",
+        "workflow_run_id",
+        "task_run_id",
+        "attempt_id"
+      ],
+      "title": "HarnessCorrelation",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/harness/v0.1/artifact-read.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Authenticated, out-of-band bytes for one prepared source-patch artifact.",
+  "properties": {
+    "artifact": {
+      "$ref": "#/$defs/Artifact"
+    },
+    "correlation": {
+      "$ref": "#/$defs/HarnessCorrelation"
+    },
+    "payload_base64": {
+      "maxLength": 699052,
+      "minLength": 1,
+      "title": "Payload Base64",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "session_id": {
+      "minLength": 1,
+      "title": "Session Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "session_id",
+    "correlation",
+    "artifact",
+    "payload_base64"
+  ],
+  "title": "HarnessArtifactRead",
+  "type": "object"
+}

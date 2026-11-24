@@ -1,0 +1,31 @@
+{
+  "$id": "https://adlc.dev/contracts/documents/v0.1/skilltree_get_status.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "contract_id": {
+      "format": "uuid",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "revision": {
+      "anyOf": [
+        {
+          "maximum": 512,
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Revision"
+    }
+  },
+  "required": [
+    "contract_id"
+  ],
+  "title": "StatusArguments",
+  "type": "object"
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": "0.1",
+  "approval_request_id": "99999999-9999-4999-8999-999999999999",
+  "workflow_run_id": "11111111-1111-4111-8111-111111111111",
+  "task_run_id": "22222222-2222-4222-8222-222222222222",
+  "attempt_id": "33333333-3333-4333-8333-333333333333",
+  "gate_type": "ACTION",
+  "status": "PENDING",
+  "blocking": true,
+  "title": "Approve dependency upgrade",
+  "requested_by": {
+    "type": "AGENT",
+    "id": "opencode-primary",
+    "display_name": "OpenCode Primary"
+  },
+  "required_role": "maintainer",
+  "reviewer_ids": ["user-42"],
+  "actions": [
+    {
+      "action_id": "approve",
+      "label": "Approve and continue",
+      "effect": "APPROVE",
+      "comment_required": false
+    },
+    {
+      "action_id": "reject",
+      "label": "Reject and fail task",
+      "effect": "REJECT",
+      "comment_required": true
+    }
+  ],
+  "context": {
+    "summary": "Upgrade the validation library from 2.1 to 3.0.",
+    "risk": "The new major version changes default coercion behavior.",
+    "requested_action": "Allow the coding agent to update the dependency lockfile.",
+    "artifact_refs": [],
+    "payload": {
+      "package": "validation-lib",
+      "from_version": "2.1.4",
+      "to_version": "3.0.0"
+    }
+  },
+  "decision": null,
+  "created_at": "2026-08-31T03:03:00Z",
+  "expires_at": "2026-09-01T03:03:00Z",
+  "metadata": {}
+}

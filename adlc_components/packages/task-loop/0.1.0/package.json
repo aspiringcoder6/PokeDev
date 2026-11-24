@@ -1,0 +1,66 @@
+{
+  "schema_version": "0.1",
+  "package_id": "task-loop",
+  "version": "0.1.0",
+  "status": "PUBLISHED",
+  "name": "Task Loop (Mock)",
+  "description": "Repeats one fixed specification through fresh mock agent sessions, preserving candidate snapshots and verifying exact mock file contents before final approval.",
+  "kind": "AGENT",
+  "interface": {
+    "inputs": [
+      {"name": "task_loop_spec", "schema_ref": "adlc://schemas/task-loop-spec/0.1", "required": true, "multiple": false, "description": "The full fixed specification, mock acceptance criteria, initial files, and loop budgets."}
+    ],
+    "outputs": [
+      {"name": "candidate", "schema_ref": "adlc://schemas/task-loop-candidate/0.1", "required": true, "multiple": false, "description": "Checksummed cumulative in-memory candidate."},
+      {"name": "verification_report", "schema_ref": "adlc://schemas/task-loop-verification/0.1", "required": true, "multiple": false, "description": "Exact mock file comparison evidence."}
+    ]
+  },
+  "configuration_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["mock_steps"],
+    "properties": {
+      "mock_steps": {
+        "type": "array", "minItems": 1, "maxItems": 100,
+        "items": {
+          "type": "object", "additionalProperties": false,
+          "properties": {
+            "changes": {"type": "object", "additionalProperties": {"type": ["string", "null"], "maxLength": 16384}},
+            "note": {"type": "string", "maxLength": 1024}
+          }
+        }
+      }
+    }
+  },
+  "defaults": {
+    "mock_steps": [
+      {"changes": {"math_utils.py": "def add(a, b):\n    return a + b\n"}, "note": "TRACE_ONLY_ITERATION_ONE: implementation complete"},
+      {"changes": {"settings.json": "{\"operation\": \"add\"}\n"}, "note": "TRACE_ONLY_ITERATION_TWO: configuration added"},
+      {"changes": {"README.md": "Use add(a, b) to add two numbers.\n", "legacy.txt": null}, "note": "TRACE_ONLY_ITERATION_THREE: documentation added"}
+    ]
+  },
+  "override_allowlist": ["/configuration/mock_steps", "/policies/retry/max_attempts", "/policies/timeout_ms"],
+  "implementation": {"adapter_type": "AGENT_PROVIDER", "adapter_ref": "agent-provider:task-loop-mock", "entrypoint": "mock-task-loop"},
+  "execution_profile": {
+    "provider_ref": "agent-provider:task-loop-mock",
+    "model_ref": "model:mock/deterministic",
+    "system_prompt_ref": "prompt:task-loop-full-spec/0.1.0",
+    "rule_set_refs": ["rules:adlc-safe-execution/0.1.0"],
+    "hook_refs": ["hook:task-lifecycle/0.1.0"],
+    "capabilities": {"tool_refs": ["tool:task-loop-mock-files/0.1.0"], "skill_refs": [], "plugin_refs": [], "mcp_server_refs": []},
+    "memory_policy_ref": "memory:task-loop-fresh-context/0.1.0",
+    "sandbox_policy_ref": "sandbox:task-loop-in-memory/0.1.0",
+    "secret_refs": {}
+  },
+  "default_policies": {
+    "retry": {"max_attempts": 3},
+    "timeout_ms": 10000,
+    "approval": {"gate_type": "AFTER_TASK"},
+    "permissions": {"mode": "PACKAGE_ALLOWLIST"},
+    "resources": {"verification_mode": "MOCK", "candidate_storage": "in-memory"},
+    "runtime_overridable": []
+  },
+  "compatibility": {"engine": {"minimum_version": "0.1.0"}, "execution_contract_versions": ["0.1"]},
+  "metadata": {"maintainer": "adlc", "provider_mode": "mock", "delivery": "A"}
+}

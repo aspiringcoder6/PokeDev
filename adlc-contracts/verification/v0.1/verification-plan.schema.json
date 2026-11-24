@@ -1,0 +1,234 @@
+{
+  "$defs": {
+    "CandidateReference": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Artifact Digest",
+          "type": "string"
+        },
+        "artifact_id": {
+          "format": "uuid",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "base_commit": {
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$",
+          "title": "Base Commit",
+          "type": "string"
+        },
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "encoding": {
+          "const": "canonical-json",
+          "default": "canonical-json",
+          "title": "Encoding",
+          "type": "string"
+        },
+        "file": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "File",
+          "type": "string"
+        },
+        "project_id": {
+          "format": "uuid",
+          "title": "Project Id",
+          "type": "string"
+        },
+        "source_attempt_id": {
+          "format": "uuid",
+          "title": "Source Attempt Id",
+          "type": "string"
+        },
+        "source_ref": {
+          "title": "Source Ref",
+          "type": "string"
+        },
+        "source_session_id": {
+          "pattern": "^[A-Za-z0-9._-]{1,255}$",
+          "title": "Source Session Id",
+          "type": "string"
+        },
+        "source_task_id": {
+          "format": "uuid",
+          "title": "Source Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_task_id",
+        "source_attempt_id",
+        "source_session_id",
+        "artifact_id",
+        "artifact_digest",
+        "base_commit",
+        "project_id",
+        "source_ref",
+        "file",
+        "content_digest"
+      ],
+      "title": "CandidateReference",
+      "type": "object"
+    },
+    "ContractReference": {
+      "additionalProperties": false,
+      "properties": {
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "contract_id": {
+          "format": "uuid",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 512,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "schema_ref": {
+          "const": "adlc://schemas/skilltree-contract/0.1",
+          "default": "adlc://schemas/skilltree-contract/0.1",
+          "title": "Schema Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract_id",
+        "revision",
+        "content_digest"
+      ],
+      "title": "ContractReference",
+      "type": "object"
+    },
+    "VerificationCase": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "criterion_index": {
+          "maximum": 15,
+          "minimum": 0,
+          "title": "Criterion Index",
+          "type": "integer"
+        },
+        "criterion_node_id": {
+          "format": "uuid",
+          "title": "Criterion Node Id",
+          "type": "string"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected"
+        },
+        "pointer": {
+          "maxLength": 512,
+          "pattern": "^(?:|/(?:[^~]|~[01])*)$",
+          "title": "Pointer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "pointer",
+        "expected",
+        "criterion_node_id",
+        "criterion_index"
+      ],
+      "title": "VerificationCase",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/verification/v0.1/verification-plan.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "candidate": {
+      "$ref": "#/$defs/CandidateReference"
+    },
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/VerificationCase"
+      },
+      "maxItems": 16,
+      "minItems": 1,
+      "title": "Cases",
+      "type": "array"
+    },
+    "contract_reference": {
+      "$ref": "#/$defs/ContractReference"
+    },
+    "plan_id": {
+      "format": "uuid",
+      "title": "Plan Id",
+      "type": "string"
+    },
+    "profile_ref": {
+      "const": "verification-profile:json-fixture/0.1.0",
+      "default": "verification-profile:json-fixture/0.1.0",
+      "title": "Profile Ref",
+      "type": "string"
+    },
+    "revision": {
+      "const": 1,
+      "default": 1,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "timeout_seconds": {
+      "default": 15,
+      "maximum": 60,
+      "minimum": 1,
+      "title": "Timeout Seconds",
+      "type": "integer"
+    },
+    "workflow_run_id": {
+      "format": "uuid",
+      "title": "Workflow Run Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "plan_id",
+    "workflow_run_id",
+    "contract_reference",
+    "candidate",
+    "cases"
+  ],
+  "title": "VerificationPlan",
+  "type": "object"
+}

@@ -1,0 +1,480 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.dev/contracts/task-loop-runtime/v0.1/iteration-request.schema.json",
+  "$defs": {
+    "LiveLoopCandidate": {
+      "additionalProperties": false,
+      "description": "Complete cumulative text overlay relative to the pinned base; null deletes.",
+      "properties": {
+        "schema_version": {
+          "const": "0.2",
+          "default": "0.2",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "candidate_id": {
+          "format": "uuid",
+          "title": "Candidate Id",
+          "type": "string"
+        },
+        "parent_candidate_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Parent Candidate Id"
+        },
+        "iteration": {
+          "minimum": 0,
+          "title": "Iteration",
+          "type": "integer"
+        },
+        "base_commit": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Base Commit",
+          "type": "string"
+        },
+        "changes": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/LiveLoopFile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": "Changes",
+          "type": "object"
+        },
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        }
+      },
+      "required": [
+        "candidate_id",
+        "parent_candidate_id",
+        "iteration",
+        "base_commit",
+        "changes",
+        "content_digest"
+      ],
+      "title": "LiveLoopCandidate",
+      "type": "object"
+    },
+    "LiveLoopCommand": {
+      "additionalProperties": false,
+      "description": "A registered runner, not an agent-generated shell command.",
+      "properties": {
+        "check_id": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Check Id",
+          "type": "string"
+        },
+        "verifier_ref": {
+          "const": "verifier:python-unittest/0.1.0",
+          "default": "verifier:python-unittest/0.1.0",
+          "title": "Verifier Ref",
+          "type": "string"
+        },
+        "test_path": {
+          "title": "Test Path",
+          "type": "string"
+        },
+        "timeout_ms": {
+          "default": 30000,
+          "maximum": 120000,
+          "minimum": 100,
+          "title": "Timeout Ms",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "check_id",
+        "test_path"
+      ],
+      "title": "LiveLoopCommand",
+      "type": "object"
+    },
+    "LiveLoopCriterion": {
+      "additionalProperties": false,
+      "properties": {
+        "criterion_id": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "description": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "check_refs": {
+          "items": {
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "title": "Check Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "criterion_id",
+        "description",
+        "check_refs"
+      ],
+      "title": "LiveLoopCriterion",
+      "type": "object"
+    },
+    "LiveLoopFile": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "maxLength": 16384,
+          "title": "Content",
+          "type": "string"
+        },
+        "mode": {
+          "default": "100644",
+          "enum": [
+            "100644",
+            "100755"
+          ],
+          "title": "Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "content"
+      ],
+      "title": "LiveLoopFile",
+      "type": "object"
+    },
+    "LiveLoopSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "0.2",
+          "default": "0.2",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "spec_id": {
+          "format": "uuid",
+          "title": "Spec Id",
+          "type": "string"
+        },
+        "revision": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "specification": {
+          "maxLength": 16384,
+          "minLength": 1,
+          "title": "Specification",
+          "type": "string"
+        },
+        "base_commit": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Base Commit",
+          "type": "string"
+        },
+        "writable_paths": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Writable Paths",
+          "type": "array"
+        },
+        "acceptance_criteria": {
+          "items": {
+            "$ref": "#/$defs/LiveLoopCriterion"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "title": "Acceptance Criteria",
+          "type": "array"
+        },
+        "verification_commands": {
+          "items": {
+            "$ref": "#/$defs/LiveLoopCommand"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "title": "Verification Commands",
+          "type": "array"
+        },
+        "max_iterations": {
+          "default": 3,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Max Iterations",
+          "type": "integer"
+        },
+        "max_stalled_iterations": {
+          "default": 2,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Max Stalled Iterations",
+          "type": "integer"
+        },
+        "context_budget_chars": {
+          "default": 131072,
+          "maximum": 262144,
+          "minimum": 1024,
+          "title": "Context Budget Chars",
+          "type": "integer"
+        },
+        "max_duration_ms": {
+          "default": 600000,
+          "maximum": 3600000,
+          "minimum": 1000,
+          "title": "Max Duration Ms",
+          "type": "integer"
+        },
+        "max_total_tokens": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Total Tokens"
+        },
+        "max_total_cost": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Total Cost"
+        }
+      },
+      "required": [
+        "spec_id",
+        "specification",
+        "base_commit",
+        "writable_paths",
+        "acceptance_criteria",
+        "verification_commands"
+      ],
+      "title": "LiveLoopSpec",
+      "type": "object"
+    },
+    "LoopRuntimeBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "protocol_ref": {
+          "const": "task-loop-runtime:iteration/0.1.0",
+          "default": "task-loop-runtime:iteration/0.1.0",
+          "title": "Protocol Ref",
+          "type": "string"
+        },
+        "runtime_ref": {
+          "maxLength": 160,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_./:-]+$",
+          "title": "Runtime Ref",
+          "type": "string"
+        },
+        "family": {
+          "enum": [
+            "OPENCODE",
+            "HARNESS",
+            "CUSTOM"
+          ],
+          "title": "Family",
+          "type": "string"
+        },
+        "provider_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_./:-]+$",
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "model_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_./:-]+$",
+          "title": "Model Id",
+          "type": "string"
+        },
+        "agent": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_./:-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Agent"
+        },
+        "modes": {
+          "items": {
+            "enum": [
+              "WORKSPACE_EDIT",
+              "FILE_PROPOSAL"
+            ],
+            "type": "string"
+          },
+          "maxItems": 2,
+          "minItems": 1,
+          "title": "Modes",
+          "type": "array"
+        },
+        "fresh_sessions": {
+          "const": true,
+          "default": true,
+          "title": "Fresh Sessions",
+          "type": "boolean"
+        },
+        "reported_usage": {
+          "const": true,
+          "default": true,
+          "title": "Reported Usage",
+          "type": "boolean"
+        },
+        "cancellation": {
+          "const": true,
+          "default": true,
+          "title": "Cancellation",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "runtime_ref",
+        "family",
+        "provider_id",
+        "model_id",
+        "modes"
+      ],
+      "title": "LoopRuntimeBinding",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Private, bounded command: no credentials, host paths or prior conversations.",
+  "properties": {
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "runtime": {
+      "$ref": "#/$defs/LoopRuntimeBinding"
+    },
+    "workflow_run_id": {
+      "format": "uuid",
+      "title": "Workflow Run Id",
+      "type": "string"
+    },
+    "task_run_id": {
+      "format": "uuid",
+      "title": "Task Run Id",
+      "type": "string"
+    },
+    "attempt_id": {
+      "format": "uuid",
+      "title": "Attempt Id",
+      "type": "string"
+    },
+    "request_id": {
+      "format": "uuid",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "iteration": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Iteration",
+      "type": "integer"
+    },
+    "policy_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Policy Digest",
+      "type": "string"
+    },
+    "specification": {
+      "$ref": "#/$defs/LiveLoopSpec"
+    },
+    "parent_candidate": {
+      "$ref": "#/$defs/LiveLoopCandidate"
+    },
+    "mode": {
+      "enum": [
+        "WORKSPACE_EDIT",
+        "FILE_PROPOSAL"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "prompt": {
+      "maxLength": 262144,
+      "title": "Prompt",
+      "type": "string"
+    },
+    "system": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "title": "System",
+      "type": "string"
+    },
+    "timeout_ms": {
+      "maximum": 3600000,
+      "minimum": 1,
+      "title": "Timeout Ms",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "runtime",
+    "workflow_run_id",
+    "task_run_id",
+    "attempt_id",
+    "request_id",
+    "iteration",
+    "policy_digest",
+    "specification",
+    "parent_candidate",
+    "mode",
+    "prompt",
+    "system",
+    "timeout_ms"
+  ],
+  "title": "LoopIterationRequest",
+  "type": "object"
+}

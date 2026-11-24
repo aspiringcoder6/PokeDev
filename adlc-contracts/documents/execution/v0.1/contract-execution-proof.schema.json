@@ -1,0 +1,155 @@
+{
+  "$defs": {
+    "ContractReference": {
+      "additionalProperties": false,
+      "properties": {
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "contract_id": {
+          "format": "uuid",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 512,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "schema_ref": {
+          "const": "adlc://schemas/skilltree-contract/0.1",
+          "default": "adlc://schemas/skilltree-contract/0.1",
+          "title": "Schema Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract_id",
+        "revision",
+        "content_digest"
+      ],
+      "title": "ContractReference",
+      "type": "object"
+    },
+    "CriterionEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "criterion_index": {
+          "maximum": 15,
+          "minimum": 0,
+          "title": "Criterion Index",
+          "type": "integer"
+        },
+        "node_id": {
+          "format": "uuid",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "verifier_ref": {
+          "enum": [
+            "verifier:contract-source-patch/0.1.0",
+            "verifier:contract-no-changes/0.1.0",
+            "verifier:contract-json-syntax/0.1.0"
+          ],
+          "title": "Verifier Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "node_id",
+        "criterion_index",
+        "verifier_ref",
+        "passed"
+      ],
+      "title": "CriterionEvidence",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/documents/execution/v0.1/contract-execution-proof.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "artifact_checksum": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Artifact Checksum",
+      "type": "string"
+    },
+    "artifact_id": {
+      "format": "uuid",
+      "title": "Artifact Id",
+      "type": "string"
+    },
+    "base_commit": {
+      "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$",
+      "title": "Base Commit",
+      "type": "string"
+    },
+    "changed_paths": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 128,
+      "title": "Changed Paths",
+      "type": "array"
+    },
+    "checked_at": {
+      "format": "date-time",
+      "title": "Checked At",
+      "type": "string"
+    },
+    "checks": {
+      "items": {
+        "$ref": "#/$defs/CriterionEvidence"
+      },
+      "maxItems": 256,
+      "minItems": 1,
+      "title": "Checks",
+      "type": "array"
+    },
+    "criteria_executed": {
+      "const": true,
+      "default": true,
+      "title": "Criteria Executed",
+      "type": "boolean"
+    },
+    "execution_policy_enforced": {
+      "const": true,
+      "default": true,
+      "title": "Execution Policy Enforced",
+      "type": "boolean"
+    },
+    "natural_language_enforced": {
+      "const": false,
+      "default": false,
+      "title": "Natural Language Enforced",
+      "type": "boolean"
+    },
+    "policy_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Policy Digest",
+      "type": "string"
+    },
+    "reference": {
+      "$ref": "#/$defs/ContractReference"
+    }
+  },
+  "required": [
+    "reference",
+    "policy_digest",
+    "artifact_id",
+    "artifact_checksum",
+    "base_commit",
+    "changed_paths",
+    "checks",
+    "checked_at"
+  ],
+  "title": "ContractExecutionProof",
+  "type": "object"
+}

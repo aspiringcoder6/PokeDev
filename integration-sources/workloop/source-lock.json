@@ -1,0 +1,8 @@
+{
+  "version": "0.1.0",
+  "repositories": {
+    "workloop": { "path": "admin/workloop", "branch": "agent-docs-langflow-dag", "revision": "1947a19ccb532f507394f9ac71fa2b51520f1785" },
+    "factory-wilson": { "path": "admin/factory-wilson", "branch": "main", "revision": "8b1197e6d5b74d728da267007a978e174ccb9aea" },
+    "factory-test": { "path": "admin/factory-test", "branch": "main", "revision": "1d8e1b9034a15442770d84262fdcc1206acddce6" }
+  }
+}

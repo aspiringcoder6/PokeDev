@@ -1,0 +1,115 @@
+import { useTranslation } from "react-i18next";
+import IconComponent from "@/components/common/genericIconComponent";
+import ShadTooltip from "@/components/common/shadTooltipComponent";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/select";
+import { usePermissions } from "@/contexts/permissionsContext";
+import CustomResourceShareAction from "@/customization/components/custom-resource-share-action";
+import type { FolderType } from "@/pages/MainPage/entities";
+import { getProjectDisplayName } from "@/utils/project-display-name";
+import { cn } from "@/utils/utils";
+import { handleSelectChange } from "../helpers/handle-select-change";
+import { FolderSelectItem } from "./folder-select-item";
+
+export const SelectOptions = ({
+  item,
+  handleDeleteFolder,
+  handleDownloadFolder,
+  handleSelectFolderToRename,
+  checkPathName,
+}: {
+  item: FolderType;
+  handleDeleteFolder: ((folder: FolderType) => void) | undefined;
+  handleDownloadFolder: (folderId: string) => void;
+  handleSelectFolderToRename: (folder: FolderType) => void;
+  checkPathName: (folderId: string) => boolean;
+}) => {
+  const { t } = useTranslation();
+  const { can } = usePermissions();
+  const canRename = can(item.id, "write");
+  const canDownload = can(item.id, "read");
+  const canDelete = can(item.id, "delete");
+  const displayName = getProjectDisplayName(item, t);
+  return (
+    <div className="flex items-center gap-1">
+      <CustomResourceShareAction
+        resourceId={item.id!}
+        resourceType="project"
+        resourceName={displayName}
+      />
+      <Select
+        onValueChange={(value) =>
+          handleSelectChange(
+            value,
+            item,
+            handleDeleteFolder,
+            handleDownloadFolder,
+            handleSelectFolderToRename,
+          )
+        }
+        value=""
+      >
+        <ShadTooltip
+          content={t("folder.options")}
+          side="right"
+          styleClasses="z-50"
+        >
+          <SelectTrigger
+            variant="plain"
+            className="h-6 w-6 min-h-[24px] min-w-[24px]"
+            id={`options-trigger-${item.id}`}
+            data-testid={`more-options-button_${item.id}`}
+            aria-label={t("folder.optionsFor", { name: displayName })}
+          >
+            <IconComponent
+              name={"MoreHorizontal"}
+              className={cn(
+                `w-4 stroke-[1.5] px-0 text-muted-foreground group-hover/menu-button:block group-hover/menu-button:text-foreground group-focus-within/menu-button:block group-focus-within/menu-button:text-foreground`,
+                checkPathName(item.id!) ? "block" : "hidden",
+              )}
+            />
+          </SelectTrigger>
+        </ShadTooltip>
+        <SelectContent
+          align="end"
+          alignOffset={-16}
+          position="popper"
+          className="min-w-[11.5rem]"
+        >
+          <SelectItem
+            variant="plain"
+            id="rename-button"
+            value="rename"
+            data-testid="btn-rename-project"
+            className="text-xs"
+            disabled={!canRename}
+          >
+            <FolderSelectItem name={t("folder.rename")} iconName="SquarePen" />
+          </SelectItem>
+          <SelectItem
+            variant="plain"
+            value="download"
+            data-testid="btn-download-project"
+            className="text-xs"
+            disabled={!canDownload}
+          >
+            <FolderSelectItem name={t("folder.download")} iconName="Download" />
+          </SelectItem>
+          <SelectItem
+            variant="plain"
+            value="delete"
+            data-testid="btn-delete-project"
+            className="text-xs"
+            disabled={!canDelete}
+          >
+            <FolderSelectItem name={t("folder.delete")} iconName="Trash2" />
+          </SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+  );
+};

@@ -1,0 +1,117 @@
+{
+  "schema_version": "0.1",
+  "package_id": "agent-memory-context",
+  "version": "0.1.0",
+  "status": "PUBLISHED",
+  "name": "AgentMemory · Lấy ngữ cảnh",
+  "description": "Đọc context CHUNKS trong dataset đã gắn với workflow; không tổng hợp, ghi hoặc xóa.",
+  "kind": "AGENT",
+  "interface": {
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "plugin_result",
+        "schema_ref": "adlc://schemas/workflow-plugin-result/0.1",
+        "required": true,
+        "multiple": false,
+        "description": "Kết quả plugin gắn với run và task."
+      },
+      {
+        "name": "context",
+        "schema_ref": "adlc://schemas/workflow-plugin-data/0.1",
+        "required": true,
+        "multiple": false,
+        "description": "Dữ liệu tư vấn từ plugin; không phải bằng chứng Verify."
+      }
+    ]
+  },
+  "configuration_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "connection": {
+        "type": "string",
+        "pattern": "^[a-zA-Z0-9_-]{1,80}$"
+      },
+      "query": {
+        "type": "string",
+        "maxLength": 4096
+      },
+      "top_k": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 20
+      }
+    },
+    "required": [
+      "connection",
+      "query",
+      "top_k"
+    ]
+  },
+  "defaults": {
+    "connection": "project",
+    "query": "",
+    "top_k": 5
+  },
+  "override_allowlist": [
+    "/configuration/connection",
+    "/configuration/query",
+    "/configuration/top_k"
+  ],
+  "implementation": {
+    "adapter_type": "AGENT_PROVIDER",
+    "adapter_ref": "integration:workflow-plugins",
+    "entrypoint": "MEMORY_CONTEXT"
+  },
+  "execution_profile": {
+    "provider_ref": "integration:workflow-plugins",
+    "model_ref": "model:workflow-plugins/no-model",
+    "system_prompt_ref": "prompt:workflow-plugins/0.1.0",
+    "rule_set_refs": [
+      "rules:workflow-plugins-bound-scope/0.1.0"
+    ],
+    "hook_refs": [],
+    "capabilities": {
+      "tool_refs": [],
+      "skill_refs": [],
+      "plugin_refs": [
+        "plugin:vai_agentmemory/1.0.0",
+        "plugin:vai_testforge/1.0.0"
+      ],
+      "mcp_server_refs": []
+    },
+    "memory_policy_ref": "memory:workflow-plugins/advisory",
+    "sandbox_policy_ref": "sandbox:workflow-plugins/remote-bound",
+    "secret_refs": {}
+  },
+  "default_policies": {
+    "retry": {
+      "max_attempts": 1
+    },
+    "timeout_ms": 720000,
+    "approval": {
+      "gate_type": null
+    },
+    "permissions": {
+      "mode": "PACKAGE_ALLOWLIST"
+    },
+    "resources": {},
+    "runtime_overridable": []
+  },
+  "compatibility": {
+    "engine": {
+      "minimum_version": "0.1.0"
+    },
+    "execution_contract_versions": [
+      "0.1"
+    ]
+  },
+  "metadata": {
+    "maintainer": "adlc",
+    "provider_mode": "live",
+    "verification_evidence": false,
+    "activation_env": "ADLC_WORKFLOW_PLUGINS_ENABLED"
+  }
+}

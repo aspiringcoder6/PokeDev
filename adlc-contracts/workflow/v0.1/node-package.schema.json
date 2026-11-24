@@ -1,0 +1,464 @@
+{
+  "$defs": {
+    "ApprovalPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "gate_type": {
+          "anyOf": [
+            {
+              "enum": [
+                "BEFORE_TASK",
+                "ACTION",
+                "AFTER_TASK"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gate Type"
+        }
+      },
+      "title": "ApprovalPolicy",
+      "type": "object"
+    },
+    "CapabilityReferences": {
+      "additionalProperties": false,
+      "properties": {
+        "mcp_server_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Mcp Server Refs",
+          "type": "array"
+        },
+        "plugin_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Plugin Refs",
+          "type": "array"
+        },
+        "skill_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Skill Refs",
+          "type": "array"
+        },
+        "tool_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Tool Refs",
+          "type": "array"
+        }
+      },
+      "title": "CapabilityReferences",
+      "type": "object"
+    },
+    "EngineCompatibility": {
+      "additionalProperties": false,
+      "properties": {
+        "minimum_version": {
+          "maxLength": 128,
+          "minLength": 5,
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+          "title": "Minimum Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "minimum_version"
+      ],
+      "title": "EngineCompatibility",
+      "type": "object"
+    },
+    "ExecutionProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "capabilities": {
+          "$ref": "#/$defs/CapabilityReferences"
+        },
+        "hook_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Hook Refs",
+          "type": "array"
+        },
+        "memory_policy_ref": {
+          "minLength": 1,
+          "title": "Memory Policy Ref",
+          "type": "string"
+        },
+        "model_ref": {
+          "minLength": 1,
+          "title": "Model Ref",
+          "type": "string"
+        },
+        "provider_ref": {
+          "minLength": 1,
+          "title": "Provider Ref",
+          "type": "string"
+        },
+        "rule_set_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Rule Set Refs",
+          "type": "array"
+        },
+        "sandbox_policy_ref": {
+          "minLength": 1,
+          "title": "Sandbox Policy Ref",
+          "type": "string"
+        },
+        "secret_refs": {
+          "additionalProperties": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Secret Refs",
+          "type": "object"
+        },
+        "system_prompt_ref": {
+          "minLength": 1,
+          "title": "System Prompt Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider_ref",
+        "model_ref",
+        "system_prompt_ref",
+        "memory_policy_ref",
+        "sandbox_policy_ref"
+      ],
+      "title": "ExecutionProfile",
+      "type": "object"
+    },
+    "InterfaceSlot": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "multiple": {
+          "title": "Multiple",
+          "type": "boolean"
+        },
+        "name": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Name",
+          "type": "string"
+        },
+        "required": {
+          "title": "Required",
+          "type": "boolean"
+        },
+        "schema_ref": {
+          "minLength": 1,
+          "title": "Schema Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "schema_ref",
+        "required",
+        "multiple"
+      ],
+      "title": "InterfaceSlot",
+      "type": "object"
+    },
+    "NodeDefaultPolicies": {
+      "additionalProperties": false,
+      "properties": {
+        "approval": {
+          "$ref": "#/$defs/ApprovalPolicy"
+        },
+        "permissions": {
+          "$ref": "#/$defs/PermissionPolicy"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "title": "Resources",
+          "type": "object"
+        },
+        "retry": {
+          "$ref": "#/$defs/RetryPolicy"
+        },
+        "runtime_overridable": {
+          "items": {
+            "minLength": 1,
+            "pattern": "^/(configuration|policies|execution_profile)(/.*)?$",
+            "type": "string"
+          },
+          "title": "Runtime Overridable",
+          "type": "array"
+        },
+        "timeout_ms": {
+          "minimum": 1,
+          "title": "Timeout Ms",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "retry",
+        "timeout_ms"
+      ],
+      "title": "NodeDefaultPolicies",
+      "type": "object"
+    },
+    "NodeImplementation": {
+      "additionalProperties": false,
+      "properties": {
+        "adapter_ref": {
+          "minLength": 1,
+          "title": "Adapter Ref",
+          "type": "string"
+        },
+        "adapter_type": {
+          "$ref": "#/$defs/PackageAdapterType"
+        },
+        "entrypoint": {
+          "minLength": 1,
+          "title": "Entrypoint",
+          "type": "string"
+        }
+      },
+      "required": [
+        "adapter_type",
+        "adapter_ref",
+        "entrypoint"
+      ],
+      "title": "NodeImplementation",
+      "type": "object"
+    },
+    "NodePackageInterface": {
+      "additionalProperties": false,
+      "properties": {
+        "inputs": {
+          "items": {
+            "$ref": "#/$defs/InterfaceSlot"
+          },
+          "title": "Inputs",
+          "type": "array"
+        },
+        "outputs": {
+          "items": {
+            "$ref": "#/$defs/InterfaceSlot"
+          },
+          "title": "Outputs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "inputs",
+        "outputs"
+      ],
+      "title": "NodePackageInterface",
+      "type": "object"
+    },
+    "NodePackageKind": {
+      "enum": [
+        "AGENT",
+        "TESTING",
+        "REVIEW",
+        "APPROVAL",
+        "ROUTER",
+        "JOIN"
+      ],
+      "title": "NodePackageKind",
+      "type": "string"
+    },
+    "NodePackageStatus": {
+      "enum": [
+        "DRAFT",
+        "PUBLISHED",
+        "DEPRECATED"
+      ],
+      "title": "NodePackageStatus",
+      "type": "string"
+    },
+    "PackageAdapterType": {
+      "enum": [
+        "AGENT_PROVIDER",
+        "TESTING_PROVIDER",
+        "REVIEW_PROVIDER",
+        "CONTROL"
+      ],
+      "title": "PackageAdapterType",
+      "type": "string"
+    },
+    "PackageCompatibility": {
+      "additionalProperties": false,
+      "properties": {
+        "engine": {
+          "$ref": "#/$defs/EngineCompatibility"
+        },
+        "execution_contract_versions": {
+          "items": {
+            "const": "0.1",
+            "type": "string"
+          },
+          "title": "Execution Contract Versions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "engine",
+        "execution_contract_versions"
+      ],
+      "title": "PackageCompatibility",
+      "type": "object"
+    },
+    "PermissionPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "const": "PACKAGE_ALLOWLIST",
+          "default": "PACKAGE_ALLOWLIST",
+          "title": "Mode",
+          "type": "string"
+        }
+      },
+      "title": "PermissionPolicy",
+      "type": "object"
+    },
+    "RetryPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "max_attempts": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Max Attempts",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "max_attempts"
+      ],
+      "title": "RetryPolicy",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/workflow/v0.1/node-package.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "compatibility": {
+      "$ref": "#/$defs/PackageCompatibility"
+    },
+    "configuration_schema": {
+      "additionalProperties": true,
+      "title": "Configuration Schema",
+      "type": "object"
+    },
+    "default_policies": {
+      "$ref": "#/$defs/NodeDefaultPolicies"
+    },
+    "defaults": {
+      "additionalProperties": true,
+      "title": "Defaults",
+      "type": "object"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "execution_profile": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ExecutionProfile"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "implementation": {
+      "$ref": "#/$defs/NodeImplementation"
+    },
+    "interface": {
+      "$ref": "#/$defs/NodePackageInterface"
+    },
+    "kind": {
+      "$ref": "#/$defs/NodePackageKind"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    },
+    "name": {
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "override_allowlist": {
+      "items": {
+        "minLength": 1,
+        "pattern": "^/(configuration|policies|execution_profile)(/.*)?$",
+        "type": "string"
+      },
+      "title": "Override Allowlist",
+      "type": "array"
+    },
+    "package_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?$",
+      "title": "Package Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/NodePackageStatus"
+    },
+    "version": {
+      "maxLength": 128,
+      "minLength": 5,
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "package_id",
+    "version",
+    "status",
+    "name",
+    "description",
+    "kind",
+    "interface",
+    "configuration_schema",
+    "defaults",
+    "override_allowlist",
+    "implementation",
+    "execution_profile",
+    "default_policies",
+    "compatibility",
+    "metadata"
+  ],
+  "title": "NodePackageDefinition",
+  "type": "object"
+}

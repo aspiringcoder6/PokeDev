@@ -1,0 +1,39 @@
+{
+  "$id": "https://adlc.dev/contracts/harness/v0.1/callback-receipt.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "accepted": {
+      "default": true,
+      "title": "Accepted",
+      "type": "boolean"
+    },
+    "attempt_id": {
+      "format": "uuid",
+      "title": "Attempt Id",
+      "type": "string"
+    },
+    "delivery_id": {
+      "format": "uuid",
+      "title": "Delivery Id",
+      "type": "string"
+    },
+    "duplicate": {
+      "default": false,
+      "title": "Duplicate",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "delivery_id",
+    "attempt_id"
+  ],
+  "title": "HarnessCallbackReceipt",
+  "type": "object"
+}

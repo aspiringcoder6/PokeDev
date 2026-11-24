@@ -1,0 +1,116 @@
+{
+  "$defs": {
+    "LiveLoopEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "argv": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Argv",
+          "type": "array"
+        },
+        "check_id": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Check Id",
+          "type": "string"
+        },
+        "executed_tests": {
+          "minimum": 0,
+          "title": "Executed Tests",
+          "type": "integer"
+        },
+        "exit_code": {
+          "title": "Exit Code",
+          "type": "integer"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "stderr": {
+          "maxLength": 8192,
+          "title": "Stderr",
+          "type": "string"
+        },
+        "stdout": {
+          "maxLength": 8192,
+          "title": "Stdout",
+          "type": "string"
+        },
+        "test_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Test Digest",
+          "type": "string"
+        },
+        "timed_out": {
+          "title": "Timed Out",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "check_id",
+        "argv",
+        "test_digest",
+        "exit_code",
+        "executed_tests",
+        "timed_out",
+        "passed",
+        "stdout",
+        "stderr"
+      ],
+      "title": "LiveLoopEvidence",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/task-loop/v0.2/task-loop-verification.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "candidate_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Candidate Digest",
+      "type": "string"
+    },
+    "candidate_id": {
+      "format": "uuid",
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "checks": {
+      "items": {
+        "$ref": "#/$defs/LiveLoopEvidence"
+      },
+      "maxItems": 16,
+      "minItems": 1,
+      "title": "Checks",
+      "type": "array"
+    },
+    "mode": {
+      "const": "COMMAND",
+      "default": "COMMAND",
+      "title": "Mode",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.2",
+      "default": "0.2",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "spec_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Spec Digest",
+      "type": "string"
+    }
+  },
+  "required": [
+    "spec_digest",
+    "candidate_id",
+    "candidate_digest",
+    "checks"
+  ],
+  "title": "LiveLoopVerification",
+  "type": "object"
+}

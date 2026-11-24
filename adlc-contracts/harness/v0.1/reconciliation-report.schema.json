@@ -1,0 +1,33 @@
+{
+  "$id": "https://adlc.dev/contracts/harness/v0.1/reconciliation-report.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "inspected": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Inspected",
+      "type": "integer"
+    },
+    "recovered_results": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Recovered Results",
+      "type": "integer"
+    },
+    "submitted_sessions": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Submitted Sessions",
+      "type": "integer"
+    },
+    "unavailable_sessions": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Unavailable Sessions",
+      "type": "integer"
+    }
+  },
+  "title": "HarnessReconciliationReport",
+  "type": "object"
+}

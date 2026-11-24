@@ -1,0 +1,53 @@
+.venv/
+**/.venv/
+node_modules/
+**/node_modules/
+__pycache__/
+**/__pycache__/
+*.pyc
+
+.env
+**/.env
+.env.*
+!.env.example
+
+dist/
+build/
+coverage/
+logs/
+adlc-flow/.langflow/
+opencode.json
+# Tool caches
+.ruff_cache/
+**/.ruff_cache/
+.pytest_cache/
+**/.pytest_cache/
+*.egg-info/
+**/*.egg-info/
+# Local runtime artifacts
+*.db
+adlc-flow/data/
+# Downloaded upstream services and private local deployment state.
+integration-sources/broker-services/
+deploy/harness-brokers/.env
+
+# External repo kept locally for bundling/deployment only.
+# It has its own .git and remote (agent-harness-server.git):
+# git commands run inside this folder target THAT repo, never this one.
+# Never remove this ignore line unless you intend to vendor the server into this repository.
+agent-harness-server/
+
+# Local deliverables (báo cáo, tài liệu đóng gói, slide, zip mã nguồn)
+# chỉ dùng để nộp/trao đổi, không đưa lên GitHub.
+deliverables/
+
+# Independent fork state
+/data/
+/tmp/
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.db-*
+*.log
+.fork-local/
+.build-staging-*/

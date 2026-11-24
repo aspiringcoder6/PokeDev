@@ -1,0 +1,55 @@
+{
+  "$id": "https://adlc.dev/contracts/project-memory/v0.1/gateway-status.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "dataset": {
+      "title": "Dataset",
+      "type": "string"
+    },
+    "document_count": {
+      "maximum": 1000000,
+      "minimum": 0,
+      "title": "Document Count",
+      "type": "integer"
+    },
+    "gateway_ref": {
+      "const": "gateway:adlc-memory-readonly/0.1.0",
+      "title": "Gateway Ref",
+      "type": "string"
+    },
+    "models_used": {
+      "const": false,
+      "title": "Models Used",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "READY",
+        "EMPTY"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "tenant_id": {
+      "title": "Tenant Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "gateway_ref",
+    "tenant_id",
+    "dataset",
+    "models_used",
+    "state",
+    "document_count"
+  ],
+  "title": "GatewayStatus",
+  "type": "object"
+}

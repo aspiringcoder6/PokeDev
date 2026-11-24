@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vdt-adlc.dev/schemas/dsh-prompt/v1.json",
+  "title": "DSH Prompt Structure",
+  "description": "Common standard for prompts sent to DSH (DeepSeek Harness) agent sessions. All ADLC prompt generators (blueprint, task, review, etc.) MUST produce a payload that conforms to this schema before rendering it into the final user message.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["role", "objective", "context", "reply_contract"],
+  "properties": {
+    "role": {
+      "type": "string",
+      "description": "The agent persona / role description (e.g. 'ADLC blueprint planner', 'ADLC code reviewer').",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "objective": {
+      "type": "string",
+      "description": "The primary task the agent must accomplish. This is the user-facing requirement.",
+      "minLength": 1,
+      "maxLength": 20000
+    },
+    "instructions": {
+      "type": "string",
+      "description": "Optional extra instructions or constraints from the caller.",
+      "maxLength": 5000
+    },
+    "context": {
+      "type": "object",
+      "description": "Structured context the agent needs to complete the objective.",
+      "additionalProperties": false,
+      "properties": {
+        "current_state": {
+          "type": "object",
+          "description": "Snapshot of the current state the agent is operating on (e.g. existing blueprint stages, current code, current review).",
+          "additionalProperties": true
+        },
+        "catalogues": {
+          "type": "array",
+          "description": "Catalogues of available items the agent may reference (e.g. node packages, tools, skills).",
+          "items": {
+            "type": "object",
+            "required": ["catalogue_id", "items"],
+            "properties": {
+              "catalogue_id": {
+                "type": "string",
+                "description": "Stable identifier for the catalogue (e.g. 'node-packages', 'tools', 'skills')."
+              },
+              "items": {
+                "type": "array",
+                "items": { "type": "object" }
+              }
+            }
+          }
+        },
+        "inputs": {
+          "type": "object",
+          "description": "Named inputs the agent should use (e.g. requirement, source_patch, test_results).",
+          "additionalProperties": true
+        },
+        "constraints": {
+          "type": "object",
+          "description": "Hard constraints the agent must respect (e.g. allowed package versions, forbidden actions).",
+          "additionalProperties": true
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Free-form metadata (correlation ids, attempt ids, etc.).",
+          "additionalProperties": true
+        }
+      }
+    },
+    "reply_contract": {
+      "type": "object",
+      "description": "Defines the exact shape of the agent's reply so the caller can parse it deterministically.",
+      "additionalProperties": false,
+      "required": ["format", "summary_required", "files"],
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": ["adlc-file-block", "json-only", "markdown", "free-text"],
+          "description": "How the agent must structure its reply."
+        },
+        "summary_required": {
+          "type": "boolean",
+          "description": "Whether the agent must include a short summary before the structured payload."
+        },
+        "files": {
+          "type": "array",
+          "description": "File blocks the agent must include in its reply (using <adlc:file path='...'>...</adlc:file>).",
+          "items": {
+            "type": "object",
+            "required": ["path", "format"],
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "Logical path of the file inside the reply (e.g. 'blueprint.json', 'review.json')."
+              },
+              "format": {
+                "type": "string",
+                "enum": ["json", "yaml", "markdown", "text"],
+                "description": "Expected content format of the file block."
+              },
+              "schema_ref": {
+                "type": "string",
+                "description": "Optional reference to a JSON schema the file content must conform to."
+              },
+              "description": {
+                "type": "string",
+                "description": "Human-readable description of what this file should contain."
+              }
+            }
+          }
+        },
+        "rules": {
+          "type": "array",
+          "description": "Free-form rules the agent must follow when producing the reply.",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

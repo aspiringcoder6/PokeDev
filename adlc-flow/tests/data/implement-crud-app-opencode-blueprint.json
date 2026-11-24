@@ -1,0 +1,265 @@
+{
+  "name": "Implement CRUD App (OpenCode Agent)",
+  "description": "Live execution plane demo: every stage runs the real OpenCode agent (aigateway MiniMax-M3) on a disposable git worktree. Package defaults: 5-minute timeout per stage, retry budget 2 attempts.",
+  "is_component": false,
+  "data": {
+    "adlc": {
+      "document_type": "WORKFLOW_DEFINITION",
+      "schema_version": "0.1",
+      "workflow_definition_id": "a1000000-0000-4000-8000-000000000001",
+      "version": 1,
+      "status": "DRAFT",
+      "default_policies": {},
+      "metadata": {}
+    },
+    "nodes": [
+      {
+        "id": "stage-analyze",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 40,
+          "y": 240
+        },
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "a1000000-0000-4000-8000-000000000101",
+            "stage_type": "REQUIREMENTS",
+            "name": "Analyze Requirements",
+            "objective": "Clarify the user feature scope and produce the shared requirement brief.",
+            "inputs": {
+              "requirement": "Design a simple CRUD application for managing tasks (title, description, status). Decide the file layout and APIs."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent-opencode",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {},
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {}
+          }
+        }
+      },
+      {
+        "id": "stage-backend",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 440,
+          "y": 100
+        },
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "a1000000-0000-4000-8000-000000000102",
+            "stage_type": "IMPLEMENTATION",
+            "name": "Backend Implementation",
+            "objective": "Implement the server-side API and persistence for the user feature.",
+            "inputs": {
+              "requirement": "Implement the CRUD backend (create/read/update/delete endpoints) for the task entity."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent-opencode",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {},
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {}
+          }
+        }
+      },
+      {
+        "id": "stage-frontend",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 440,
+          "y": 380
+        },
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "a1000000-0000-4000-8000-000000000103",
+            "stage_type": "IMPLEMENTATION",
+            "name": "Frontend Implementation",
+            "objective": "Implement the user interface for the user feature.",
+            "inputs": {
+              "requirement": "Implement a minimal UI to list, create, update and delete tasks."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent-opencode",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {},
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {}
+          }
+        }
+      },
+      {
+        "id": "stage-testing",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 840,
+          "y": 240
+        },
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "a1000000-0000-4000-8000-000000000104",
+            "stage_type": "TESTING",
+            "name": "Testing",
+            "objective": "Run the test suite covering both backend and frontend changes.",
+            "inputs": {
+              "requirement": "Add and run basic tests covering the CRUD operations."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent-opencode",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {},
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {}
+          }
+        }
+      },
+      {
+        "id": "stage-review",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 1240,
+          "y": 240
+        },
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "a1000000-0000-4000-8000-000000000105",
+            "stage_type": "REVIEW",
+            "name": "Review",
+            "objective": "Review the completed implementation and testing evidence.",
+            "inputs": {
+              "requirement": "Review the delivered CRUD implementation and summarize the changes."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent-opencode",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {},
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {}
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-analyze-backend",
+        "source": "stage-analyze",
+        "target": "stage-backend",
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_EDGE",
+            "schema_version": "0.1",
+            "edge_id": "a1000000-0000-4000-8000-000000000201",
+            "condition": "ON_SUCCESS",
+            "bindings": [],
+            "metadata": {}
+          }
+        }
+      },
+      {
+        "id": "edge-analyze-frontend",
+        "source": "stage-analyze",
+        "target": "stage-frontend",
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_EDGE",
+            "schema_version": "0.1",
+            "edge_id": "a1000000-0000-4000-8000-000000000202",
+            "condition": "ON_SUCCESS",
+            "bindings": [],
+            "metadata": {}
+          }
+        }
+      },
+      {
+        "id": "edge-backend-testing",
+        "source": "stage-backend",
+        "target": "stage-testing",
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_EDGE",
+            "schema_version": "0.1",
+            "edge_id": "a1000000-0000-4000-8000-000000000203",
+            "condition": "ON_SUCCESS",
+            "bindings": [],
+            "metadata": {}
+          }
+        }
+      },
+      {
+        "id": "edge-frontend-testing",
+        "source": "stage-frontend",
+        "target": "stage-testing",
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_EDGE",
+            "schema_version": "0.1",
+            "edge_id": "a1000000-0000-4000-8000-000000000204",
+            "condition": "ON_SUCCESS",
+            "bindings": [],
+            "metadata": {}
+          }
+        }
+      },
+      {
+        "id": "edge-testing-review",
+        "source": "stage-testing",
+        "target": "stage-review",
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_EDGE",
+            "schema_version": "0.1",
+            "edge_id": "a1000000-0000-4000-8000-000000000205",
+            "condition": "ON_SUCCESS",
+            "bindings": [],
+            "metadata": {}
+          }
+        }
+      }
+    ],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    }
+  }
+}

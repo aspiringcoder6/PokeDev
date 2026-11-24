@@ -1,0 +1,114 @@
+{
+  "$defs": {
+    "ContractPluginTool": {
+      "additionalProperties": false,
+      "properties": {
+        "effect": {
+          "enum": [
+            "CREATE",
+            "EDIT",
+            "READ",
+            "VALIDATE"
+          ],
+          "title": "Effect",
+          "type": "string"
+        },
+        "input_schema": {
+          "title": "Input Schema",
+          "type": "string"
+        },
+        "name": {
+          "enum": [
+            "skilltree_init",
+            "skilltree_upsert_node",
+            "skilltree_remove_node",
+            "skilltree_set_dependency",
+            "skilltree_get_status",
+            "skilltree_validate"
+          ],
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "input_schema",
+        "effect"
+      ],
+      "title": "ContractPluginTool",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/documents/v0.1/contract-plugin.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "approval_authority": {
+      "const": "ADLC_AUTHENTICATED_OWNER",
+      "default": "ADLC_AUTHENTICATED_OWNER",
+      "title": "Approval Authority",
+      "type": "string"
+    },
+    "document_schema": {
+      "title": "Document Schema",
+      "type": "string"
+    },
+    "document_type": {
+      "const": "skilltree",
+      "default": "skilltree",
+      "title": "Document Type",
+      "type": "string"
+    },
+    "plugin_id": {
+      "const": "vai-adlc-skilltree",
+      "default": "vai-adlc-skilltree",
+      "title": "Plugin Id",
+      "type": "string"
+    },
+    "renderer_available": {
+      "const": false,
+      "default": false,
+      "title": "Renderer Available",
+      "type": "boolean"
+    },
+    "renderer_ref": {
+      "const": "adlc-renderer:skilltree/0.1",
+      "default": "adlc-renderer:skilltree/0.1",
+      "title": "Renderer Ref",
+      "type": "string"
+    },
+    "schema_ref": {
+      "const": "adlc://schemas/skilltree-contract/0.1",
+      "default": "adlc://schemas/skilltree-contract/0.1",
+      "title": "Schema Ref",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "tools": {
+      "items": {
+        "$ref": "#/$defs/ContractPluginTool"
+      },
+      "maxItems": 6,
+      "minItems": 6,
+      "title": "Tools",
+      "type": "array"
+    },
+    "version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "document_schema",
+    "tools"
+  ],
+  "title": "ContractPluginManifest",
+  "type": "object"
+}

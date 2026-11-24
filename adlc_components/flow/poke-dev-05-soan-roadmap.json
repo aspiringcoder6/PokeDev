@@ -1,0 +1,79 @@
+{
+  "id": "4c3b5260-fee1-562d-b096-d3a13c2da24a",
+  "name": "Poke Dev 05 - Soạn roadmap Skilltree (LIVE)",
+  "description": "Agent soạn roadmap read-only để demo graph, revision, tiêu chí, JSON và phê duyệt contract.",
+  "is_component": false,
+  "locked": false,
+  "endpoint_name": "poke-dev-05-soan-roadmap",
+  "tags": [
+    "Poke Dev",
+    "Live demo"
+  ],
+  "data": {
+    "adlc": {
+      "document_type": "WORKFLOW_DEFINITION",
+      "schema_version": "0.1",
+      "workflow_definition_id": "4c3b5260-fee1-562d-b096-d3a13c2da24a",
+      "version": 1,
+      "status": "DRAFT",
+      "default_policies": {},
+      "metadata": {
+        "sample_set": "poke-dev-live-20261009",
+        "demo_note": "Cần model/provider hoạt động. Duyệt contract và Submit phiên authoring là hai thao tác khác nhau. Không dùng Propose Tasks. Để tiếp tục mẫu 06, copy đúng approved contract reference trước khi fork."
+      }
+    },
+    "nodes": [
+      {
+        "id": "pd05-author",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 120,
+          "y": 170
+        },
+        "data": {
+          "id": "pd05-author",
+          "type": "adlcStage",
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "76489817-a057-5b85-8ef7-f11c3a44603f",
+            "stage_type": "REQUIREMENTS",
+            "name": "Soạn roadmap kiểm tra package manifest",
+            "objective": "Author exactly one small ADLC Skilltree roadmap titled \"Inspect package manifest for Poke Dev demo\". Scope: inspect client/package.json in the configured source repository without changing any file. Set constraints.read_only=true and constraints.allowed_paths=[\"client/package.json\"]. Leave forbidden_actions empty. Create exactly one MILESTONE and one child TASK, linked by CONTAINS. The TASK objective is to read client/package.json and report its package name and available scripts. Add exactly one acceptance criterion: description=\"The repository has no changed files after this read-only task\", verification=\"ARTIFACT\", verifier_ref=\"verifier:contract-no-changes/0.1.0\". Do not add HUMAN, TEST or unknown verifier criteria. Use the six Skilltree tools to initialize, create nodes, set the dependency and validate until passed=true. Do not read the filesystem while authoring; this step writes declarations only. Hand off the validated writer reference for human approval. Never approve the document or claim the inspection has already executed.",
+            "inputs": {
+              "requirement": "Author exactly one small ADLC Skilltree roadmap titled \"Inspect package manifest for Poke Dev demo\". Scope: inspect client/package.json in the configured source repository without changing any file. Set constraints.read_only=true and constraints.allowed_paths=[\"client/package.json\"]. Leave forbidden_actions empty. Create exactly one MILESTONE and one child TASK, linked by CONTAINS. The TASK objective is to read client/package.json and report its package name and available scripts. Add exactly one acceptance criterion: description=\"The repository has no changed files after this read-only task\", verification=\"ARTIFACT\", verifier_ref=\"verifier:contract-no-changes/0.1.0\". Do not add HUMAN, TEST or unknown verifier criteria. Use the six Skilltree tools to initialize, create nodes, set the dependency and validate until passed=true. Do not read the filesystem while authoring; this step writes declarations only. Hand off the validated writer reference for human approval. Never approve the document or claim the inspection has already executed."
+            },
+            "expected_outputs": [
+              "contract_reference"
+            ],
+            "package_ref": {
+              "package_id": "skilltree-authoring-deepseek-harness",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {},
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {
+              "sample_set": "poke-dev-live-20261009"
+            }
+          },
+          "node": {
+            "display_name": "Soạn roadmap kiểm tra package manifest",
+            "description": "Author exactly one small ADLC Skilltree roadmap titled \"Inspect package manifest for Poke Dev demo\". Scope: inspect client/package.json in the configured source repository without changing any file. Set constraints.read_only=true and constraints.allowed_paths=[\"client/package.json\"]. Leave forbidden_actions empty. Create exactly one MILESTONE and one child TASK, linked by CONTAINS. The TASK objective is to read client/package.json and report its package name and available scripts. Add exactly one acceptance criterion: description=\"The repository has no changed files after this read-only task\", verification=\"ARTIFACT\", verifier_ref=\"verifier:contract-no-changes/0.1.0\". Do not add HUMAN, TEST or unknown verifier criteria. Use the six Skilltree tools to initialize, create nodes, set the dependency and validate until passed=true. Do not read the filesystem while authoring; this step writes declarations only. Hand off the validated writer reference for human approval. Never approve the document or claim the inspection has already executed.",
+            "template": {},
+            "outputs": [],
+            "type": "adlcStage",
+            "documentation": ""
+          }
+        }
+      }
+    ],
+    "edges": [],
+    "viewport": {
+      "x": 25,
+      "y": 35,
+      "zoom": 0.85
+    }
+  }
+}

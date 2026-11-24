@@ -1,0 +1,301 @@
+{
+  "$defs": {
+    "CandidateReference": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Artifact Digest",
+          "type": "string"
+        },
+        "artifact_id": {
+          "format": "uuid",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "base_commit": {
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$",
+          "title": "Base Commit",
+          "type": "string"
+        },
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "encoding": {
+          "const": "canonical-json",
+          "default": "canonical-json",
+          "title": "Encoding",
+          "type": "string"
+        },
+        "file": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "File",
+          "type": "string"
+        },
+        "project_id": {
+          "format": "uuid",
+          "title": "Project Id",
+          "type": "string"
+        },
+        "source_attempt_id": {
+          "format": "uuid",
+          "title": "Source Attempt Id",
+          "type": "string"
+        },
+        "source_ref": {
+          "title": "Source Ref",
+          "type": "string"
+        },
+        "source_session_id": {
+          "pattern": "^[A-Za-z0-9._-]{1,255}$",
+          "title": "Source Session Id",
+          "type": "string"
+        },
+        "source_task_id": {
+          "format": "uuid",
+          "title": "Source Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_task_id",
+        "source_attempt_id",
+        "source_session_id",
+        "artifact_id",
+        "artifact_digest",
+        "base_commit",
+        "project_id",
+        "source_ref",
+        "file",
+        "content_digest"
+      ],
+      "title": "CandidateReference",
+      "type": "object"
+    },
+    "ContractReference": {
+      "additionalProperties": false,
+      "properties": {
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "contract_id": {
+          "format": "uuid",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 512,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "schema_ref": {
+          "const": "adlc://schemas/skilltree-contract/0.1",
+          "default": "adlc://schemas/skilltree-contract/0.1",
+          "title": "Schema Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract_id",
+        "revision",
+        "content_digest"
+      ],
+      "title": "ContractReference",
+      "type": "object"
+    },
+    "ReplayCase": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "criterion_index": {
+          "maximum": 15,
+          "minimum": 0,
+          "title": "Criterion Index",
+          "type": "integer"
+        },
+        "criterion_node_id": {
+          "format": "uuid",
+          "title": "Criterion Node Id",
+          "type": "string"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected"
+        },
+        "expected_status": {
+          "default": 200,
+          "maximum": 599,
+          "minimum": 100,
+          "title": "Expected Status",
+          "type": "integer"
+        },
+        "method": {
+          "const": "GET",
+          "default": "GET",
+          "title": "Method",
+          "type": "string"
+        },
+        "path": {
+          "const": "/fixture",
+          "default": "/fixture",
+          "title": "Path",
+          "type": "string"
+        },
+        "pointer": {
+          "maxLength": 512,
+          "pattern": "^(?:|/(?:[^~]|~[01])*)$",
+          "title": "Pointer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "pointer",
+        "expected",
+        "criterion_node_id",
+        "criterion_index"
+      ],
+      "title": "ReplayCase",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/verification-replay/v0.1/replay-plan.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "candidate": {
+      "$ref": "#/$defs/CandidateReference"
+    },
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/ReplayCase"
+      },
+      "maxItems": 16,
+      "minItems": 1,
+      "title": "Cases",
+      "type": "array"
+    },
+    "config_digest": {
+      "default": "sha256:d634ef15e33d6ab44ac44f2d62da5d80ae97e718da7e5222a3e83566f742e191",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Config Digest",
+      "type": "string"
+    },
+    "contract_reference": {
+      "$ref": "#/$defs/ContractReference"
+    },
+    "credential_ref": {
+      "const": "credential-profile:ephemeral-fixture/0.1.0",
+      "default": "credential-profile:ephemeral-fixture/0.1.0",
+      "title": "Credential Ref",
+      "type": "string"
+    },
+    "heal": {
+      "const": false,
+      "default": false,
+      "title": "Heal",
+      "type": "boolean"
+    },
+    "models": {
+      "const": false,
+      "default": false,
+      "title": "Models",
+      "type": "boolean"
+    },
+    "plan_id": {
+      "format": "uuid",
+      "title": "Plan Id",
+      "type": "string"
+    },
+    "profile_ref": {
+      "const": "verification-profile:http-json-replay/0.1.0",
+      "default": "verification-profile:http-json-replay/0.1.0",
+      "title": "Profile Ref",
+      "type": "string"
+    },
+    "revision": {
+      "const": 1,
+      "default": 1,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "risk_class": {
+      "const": "read-only-non-production",
+      "default": "read-only-non-production",
+      "title": "Risk Class",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "skip_policy": {
+      "const": "no-required-skips",
+      "default": "no-required-skips",
+      "title": "Skip Policy",
+      "type": "string"
+    },
+    "suite_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Suite Digest",
+      "type": "string"
+    },
+    "target_profile_ref": {
+      "const": "target-profile:disposable-http-json/0.1.0",
+      "default": "target-profile:disposable-http-json/0.1.0",
+      "title": "Target Profile Ref",
+      "type": "string"
+    },
+    "timeout_seconds": {
+      "default": 15,
+      "maximum": 60,
+      "minimum": 1,
+      "title": "Timeout Seconds",
+      "type": "integer"
+    },
+    "workflow_run_id": {
+      "format": "uuid",
+      "title": "Workflow Run Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "plan_id",
+    "workflow_run_id",
+    "contract_reference",
+    "candidate",
+    "cases",
+    "suite_digest"
+  ],
+  "title": "ReplayPlan",
+  "type": "object"
+}

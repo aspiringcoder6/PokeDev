@@ -1,0 +1,91 @@
+{
+  "schema_version": "0.1",
+  "package_id": "approval",
+  "version": "0.1.0",
+  "status": "PUBLISHED",
+  "name": "Human Approval",
+  "description": "Pauses an ADLC plan until a human approves or rejects it.",
+  "kind": "APPROVAL",
+  "interface": {
+    "inputs": [
+      {
+        "name": "approval_context",
+        "schema_ref": "adlc://schemas/approval-context/0.1",
+        "required": false,
+        "multiple": false,
+        "description": "Optional context shown to the approver."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "approval_decision",
+        "schema_ref": "adlc://schemas/approval-decision/0.1",
+        "required": true,
+        "multiple": false,
+        "description": "The recorded approve or reject decision."
+      }
+    ]
+  },
+  "configuration_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "message": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1000
+      },
+      "required_role": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 128
+      }
+    },
+    "required": [
+      "message",
+      "required_role"
+    ]
+  },
+  "defaults": {
+    "message": "Review the completed work before the workflow continues.",
+    "required_role": "reviewer"
+  },
+  "override_allowlist": [
+    "/configuration/message",
+    "/configuration/required_role",
+    "/policies/timeout_ms"
+  ],
+  "implementation": {
+    "adapter_type": "CONTROL",
+    "adapter_ref": "control:approval",
+    "entrypoint": "after-task"
+  },
+  "execution_profile": null,
+  "default_policies": {
+    "retry": {
+      "max_attempts": 1
+    },
+    "timeout_ms": 86400000,
+    "approval": {
+      "gate_type": "ACTION"
+    },
+    "permissions": {
+      "mode": "PACKAGE_ALLOWLIST"
+    },
+    "resources": {},
+    "runtime_overridable": []
+  },
+  "compatibility": {
+    "engine": {
+      "minimum_version": "0.1.0"
+    },
+    "execution_contract_versions": [
+      "0.1"
+    ]
+  },
+  "metadata": {
+    "maintainer": "adlc",
+    "provider_mode": "control"
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "$defs": {
+    "AcceptanceCriterion": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "verification": {
+          "default": "HUMAN",
+          "enum": [
+            "HUMAN",
+            "TEST",
+            "ARTIFACT"
+          ],
+          "title": "Verification",
+          "type": "string"
+        },
+        "verifier_ref": {
+          "anyOf": [
+            {
+              "maxLength": 255,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9:._/@-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Verifier Ref"
+        }
+      },
+      "required": [
+        "description"
+      ],
+      "title": "AcceptanceCriterion",
+      "type": "object"
+    },
+    "SkilltreeNodeSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "acceptance_criteria": {
+          "items": {
+            "$ref": "#/$defs/AcceptanceCriterion"
+          },
+          "maxItems": 16,
+          "title": "Acceptance Criteria",
+          "type": "array"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 4000,
+          "title": "Description",
+          "type": "string"
+        },
+        "kind": {
+          "default": "TASK",
+          "enum": [
+            "MILESTONE",
+            "TASK",
+            "DECISION"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "title"
+      ],
+      "title": "SkilltreeNodeSpec",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/documents/v0.1/skilltree_upsert_node.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "contract_id": {
+      "format": "uuid",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "expected_revision": {
+      "maximum": 512,
+      "minimum": 1,
+      "title": "Expected Revision",
+      "type": "integer"
+    },
+    "idempotency_key": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._:-]+$",
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "node": {
+      "$ref": "#/$defs/SkilltreeNodeSpec"
+    },
+    "node_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Node Id"
+    }
+  },
+  "required": [
+    "contract_id",
+    "expected_revision",
+    "idempotency_key",
+    "node"
+  ],
+  "title": "UpsertArguments",
+  "type": "object"
+}

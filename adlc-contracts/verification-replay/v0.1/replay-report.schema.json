@@ -1,0 +1,191 @@
+{
+  "$defs": {
+    "ReplayComparison": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected"
+        },
+        "expected_status": {
+          "title": "Expected Status",
+          "type": "integer"
+        },
+        "found": {
+          "title": "Found",
+          "type": "boolean"
+        },
+        "observed": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Observed"
+        },
+        "observed_status": {
+          "title": "Observed Status",
+          "type": "integer"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "pointer": {
+          "title": "Pointer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "pointer",
+        "expected",
+        "observed",
+        "found",
+        "expected_status",
+        "observed_status",
+        "passed"
+      ],
+      "title": "ReplayComparison",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/verification-replay/v0.1/replay-report.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "application_verified": {
+      "const": false,
+      "default": false,
+      "title": "Application Verified",
+      "type": "boolean"
+    },
+    "candidate_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Candidate Digest",
+      "type": "string"
+    },
+    "checks": {
+      "items": {
+        "$ref": "#/$defs/ReplayComparison"
+      },
+      "maxItems": 16,
+      "minItems": 1,
+      "title": "Checks",
+      "type": "array"
+    },
+    "comparator_ref": {
+      "const": "validator:http-json-replay/0.1.0",
+      "default": "validator:http-json-replay/0.1.0",
+      "title": "Comparator Ref",
+      "type": "string"
+    },
+    "completed_cases": {
+      "title": "Completed Cases",
+      "type": "integer"
+    },
+    "config_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Config Digest",
+      "type": "string"
+    },
+    "contract_fully_verified": {
+      "const": false,
+      "default": false,
+      "title": "Contract Fully Verified",
+      "type": "boolean"
+    },
+    "junit_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Junit Digest",
+      "type": "string"
+    },
+    "natural_language_enforced": {
+      "const": false,
+      "default": false,
+      "title": "Natural Language Enforced",
+      "type": "boolean"
+    },
+    "plan_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Plan Digest",
+      "type": "string"
+    },
+    "receipt_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Receipt Digest",
+      "type": "string"
+    },
+    "required_cases": {
+      "title": "Required Cases",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "suite_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Suite Digest",
+      "type": "string"
+    },
+    "verdict": {
+      "enum": [
+        "PASS",
+        "FAIL"
+      ],
+      "title": "Verdict",
+      "type": "string"
+    }
+  },
+  "required": [
+    "plan_digest",
+    "receipt_digest",
+    "candidate_digest",
+    "suite_digest",
+    "config_digest",
+    "junit_digest",
+    "verdict",
+    "required_cases",
+    "completed_cases",
+    "checks"
+  ],
+  "title": "ReplayReport",
+  "type": "object"
+}

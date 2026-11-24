@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.dev/contracts/task-loop-runtime/v0.1/runtime-binding.schema.json",
+  "additionalProperties": false,
+  "properties": {
+    "protocol_ref": {
+      "const": "task-loop-runtime:iteration/0.1.0",
+      "default": "task-loop-runtime:iteration/0.1.0",
+      "title": "Protocol Ref",
+      "type": "string"
+    },
+    "runtime_ref": {
+      "maxLength": 160,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_./:-]+$",
+      "title": "Runtime Ref",
+      "type": "string"
+    },
+    "family": {
+      "enum": [
+        "OPENCODE",
+        "HARNESS",
+        "CUSTOM"
+      ],
+      "title": "Family",
+      "type": "string"
+    },
+    "provider_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_./:-]+$",
+      "title": "Provider Id",
+      "type": "string"
+    },
+    "model_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_./:-]+$",
+      "title": "Model Id",
+      "type": "string"
+    },
+    "agent": {
+      "anyOf": [
+        {
+          "maxLength": 160,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_./:-]+$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Agent"
+    },
+    "modes": {
+      "items": {
+        "enum": [
+          "WORKSPACE_EDIT",
+          "FILE_PROPOSAL"
+        ],
+        "type": "string"
+      },
+      "maxItems": 2,
+      "minItems": 1,
+      "title": "Modes",
+      "type": "array"
+    },
+    "fresh_sessions": {
+      "const": true,
+      "default": true,
+      "title": "Fresh Sessions",
+      "type": "boolean"
+    },
+    "reported_usage": {
+      "const": true,
+      "default": true,
+      "title": "Reported Usage",
+      "type": "boolean"
+    },
+    "cancellation": {
+      "const": true,
+      "default": true,
+      "title": "Cancellation",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "runtime_ref",
+    "family",
+    "provider_id",
+    "model_id",
+    "modes"
+  ],
+  "title": "LoopRuntimeBinding",
+  "type": "object"
+}

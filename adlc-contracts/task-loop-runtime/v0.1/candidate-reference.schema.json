@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.dev/contracts/task-loop-runtime/v0.1/candidate-reference.schema.json",
+  "additionalProperties": false,
+  "properties": {
+    "candidate_id": {
+      "format": "uuid",
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "content_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Content Digest",
+      "type": "string"
+    },
+    "iteration": {
+      "maximum": 100,
+      "minimum": 0,
+      "title": "Iteration",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "candidate_id",
+    "content_digest",
+    "iteration"
+  ],
+  "title": "LoopCandidateReference",
+  "type": "object"
+}

@@ -1,0 +1,72 @@
+{
+  "$defs": {
+    "MemoryQuery": {
+      "additionalProperties": false,
+      "properties": {
+        "idempotency_key": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9._-]+$",
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "query": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Query",
+          "type": "string"
+        },
+        "top_k": {
+          "default": 5,
+          "maximum": 10,
+          "minimum": 1,
+          "title": "Top K",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "query",
+        "idempotency_key"
+      ],
+      "title": "MemoryQuery",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/project-memory/v0.1/memory-bridge-command.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "arguments": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MemoryQuery"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "operation": {
+      "enum": [
+        "context",
+        "status",
+        "health"
+      ],
+      "title": "Operation",
+      "type": "string"
+    },
+    "session_id": {
+      "pattern": "^[A-Za-z0-9._-]{1,255}$",
+      "title": "Session Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "session_id",
+    "operation"
+  ],
+  "title": "MemoryBridgeCommand",
+  "type": "object"
+}

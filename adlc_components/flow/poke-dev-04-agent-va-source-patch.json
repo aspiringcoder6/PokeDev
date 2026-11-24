@@ -1,0 +1,143 @@
+{
+  "id": "88dd24fd-71ea-5053-8fbc-068136988b76",
+  "name": "Poke Dev 04 - Harness và source patch (LIVE)",
+  "description": "Agent thật sửa một đoạn tài liệu trong checkout riêng của Meta_ecom, review patch rồi Submit thủ công.",
+  "is_component": false,
+  "locked": false,
+  "endpoint_name": "poke-dev-04-agent-va-source-patch",
+  "tags": [
+    "Poke Dev",
+    "Live demo"
+  ],
+  "data": {
+    "adlc": {
+      "document_type": "WORKFLOW_DEFINITION",
+      "schema_version": "0.1",
+      "workflow_definition_id": "88dd24fd-71ea-5053-8fbc-068136988b76",
+      "version": 1,
+      "status": "DRAFT",
+      "default_policies": {},
+      "metadata": {
+        "sample_set": "poke-dev-live-20261009",
+        "demo_note": "Cần model/provider hoạt động. Chạy từ source đã commit D:/coding/Meta_ecom, file client/README.md. Patch không tự áp vào source repository. Prompt giới hạn đường dẫn của coding profile này không phải guard cứng như contract profile."
+      }
+    },
+    "nodes": [
+      {
+        "id": "pd04-live",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 100,
+          "y": 160
+        },
+        "data": {
+          "id": "pd04-live",
+          "type": "adlcStage",
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "417acf26-8d9b-5c2b-be09-4a3d0fd3dc82",
+            "stage_type": "IMPLEMENTATION",
+            "name": "Sửa tài liệu trong checkout riêng",
+            "objective": "In the configured isolated Git checkout, edit only client/README.md. Append one Markdown section with heading \"## Poke Dev live demo\" and this exact sentence: \"This change demonstrates scoped agent execution and manual source-patch review in Poke Dev.\" Preserve all existing content. Do not modify any other file. Do not install dependencies, run network requests, commit, push, deploy, or run the app. Finish after this small edit and follow the driver result-envelope instructions. This is a documentation-only task.",
+            "inputs": {
+              "requirement": "In the configured isolated Git checkout, edit only client/README.md. Append one Markdown section with heading \"## Poke Dev live demo\" and this exact sentence: \"This change demonstrates scoped agent execution and manual source-patch review in Poke Dev.\" Preserve all existing content. Do not modify any other file. Do not install dependencies, run network requests, commit, push, deploy, or run the app. Finish after this small edit and follow the driver result-envelope instructions. This is a documentation-only task."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent-deepseek-harness",
+              "version": "0.3.2"
+            },
+            "configuration_overrides": {
+              "submission_mode": "MANUAL"
+            },
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {
+              "sample_set": "poke-dev-live-20261009"
+            }
+          },
+          "node": {
+            "display_name": "Sửa tài liệu trong checkout riêng",
+            "description": "In the configured isolated Git checkout, edit only client/README.md. Append one Markdown section with heading \"## Poke Dev live demo\" and this exact sentence: \"This change demonstrates scoped agent execution and manual source-patch review in Poke Dev.\" Preserve all existing content. Do not modify any other file. Do not install dependencies, run network requests, commit, push, deploy, or run the app. Finish after this small edit and follow the driver result-envelope instructions. This is a documentation-only task.",
+            "template": {},
+            "outputs": [],
+            "type": "adlcStage",
+            "documentation": ""
+          }
+        }
+      },
+      {
+        "id": "pd04-approval",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 530,
+          "y": 160
+        },
+        "data": {
+          "id": "pd04-approval",
+          "type": "adlcStage",
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "2eec9bbe-39ac-563e-a68b-6bc6e982d6eb",
+            "stage_type": "APPROVAL",
+            "name": "Phê duyệt kết quả đã Submit",
+            "objective": "Review patch client/README.md, Submit phiên Harness, sau đó phê duyệt kết quả workflow.",
+            "inputs": {
+              "approval_context": "Review patch client/README.md, Submit phiên Harness, sau đó phê duyệt kết quả workflow."
+            },
+            "expected_outputs": [
+              "approval_decision"
+            ],
+            "package_ref": {
+              "package_id": "approval",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {},
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {
+              "sample_set": "poke-dev-live-20261009"
+            }
+          },
+          "node": {
+            "display_name": "Phê duyệt kết quả đã Submit",
+            "description": "Review patch client/README.md, Submit phiên Harness, sau đó phê duyệt kết quả workflow.",
+            "template": {},
+            "outputs": [],
+            "type": "adlcStage",
+            "documentation": ""
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "pd04-live-pd04-approval",
+        "source": "pd04-live",
+        "target": "pd04-approval",
+        "type": "adlcEdge",
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_EDGE",
+            "schema_version": "0.1",
+            "edge_id": "ef54fae6-f7f5-5255-aea3-a9c567c15499",
+            "condition": "ON_SUCCESS",
+            "bindings": [],
+            "metadata": {}
+          }
+        }
+      }
+    ],
+    "viewport": {
+      "x": 25,
+      "y": 35,
+      "zoom": 0.85
+    }
+  }
+}

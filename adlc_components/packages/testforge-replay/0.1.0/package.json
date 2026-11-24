@@ -1,0 +1,102 @@
+{
+  "schema_version": "0.1",
+  "package_id": "testforge-replay",
+  "version": "0.1.0",
+  "status": "PUBLISHED",
+  "name": "TestForge · Chạy replay",
+  "description": "Chạy lại session trên môi trường test đã gắn với workflow, theo dõi job và giữ báo cáo. Không tự healing.",
+  "kind": "TESTING",
+  "interface": {
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "plugin_result",
+        "schema_ref": "adlc://schemas/workflow-plugin-result/0.1",
+        "required": true,
+        "multiple": false,
+        "description": "Kết quả plugin gắn với run và task."
+      },
+      {
+        "name": "report",
+        "schema_ref": "adlc://schemas/workflow-plugin-data/0.1",
+        "required": true,
+        "multiple": false,
+        "description": "Dữ liệu tư vấn từ plugin; không phải bằng chứng Verify."
+      }
+    ]
+  },
+  "configuration_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "connection": {
+        "type": "string",
+        "pattern": "^[a-zA-Z0-9_-]{1,80}$"
+      }
+    },
+    "required": [
+      "connection"
+    ]
+  },
+  "defaults": {
+    "connection": "project"
+  },
+  "override_allowlist": [
+    "/configuration/connection"
+  ],
+  "implementation": {
+    "adapter_type": "TESTING_PROVIDER",
+    "adapter_ref": "integration:workflow-plugins",
+    "entrypoint": "TESTFORGE_REPLAY"
+  },
+  "execution_profile": {
+    "provider_ref": "integration:workflow-plugins",
+    "model_ref": "model:workflow-plugins/no-model",
+    "system_prompt_ref": "prompt:workflow-plugins/0.1.0",
+    "rule_set_refs": [
+      "rules:workflow-plugins-bound-scope/0.1.0"
+    ],
+    "hook_refs": [],
+    "capabilities": {
+      "tool_refs": [],
+      "skill_refs": [],
+      "plugin_refs": [
+        "plugin:vai_agentmemory/1.0.0",
+        "plugin:vai_testforge/1.0.0"
+      ],
+      "mcp_server_refs": []
+    },
+    "memory_policy_ref": "memory:workflow-plugins/advisory",
+    "sandbox_policy_ref": "sandbox:workflow-plugins/remote-bound",
+    "secret_refs": {}
+  },
+  "default_policies": {
+    "retry": {
+      "max_attempts": 1
+    },
+    "timeout_ms": 720000,
+    "approval": {
+      "gate_type": null
+    },
+    "permissions": {
+      "mode": "PACKAGE_ALLOWLIST"
+    },
+    "resources": {},
+    "runtime_overridable": []
+  },
+  "compatibility": {
+    "engine": {
+      "minimum_version": "0.1.0"
+    },
+    "execution_contract_versions": [
+      "0.1"
+    ]
+  },
+  "metadata": {
+    "maintainer": "adlc",
+    "provider_mode": "live",
+    "verification_evidence": false,
+    "activation_env": "ADLC_WORKFLOW_PLUGINS_ENABLED"
+  }
+}

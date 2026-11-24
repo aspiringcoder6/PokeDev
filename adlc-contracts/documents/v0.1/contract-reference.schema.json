@@ -1,0 +1,36 @@
+{
+  "$id": "https://adlc.dev/contracts/documents/v0.1/contract-reference.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "content_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Content Digest",
+      "type": "string"
+    },
+    "contract_id": {
+      "format": "uuid",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "revision": {
+      "maximum": 512,
+      "minimum": 1,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "schema_ref": {
+      "const": "adlc://schemas/skilltree-contract/0.1",
+      "default": "adlc://schemas/skilltree-contract/0.1",
+      "title": "Schema Ref",
+      "type": "string"
+    }
+  },
+  "required": [
+    "contract_id",
+    "revision",
+    "content_digest"
+  ],
+  "title": "ContractReference",
+  "type": "object"
+}

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.dev/contracts/task-loop-runtime/v0.2/runtime-usage.schema.json",
+  "additionalProperties": false,
+  "properties": {
+    "input_tokens": {
+      "minimum": 0,
+      "title": "Input Tokens",
+      "type": "integer"
+    },
+    "output_tokens": {
+      "minimum": 0,
+      "title": "Output Tokens",
+      "type": "integer"
+    },
+    "total_tokens": {
+      "minimum": 0,
+      "title": "Total Tokens",
+      "type": "integer"
+    },
+    "cost": {
+      "title": "Cost",
+      "type": "null"
+    }
+  },
+  "required": [
+    "input_tokens",
+    "output_tokens",
+    "total_tokens",
+    "cost"
+  ],
+  "title": "LoopRuntimeUsageV2",
+  "type": "object"
+}

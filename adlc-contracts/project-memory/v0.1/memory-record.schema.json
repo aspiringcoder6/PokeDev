@@ -1,0 +1,262 @@
+{
+  "$defs": {
+    "MemoryBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "base_commit": {
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$",
+          "title": "Base Commit",
+          "type": "string"
+        },
+        "project_id": {
+          "format": "uuid",
+          "title": "Project Id",
+          "type": "string"
+        },
+        "source_attempt_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Attempt Id"
+        },
+        "source_ref": {
+          "maxLength": 140,
+          "title": "Source Ref",
+          "type": "string"
+        },
+        "source_session_id": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z0-9._-]{1,255}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Session Id"
+        },
+        "source_task_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Task Id"
+        },
+        "workflow_run_id": {
+          "format": "uuid",
+          "title": "Workflow Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workflow_run_id",
+        "project_id",
+        "base_commit",
+        "source_ref"
+      ],
+      "title": "MemoryBinding",
+      "type": "object"
+    },
+    "MemoryChunk": {
+      "additionalProperties": false,
+      "properties": {
+        "chunk_id": {
+          "maxLength": 255,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+          "title": "Chunk Id",
+          "type": "string"
+        },
+        "document_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Document Digest",
+          "type": "string"
+        },
+        "document_id": {
+          "maxLength": 255,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+          "title": "Document Id",
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "recorded_at": {
+          "format": "date-time",
+          "title": "Recorded At",
+          "type": "string"
+        },
+        "revision": {
+          "maxLength": 255,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+          "title": "Revision",
+          "type": "string"
+        },
+        "source_commit": {
+          "anyOf": [
+            {
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Commit"
+        },
+        "source_uri": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "title": "Source Uri",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 8192,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "text_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Text Digest",
+          "type": "string"
+        }
+      },
+      "required": [
+        "chunk_id",
+        "document_id",
+        "revision",
+        "source_uri",
+        "document_digest",
+        "text",
+        "text_digest",
+        "recorded_at",
+        "expires_at"
+      ],
+      "title": "MemoryChunk",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/project-memory/v0.1/memory-record.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "authority": {
+      "const": "ADVISORY_UNTRUSTED",
+      "default": "ADVISORY_UNTRUSTED",
+      "title": "Authority",
+      "type": "string"
+    },
+    "backend_revision": {
+      "maxLength": 255,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+      "title": "Backend Revision",
+      "type": "string"
+    },
+    "binding": {
+      "$ref": "#/$defs/MemoryBinding"
+    },
+    "chunks": {
+      "items": {
+        "$ref": "#/$defs/MemoryChunk"
+      },
+      "maxItems": 10,
+      "title": "Chunks",
+      "type": "array"
+    },
+    "dataset": {
+      "title": "Dataset",
+      "type": "string"
+    },
+    "models_used": {
+      "const": false,
+      "default": false,
+      "title": "Models Used",
+      "type": "boolean"
+    },
+    "profile_ref": {
+      "const": "memory-profile:project-context/0.1.0",
+      "default": "memory-profile:project-context/0.1.0",
+      "title": "Profile Ref",
+      "type": "string"
+    },
+    "query": {
+      "maxLength": 2000,
+      "minLength": 1,
+      "title": "Query",
+      "type": "string"
+    },
+    "record_id": {
+      "format": "uuid",
+      "title": "Record Id",
+      "type": "string"
+    },
+    "retrieved_at": {
+      "format": "date-time",
+      "title": "Retrieved At",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_provenance_verified": {
+      "const": false,
+      "default": false,
+      "title": "Source Provenance Verified",
+      "type": "boolean"
+    },
+    "tenant_id": {
+      "title": "Tenant Id",
+      "type": "string"
+    },
+    "top_k": {
+      "maximum": 10,
+      "minimum": 1,
+      "title": "Top K",
+      "type": "integer"
+    },
+    "verification_evidence": {
+      "const": false,
+      "default": false,
+      "title": "Verification Evidence",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "record_id",
+    "binding",
+    "query",
+    "top_k",
+    "tenant_id",
+    "dataset",
+    "backend_revision",
+    "retrieved_at",
+    "chunks"
+  ],
+  "title": "MemoryRecord",
+  "type": "object"
+}

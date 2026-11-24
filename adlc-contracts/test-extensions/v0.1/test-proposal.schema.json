@@ -1,0 +1,471 @@
+{
+  "$defs": {
+    "ContractReference": {
+      "additionalProperties": false,
+      "properties": {
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "contract_id": {
+          "format": "uuid",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 512,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "schema_ref": {
+          "const": "adlc://schemas/skilltree-contract/0.1",
+          "default": "adlc://schemas/skilltree-contract/0.1",
+          "title": "Schema Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract_id",
+        "revision",
+        "content_digest"
+      ],
+      "title": "ContractReference",
+      "type": "object"
+    },
+    "PerformanceBudget": {
+      "additionalProperties": false,
+      "description": "Bounded planning inputs only. No performance runner is registered.",
+      "properties": {
+        "duration_seconds": {
+          "maximum": 30,
+          "minimum": 1,
+          "title": "Duration Seconds",
+          "type": "integer"
+        },
+        "failed_requests_max": {
+          "maximum": 10,
+          "minimum": 0,
+          "title": "Failed Requests Max",
+          "type": "integer"
+        },
+        "max_requests": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Max Requests",
+          "type": "integer"
+        },
+        "p95_latency_ms_max": {
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "P95 Latency Ms Max",
+          "type": "integer"
+        },
+        "requests_per_second": {
+          "maximum": 5,
+          "minimum": 1,
+          "title": "Requests Per Second",
+          "type": "integer"
+        },
+        "virtual_users": {
+          "maximum": 5,
+          "minimum": 1,
+          "title": "Virtual Users",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "virtual_users",
+        "duration_seconds",
+        "requests_per_second",
+        "max_requests",
+        "p95_latency_ms_max",
+        "failed_requests_max"
+      ],
+      "title": "PerformanceBudget",
+      "type": "object"
+    },
+    "ProposalReference": {
+      "additionalProperties": false,
+      "properties": {
+        "document_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Document Digest",
+          "type": "string"
+        },
+        "proposal_id": {
+          "format": "uuid",
+          "title": "Proposal Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "proposal_id",
+        "revision",
+        "document_digest"
+      ],
+      "title": "ProposalReference",
+      "type": "object"
+    },
+    "ReplayCase": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "criterion_index": {
+          "maximum": 15,
+          "minimum": 0,
+          "title": "Criterion Index",
+          "type": "integer"
+        },
+        "criterion_node_id": {
+          "format": "uuid",
+          "title": "Criterion Node Id",
+          "type": "string"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected"
+        },
+        "expected_status": {
+          "default": 200,
+          "maximum": 599,
+          "minimum": 100,
+          "title": "Expected Status",
+          "type": "integer"
+        },
+        "method": {
+          "const": "GET",
+          "default": "GET",
+          "title": "Method",
+          "type": "string"
+        },
+        "path": {
+          "const": "/fixture",
+          "default": "/fixture",
+          "title": "Path",
+          "type": "string"
+        },
+        "pointer": {
+          "maxLength": 512,
+          "pattern": "^(?:|/(?:[^~]|~[01])*)$",
+          "title": "Pointer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "pointer",
+        "expected",
+        "criterion_node_id",
+        "criterion_index"
+      ],
+      "title": "ReplayCase",
+      "type": "object"
+    },
+    "ReplaySource": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Candidate Digest",
+          "type": "string"
+        },
+        "contract_reference": {
+          "$ref": "#/$defs/ContractReference"
+        },
+        "plan_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Plan Digest",
+          "type": "string"
+        },
+        "plan_id": {
+          "format": "uuid",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "project_id": {
+          "format": "uuid",
+          "title": "Project Id",
+          "type": "string"
+        },
+        "source_session_id": {
+          "pattern": "^[A-Za-z0-9._-]{1,255}$",
+          "title": "Source Session Id",
+          "type": "string"
+        },
+        "suite_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Suite Digest",
+          "type": "string"
+        },
+        "workflow_run_id": {
+          "format": "uuid",
+          "title": "Workflow Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workflow_run_id",
+        "plan_id",
+        "plan_digest",
+        "suite_digest",
+        "candidate_digest",
+        "project_id",
+        "source_session_id",
+        "contract_reference"
+      ],
+      "title": "ReplaySource",
+      "type": "object"
+    },
+    "TestPermissions": {
+      "additionalProperties": false,
+      "description": "The only reviewed target/data envelope today; not a broker permission grant.",
+      "properties": {
+        "allowed_methods": {
+          "items": {
+            "const": "GET",
+            "type": "string"
+          },
+          "maxItems": 1,
+          "minItems": 1,
+          "title": "Allowed Methods",
+          "type": "array"
+        },
+        "allowed_paths": {
+          "items": {
+            "const": "/fixture",
+            "type": "string"
+          },
+          "maxItems": 1,
+          "minItems": 1,
+          "title": "Allowed Paths",
+          "type": "array"
+        },
+        "cancellation": {
+          "const": "confirmed-worker-cancel",
+          "title": "Cancellation",
+          "type": "string"
+        },
+        "cleanup": {
+          "const": "release-owned-target",
+          "title": "Cleanup",
+          "type": "string"
+        },
+        "credential_ref": {
+          "const": "credential-profile:ephemeral-fixture/0.1.0",
+          "title": "Credential Ref",
+          "type": "string"
+        },
+        "data_scope": {
+          "const": "synthetic-run-owned-only",
+          "title": "Data Scope",
+          "type": "string"
+        },
+        "environment": {
+          "const": "non-production",
+          "title": "Environment",
+          "type": "string"
+        },
+        "max_duration_seconds": {
+          "maximum": 60,
+          "minimum": 1,
+          "title": "Max Duration Seconds",
+          "type": "integer"
+        },
+        "network_scope": {
+          "const": "allocated-loopback-target-only",
+          "title": "Network Scope",
+          "type": "string"
+        },
+        "target_profile_ref": {
+          "const": "target-profile:disposable-http-json/0.1.0",
+          "title": "Target Profile Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_profile_ref",
+        "credential_ref",
+        "environment",
+        "data_scope",
+        "allowed_methods",
+        "allowed_paths",
+        "network_scope",
+        "cleanup",
+        "cancellation",
+        "max_duration_seconds"
+      ],
+      "title": "TestPermissions",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/test-extensions/v0.1/test-proposal.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "authoring_session_id": {
+      "anyOf": [
+        {
+          "pattern": "^[A-Za-z0-9._-]{1,255}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Authoring Session Id"
+    },
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/ReplayCase"
+      },
+      "maxItems": 16,
+      "title": "Cases",
+      "type": "array"
+    },
+    "executable": {
+      "const": false,
+      "default": false,
+      "title": "Executable",
+      "type": "boolean"
+    },
+    "heal": {
+      "const": false,
+      "default": false,
+      "title": "Heal",
+      "type": "boolean"
+    },
+    "kind": {
+      "enum": [
+        "suite-revision",
+        "exploration",
+        "performance"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "models_used": {
+      "const": false,
+      "default": false,
+      "title": "Models Used",
+      "type": "boolean"
+    },
+    "parent_reference": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ProposalReference"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "performance": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PerformanceBudget"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "permissions": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TestPermissions"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "profile_ref": {
+      "const": "test-extension-profile:proposals/0.1.0",
+      "default": "test-extension-profile:proposals/0.1.0",
+      "title": "Profile Ref",
+      "type": "string"
+    },
+    "proposal_id": {
+      "format": "uuid",
+      "title": "Proposal Id",
+      "type": "string"
+    },
+    "rationale": {
+      "maxLength": 2000,
+      "minLength": 1,
+      "title": "Rationale",
+      "type": "string"
+    },
+    "revision": {
+      "default": 1,
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source": {
+      "$ref": "#/$defs/ReplaySource"
+    },
+    "title": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "verification_evidence": {
+      "const": false,
+      "default": false,
+      "title": "Verification Evidence",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "proposal_id",
+    "source",
+    "kind",
+    "title",
+    "rationale",
+    "cases"
+  ],
+  "title": "TestProposal",
+  "type": "object"
+}

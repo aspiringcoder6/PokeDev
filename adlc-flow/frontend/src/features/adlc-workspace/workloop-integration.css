@@ -1,0 +1,214 @@
+.wi-page {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 36px;
+}
+.wi-page header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 26px;
+}
+.wi-page header span {
+  color: hsl(var(--primary));
+  font-size: 10px;
+  letter-spacing: 1.4px;
+  font-weight: 600;
+}
+.wi-page h1 {
+  font-size: 27px;
+  font-weight: 600;
+  margin: 9px 0;
+}
+.wi-page p {
+  color: hsl(var(--muted-foreground));
+  font-size: 13px;
+  line-height: 1.8;
+}
+.wi-page button,
+.wi-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 13px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  font-size: 12px;
+}
+.wi-page button:focus-visible,
+.wi-page a:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 3px;
+}
+.wi-page button:hover,
+.wi-links a:hover {
+  background: hsl(var(--accent));
+}
+.wi-page button:disabled {
+  opacity: 0.5;
+}
+.wi-statuses {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.wi-statuses article,
+.wi-panel {
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  background: hsl(var(--card));
+  padding: 22px;
+}
+.wi-statuses article {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.wi-statuses article > span {
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+}
+.wi-statuses strong {
+  font-size: 17px;
+  font-weight: 600;
+}
+.wi-statuses small {
+  color: hsl(var(--muted-foreground));
+  line-height: 1.7;
+  font-size: 11px;
+}
+.wi-good {
+  color: #49b894;
+}
+.wi-page .wi-updated {
+  margin: 12px 0 24px;
+  font-size: 10px;
+  text-align: right;
+}
+.wi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  align-items: start;
+  gap: 20px;
+}
+.wi-panel > svg {
+  color: hsl(var(--primary));
+  margin-bottom: 16px;
+}
+.wi-panel h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.wi-panel ol {
+  list-style: decimal;
+  padding-left: 19px;
+  font-size: 12px;
+  line-height: 1.9;
+  color: hsl(var(--muted-foreground));
+}
+.wi-panel li {
+  padding-left: 4px;
+  margin: 13px 0;
+}
+.wi-panel li strong {
+  color: hsl(var(--foreground));
+  font-weight: 500;
+}
+.wi-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 23px;
+}
+.wi-page a.wi-primary {
+  background: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.wi-page a.wi-primary:hover {
+  opacity: 0.9;
+}
+.wi-page .wi-hint {
+  font-size: 11px;
+  margin-top: 16px;
+}
+.wi-panel label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+  margin-top: 19px;
+}
+.wi-panel input,
+.wi-panel select,
+.wi-panel textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 7px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-size: 12px;
+  line-height: 1.8;
+}
+.wi-panel textarea {
+  resize: vertical;
+  min-height: 105px;
+}
+.wi-panel details {
+  margin-top: 17px;
+}
+.wi-page summary {
+  font-size: 12px;
+  cursor: pointer;
+}
+.wi-panel pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 12px 0;
+  font-size: 11px;
+  line-height: 1.8;
+  color: hsl(var(--muted-foreground));
+}
+.wi-page .wi-copy {
+  margin-top: 16px;
+}
+.wi-page .wi-notice {
+  border: 1px solid #d6a34e;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+.wi-details {
+  margin-top: 26px;
+  border-top: 1px solid hsl(var(--border));
+  padding: 20px 0;
+}
+.wi-details dl {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 10px;
+  font-size: 12px;
+  margin: 18px 0;
+}
+.wi-details dd {
+  color: hsl(var(--muted-foreground));
+  overflow-wrap: anywhere;
+}
+.wi-slack-notifications {
+  margin-top: 20px;
+}
+.wi-slack-notifications form {
+  display: grid;
+  gap: 10px;
+}
+.wi-slack-notifications input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  background: hsl(var(--background));
+}

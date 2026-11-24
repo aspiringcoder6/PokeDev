@@ -1,0 +1,245 @@
+{
+  "schema_version": "0.1",
+  "package_id": "coding-agent-contract-harness",
+  "version": "0.2.0",
+  "status": "PUBLISHED",
+  "name": "Contract-bound Coding Agent (checkpoint recovery)",
+  "description": "H5D guarded contract execution with exact verification checkpoint reconciliation, MANUAL submission and no interrupted model replay.",
+  "kind": "AGENT",
+  "interface": {
+    "inputs": [
+      {
+        "name": "requirement",
+        "schema_ref": "adlc://schemas/requirement/0.1",
+        "required": true,
+        "multiple": false
+      }
+    ],
+    "outputs": [
+      {
+        "name": "contract_reference",
+        "schema_ref": "adlc://schemas/contract-reference/0.1",
+        "required": true,
+        "multiple": false
+      },
+      {
+        "name": "source_patch",
+        "schema_ref": "adlc://schemas/source-patch/0.1",
+        "required": true,
+        "multiple": false
+      }
+    ]
+  },
+  "configuration_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "approved_contract_ref",
+      "harness_profile_ref",
+      "result_schema_ref",
+      "submission_mode",
+      "callback_ref",
+      "plugin_lock",
+      "recovery_ref"
+    ],
+    "properties": {
+      "approved_contract_ref": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "additionalProperties": false,
+        "required": [
+          "schema_ref",
+          "contract_id",
+          "revision",
+          "content_digest"
+        ],
+        "properties": {
+          "schema_ref": {
+            "const": "adlc://schemas/skilltree-contract/0.1"
+          },
+          "contract_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 512
+          },
+          "content_digest": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        }
+      },
+      "harness_profile_ref": {
+        "const": "harness-profile:adlc-contract-coding/0.1.0"
+      },
+      "result_schema_ref": {
+        "const": "adlc://schemas/contract-execution-result/0.1"
+      },
+      "submission_mode": {
+        "const": "MANUAL"
+      },
+      "callback_ref": {
+        "const": "adlc-primary"
+      },
+      "plugin_lock": {
+        "const": [
+          {
+            "plugin_id": "vai-adlc-driver-deepseek",
+            "version": "0.2.0",
+            "content_digest": "sha256:fd008789399cf9ce4770281e0b955c38a45dbd7e863425fdac82a35c806a5a63",
+            "required": true
+          },
+          {
+            "plugin_id": "vai-adlc-runtime",
+            "version": "0.3.0",
+            "content_digest": "sha256:0739d9e137ece1ebd6c5b97264b39100b4f56b466a7a5b2c18f1e18233f8b6e7",
+            "required": true
+          },
+          {
+            "plugin_id": "vai-adlc-artifacts-git",
+            "version": "0.2.0",
+            "content_digest": "sha256:f4dccc95a0266a47611bd163b970c621fc598801497b65078d1276e6da7bf9fc",
+            "required": true
+          },
+          {
+            "plugin_id": "vai-adlc-contract-execution",
+            "version": "0.1.0",
+            "content_digest": "sha256:353d8ac60417dd69c550059cb8acdd14171d096608feb7d0d049645c56de3231",
+            "required": true
+          },
+          {
+            "plugin_id": "vai-adlc-contract-recovery",
+            "version": "0.1.0",
+            "content_digest": "sha256:5d16929b6919c74233619ff6674f5d1bde1e12075c6242efa06ffc0a039bf139",
+            "required": true
+          }
+        ]
+      },
+      "recovery_ref": {
+        "const": "plugin:vai-adlc-contract-recovery/0.1.0"
+      }
+    }
+  },
+  "defaults": {
+    "approved_contract_ref": null,
+    "harness_profile_ref": "harness-profile:adlc-contract-coding/0.1.0",
+    "result_schema_ref": "adlc://schemas/contract-execution-result/0.1",
+    "submission_mode": "MANUAL",
+    "callback_ref": "adlc-primary",
+    "plugin_lock": [
+      {
+        "plugin_id": "vai-adlc-driver-deepseek",
+        "version": "0.2.0",
+        "content_digest": "sha256:fd008789399cf9ce4770281e0b955c38a45dbd7e863425fdac82a35c806a5a63",
+        "required": true
+      },
+      {
+        "plugin_id": "vai-adlc-runtime",
+        "version": "0.3.0",
+        "content_digest": "sha256:0739d9e137ece1ebd6c5b97264b39100b4f56b466a7a5b2c18f1e18233f8b6e7",
+        "required": true
+      },
+      {
+        "plugin_id": "vai-adlc-artifacts-git",
+        "version": "0.2.0",
+        "content_digest": "sha256:f4dccc95a0266a47611bd163b970c621fc598801497b65078d1276e6da7bf9fc",
+        "required": true
+      },
+      {
+        "plugin_id": "vai-adlc-contract-execution",
+        "version": "0.1.0",
+        "content_digest": "sha256:353d8ac60417dd69c550059cb8acdd14171d096608feb7d0d049645c56de3231",
+        "required": true
+      },
+      {
+        "plugin_id": "vai-adlc-contract-recovery",
+        "version": "0.1.0",
+        "content_digest": "sha256:5d16929b6919c74233619ff6674f5d1bde1e12075c6242efa06ffc0a039bf139",
+        "required": true
+      }
+    ],
+    "recovery_ref": "plugin:vai-adlc-contract-recovery/0.1.0"
+  },
+  "override_allowlist": [
+    "/configuration/approved_contract_ref",
+    "/policies/timeout_ms"
+  ],
+  "implementation": {
+    "adapter_type": "AGENT_PROVIDER",
+    "adapter_ref": "agent-provider:deepseek-harness",
+    "entrypoint": "contract-coding"
+  },
+  "execution_profile": {
+    "provider_ref": "agent-provider:deepseek-harness",
+    "model_ref": "model:my-codex/cx/gpt-5.6-luna",
+    "system_prompt_ref": "prompt:adlc-contract-coding/0.1.0",
+    "rule_set_refs": [
+      "rules:adlc-contract-repository/0.1.0"
+    ],
+    "hook_refs": [
+      "hook:task-lifecycle/0.1.0"
+    ],
+    "capabilities": {
+      "tool_refs": [
+        "tool:contract_get_context/0.1.0",
+        "tool:contract_list_files/0.1.0",
+        "tool:contract_read_file/0.1.0",
+        "tool:contract_write_file/0.1.0"
+      ],
+      "skill_refs": [],
+      "mcp_server_refs": [],
+      "plugin_refs": [
+        "plugin:vai-adlc-driver-deepseek/0.2.0",
+        "plugin:vai-adlc-runtime/0.3.0",
+        "plugin:vai-adlc-artifacts-git/0.2.0",
+        "plugin:vai-adlc-contract-execution/0.1.0",
+        "plugin:vai-adlc-contract-recovery/0.1.0"
+      ]
+    },
+    "memory_policy_ref": "memory:dsh-session/0.1.0",
+    "sandbox_policy_ref": "sandbox:harness-contract-tools-only/0.1.0",
+    "secret_refs": {}
+  },
+  "default_policies": {
+    "retry": {
+      "max_attempts": 1
+    },
+    "timeout_ms": 900000,
+    "approval": {
+      "gate_type": null
+    },
+    "permissions": {
+      "mode": "PACKAGE_ALLOWLIST"
+    },
+    "resources": {
+      "runtime": "deepseek-harness-contract-recovery",
+      "result_delivery": "signed-webhook",
+      "verification": "captured-contract-predicates",
+      "plugin_integrity": "required",
+      "recovery": "exact-checkpoint-no-model-replay"
+    },
+    "runtime_overridable": [
+      "/policies/timeout_ms"
+    ]
+  },
+  "compatibility": {
+    "engine": {
+      "minimum_version": "0.1.0"
+    },
+    "execution_contract_versions": [
+      "0.1"
+    ]
+  },
+  "metadata": {
+    "activation": "opt-in",
+    "maintainer": "adlc",
+    "milestone": "H5D",
+    "natural_language_enforced": false
+  }
+}

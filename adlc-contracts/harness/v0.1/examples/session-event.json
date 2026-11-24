@@ -1,0 +1,14 @@
+{
+  "schema_version": "0.1",
+  "event_id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+  "session_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+  "sequence": 4,
+  "event_type": "verification.completed",
+  "previous_status": "VERIFYING",
+  "status": "READY_FOR_SUBMISSION",
+  "occurred_at": "2026-09-23T02:00:02Z",
+  "payload": {
+    "verifier_ref": "plugin:vai-adlc-verify-structured/0.1.0",
+    "status": "PASSED"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "$id": "https://adlc.dev/contracts/test-extensions/v0.1/test-permissions.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "The only reviewed target/data envelope today; not a broker permission grant.",
+  "properties": {
+    "allowed_methods": {
+      "items": {
+        "const": "GET",
+        "type": "string"
+      },
+      "maxItems": 1,
+      "minItems": 1,
+      "title": "Allowed Methods",
+      "type": "array"
+    },
+    "allowed_paths": {
+      "items": {
+        "const": "/fixture",
+        "type": "string"
+      },
+      "maxItems": 1,
+      "minItems": 1,
+      "title": "Allowed Paths",
+      "type": "array"
+    },
+    "cancellation": {
+      "const": "confirmed-worker-cancel",
+      "title": "Cancellation",
+      "type": "string"
+    },
+    "cleanup": {
+      "const": "release-owned-target",
+      "title": "Cleanup",
+      "type": "string"
+    },
+    "credential_ref": {
+      "const": "credential-profile:ephemeral-fixture/0.1.0",
+      "title": "Credential Ref",
+      "type": "string"
+    },
+    "data_scope": {
+      "const": "synthetic-run-owned-only",
+      "title": "Data Scope",
+      "type": "string"
+    },
+    "environment": {
+      "const": "non-production",
+      "title": "Environment",
+      "type": "string"
+    },
+    "max_duration_seconds": {
+      "maximum": 60,
+      "minimum": 1,
+      "title": "Max Duration Seconds",
+      "type": "integer"
+    },
+    "network_scope": {
+      "const": "allocated-loopback-target-only",
+      "title": "Network Scope",
+      "type": "string"
+    },
+    "target_profile_ref": {
+      "const": "target-profile:disposable-http-json/0.1.0",
+      "title": "Target Profile Ref",
+      "type": "string"
+    }
+  },
+  "required": [
+    "target_profile_ref",
+    "credential_ref",
+    "environment",
+    "data_scope",
+    "allowed_methods",
+    "allowed_paths",
+    "network_scope",
+    "cleanup",
+    "cancellation",
+    "max_duration_seconds"
+  ],
+  "title": "TestPermissions",
+  "type": "object"
+}

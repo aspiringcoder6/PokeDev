@@ -1,0 +1,111 @@
+{
+  "$defs": {
+    "RoadmapConstraints": {
+      "additionalProperties": false,
+      "description": "Declared commitments, not execution permissions until the H5C policy adapter.",
+      "properties": {
+        "allowed_paths": {
+          "items": {
+            "maxLength": 255,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Allowed Paths",
+          "type": "array"
+        },
+        "forbidden_actions": {
+          "items": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 32,
+          "title": "Forbidden Actions",
+          "type": "array"
+        },
+        "read_only": {
+          "default": true,
+          "title": "Read Only",
+          "type": "boolean"
+        }
+      },
+      "title": "RoadmapConstraints",
+      "type": "object"
+    },
+    "RoadmapScope": {
+      "additionalProperties": false,
+      "properties": {
+        "in_scope": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 32,
+          "title": "In Scope",
+          "type": "array"
+        },
+        "objective": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Objective",
+          "type": "string"
+        },
+        "out_of_scope": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 32,
+          "title": "Out Of Scope",
+          "type": "array"
+        }
+      },
+      "required": [
+        "objective"
+      ],
+      "title": "RoadmapScope",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/documents/v0.1/skilltree_init.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "constraints": {
+      "$ref": "#/$defs/RoadmapConstraints"
+    },
+    "expected_revision": {
+      "const": 0,
+      "default": 0,
+      "title": "Expected Revision",
+      "type": "integer"
+    },
+    "idempotency_key": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._:-]+$",
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "scope": {
+      "$ref": "#/$defs/RoadmapScope"
+    },
+    "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "idempotency_key",
+    "title",
+    "scope"
+  ],
+  "title": "InitArguments",
+  "type": "object"
+}

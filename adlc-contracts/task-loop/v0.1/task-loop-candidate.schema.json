@@ -1,0 +1,57 @@
+{
+  "$id": "https://adlc.dev/contracts/task-loop/v0.1/task-loop-candidate.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "candidate_id": {
+      "format": "uuid",
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "content_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Content Digest",
+      "type": "string"
+    },
+    "files": {
+      "additionalProperties": {
+        "maxLength": 16384,
+        "type": "string"
+      },
+      "title": "Files",
+      "type": "object"
+    },
+    "iteration": {
+      "minimum": 0,
+      "title": "Iteration",
+      "type": "integer"
+    },
+    "parent_candidate_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Parent Candidate Id"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "candidate_id",
+    "parent_candidate_id",
+    "iteration",
+    "content_digest",
+    "files"
+  ],
+  "title": "TaskLoopCandidate",
+  "type": "object"
+}

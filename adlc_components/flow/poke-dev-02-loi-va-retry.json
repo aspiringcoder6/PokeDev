@@ -1,0 +1,207 @@
+{
+  "id": "b5d02538-a4f6-58fb-9cd8-212cff614c02",
+  "name": "Poke Dev 02 - Lỗi và Retry (MOCK)",
+  "description": "Một tác vụ cố ý lỗi ở lần đầu; người dùng Retry, sau đó phê duyệt. Không gọi model.",
+  "is_component": false,
+  "locked": false,
+  "endpoint_name": "poke-dev-02-loi-va-retry",
+  "tags": [
+    "Poke Dev",
+    "Live demo"
+  ],
+  "data": {
+    "adlc": {
+      "document_type": "WORKFLOW_DEFINITION",
+      "schema_version": "0.1",
+      "workflow_definition_id": "b5d02538-a4f6-58fb-9cd8-212cff614c02",
+      "version": 1,
+      "status": "DRAFT",
+      "default_policies": {},
+      "metadata": {
+        "sample_set": "poke-dev-live-20261009",
+        "demo_note": "Dùng Validate & Preview, không dùng Propose Tasks. Lỗi MOCK_EXECUTION_FAILED không tự retry; nút Retry tạo lần thử mới và tắt cờ lỗi mô phỏng cho lần thử đó."
+      }
+    },
+    "nodes": [
+      {
+        "id": "pd02-fail",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 90,
+          "y": 160
+        },
+        "data": {
+          "id": "pd02-fail",
+          "type": "adlcStage",
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "11392086-d2de-5d5d-b5da-1c40beae5043",
+            "stage_type": "IMPLEMENTATION",
+            "name": "Tác vụ lỗi có chủ đích",
+            "objective": "Tình huống lỗi mô phỏng để minh họa lần thực thi và Retry.",
+            "inputs": {
+              "requirement": "Tình huống lỗi mô phỏng để minh họa lần thực thi và Retry."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {
+              "simulate_failure": true,
+              "delay_ms": 1500
+            },
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {
+              "sample_set": "poke-dev-live-20261009"
+            }
+          },
+          "node": {
+            "display_name": "Tác vụ lỗi có chủ đích",
+            "description": "Tình huống lỗi mô phỏng để minh họa lần thực thi và Retry.",
+            "template": {},
+            "outputs": [],
+            "type": "adlcStage",
+            "documentation": ""
+          }
+        }
+      },
+      {
+        "id": "pd02-review",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 440,
+          "y": 160
+        },
+        "data": {
+          "id": "pd02-review",
+          "type": "adlcStage",
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "dde0719e-e6dd-5c65-a4bb-9c4ee16c8e4d",
+            "stage_type": "REVIEW",
+            "name": "Review sau Retry",
+            "objective": "Mô phỏng review sau lần thực thi thành công.",
+            "inputs": {
+              "requirement": "Mô phỏng review sau lần thực thi thành công."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {
+              "delay_ms": 1500
+            },
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {
+              "sample_set": "poke-dev-live-20261009"
+            }
+          },
+          "node": {
+            "display_name": "Review sau Retry",
+            "description": "Mô phỏng review sau lần thực thi thành công.",
+            "template": {},
+            "outputs": [],
+            "type": "adlcStage",
+            "documentation": ""
+          }
+        }
+      },
+      {
+        "id": "pd02-approval",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 790,
+          "y": 160
+        },
+        "data": {
+          "id": "pd02-approval",
+          "type": "adlcStage",
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "6bb16fda-7933-5172-91c2-3b290d5ed86b",
+            "stage_type": "APPROVAL",
+            "name": "Phê duyệt sau Retry",
+            "objective": "Xem lịch sử lần lỗi và lần Retry trước khi phê duyệt.",
+            "inputs": {
+              "approval_context": "Xem lịch sử lần lỗi và lần Retry trước khi phê duyệt."
+            },
+            "expected_outputs": [
+              "approval_decision"
+            ],
+            "package_ref": {
+              "package_id": "approval",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {},
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {
+              "sample_set": "poke-dev-live-20261009"
+            }
+          },
+          "node": {
+            "display_name": "Phê duyệt sau Retry",
+            "description": "Xem lịch sử lần lỗi và lần Retry trước khi phê duyệt.",
+            "template": {},
+            "outputs": [],
+            "type": "adlcStage",
+            "documentation": ""
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "pd02-fail-pd02-review",
+        "source": "pd02-fail",
+        "target": "pd02-review",
+        "type": "adlcEdge",
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_EDGE",
+            "schema_version": "0.1",
+            "edge_id": "05ed5d32-dda0-521f-a1f7-3f998b81c927",
+            "condition": "ON_SUCCESS",
+            "bindings": [],
+            "metadata": {}
+          }
+        }
+      },
+      {
+        "id": "pd02-review-pd02-approval",
+        "source": "pd02-review",
+        "target": "pd02-approval",
+        "type": "adlcEdge",
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_EDGE",
+            "schema_version": "0.1",
+            "edge_id": "e7204217-3444-5c7f-b0ac-064377c89ce3",
+            "condition": "ON_SUCCESS",
+            "bindings": [],
+            "metadata": {}
+          }
+        }
+      }
+    ],
+    "viewport": {
+      "x": 25,
+      "y": 35,
+      "zoom": 0.85
+    }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "$defs": {
+    "ContractReference": {
+      "additionalProperties": false,
+      "properties": {
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "contract_id": {
+          "format": "uuid",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 512,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "schema_ref": {
+          "const": "adlc://schemas/skilltree-contract/0.1",
+          "default": "adlc://schemas/skilltree-contract/0.1",
+          "title": "Schema Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract_id",
+        "revision",
+        "content_digest"
+      ],
+      "title": "ContractReference",
+      "type": "object"
+    },
+    "ContractReferenceOutput": {
+      "additionalProperties": false,
+      "properties": {
+        "contract_reference": {
+          "$ref": "#/$defs/ContractReference"
+        }
+      },
+      "required": [
+        "contract_reference"
+      ],
+      "title": "ContractReferenceOutput",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/documents/authoring/v0.1/skilltree-authoring-result.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "contract_status": {
+      "enum": [
+        "VALIDATED",
+        "APPROVED"
+      ],
+      "title": "Contract Status",
+      "type": "string"
+    },
+    "criteria_executed": {
+      "const": false,
+      "default": false,
+      "title": "Criteria Executed",
+      "type": "boolean"
+    },
+    "execution_policy_enforced": {
+      "const": false,
+      "default": false,
+      "title": "Execution Policy Enforced",
+      "type": "boolean"
+    },
+    "outputs": {
+      "$ref": "#/$defs/ContractReferenceOutput"
+    },
+    "summary": {
+      "const": "Tool-authored roadmap saved in ADLC; contract approval and execution are separate.",
+      "default": "Tool-authored roadmap saved in ADLC; contract approval and execution are separate.",
+      "title": "Summary",
+      "type": "string"
+    }
+  },
+  "required": [
+    "outputs",
+    "contract_status"
+  ],
+  "title": "SkilltreeAuthoringOutcome",
+  "type": "object"
+}

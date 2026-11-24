@@ -1,0 +1,15 @@
+{
+  "renderer_ref": "adlc-renderer:skilltree/0.1",
+  "schema_refs": ["adlc://schemas/skilltree-contract/0.1"],
+  "source": "adlc-flow/frontend/src/components/adlc/ContractViewer",
+  "hosts": {
+    "adlc": "RunDetailPage/ContractPanel",
+    "harness": "plugin:vai-adlc-contract-ui/0.1.0 via authenticated ADLC ContractHarnessPage"
+  },
+  "mutations": [],
+  "unknown_schema_behavior": "ESCAPED_JSON_NO_REVIEW_ACTIONS",
+  "layout_is_semantic_content": false,
+  "approval_authority": "ADLC_AUTHENTICATED_OWNER",
+  "criteria_executed": false,
+  "execution_policy_enforced": false
+}

@@ -1,0 +1,688 @@
+{
+  "$defs": {
+    "CandidateReference": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Artifact Digest",
+          "type": "string"
+        },
+        "artifact_id": {
+          "format": "uuid",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "base_commit": {
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$",
+          "title": "Base Commit",
+          "type": "string"
+        },
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "encoding": {
+          "const": "canonical-json",
+          "default": "canonical-json",
+          "title": "Encoding",
+          "type": "string"
+        },
+        "file": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "File",
+          "type": "string"
+        },
+        "project_id": {
+          "format": "uuid",
+          "title": "Project Id",
+          "type": "string"
+        },
+        "source_attempt_id": {
+          "format": "uuid",
+          "title": "Source Attempt Id",
+          "type": "string"
+        },
+        "source_ref": {
+          "title": "Source Ref",
+          "type": "string"
+        },
+        "source_session_id": {
+          "pattern": "^[A-Za-z0-9._-]{1,255}$",
+          "title": "Source Session Id",
+          "type": "string"
+        },
+        "source_task_id": {
+          "format": "uuid",
+          "title": "Source Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_task_id",
+        "source_attempt_id",
+        "source_session_id",
+        "artifact_id",
+        "artifact_digest",
+        "base_commit",
+        "project_id",
+        "source_ref",
+        "file",
+        "content_digest"
+      ],
+      "title": "CandidateReference",
+      "type": "object"
+    },
+    "Comparison": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected"
+        },
+        "found": {
+          "title": "Found",
+          "type": "boolean"
+        },
+        "observed": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Observed"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "pointer": {
+          "title": "Pointer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "pointer",
+        "expected",
+        "observed",
+        "found",
+        "passed"
+      ],
+      "title": "Comparison",
+      "type": "object"
+    },
+    "ContractReference": {
+      "additionalProperties": false,
+      "properties": {
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "contract_id": {
+          "format": "uuid",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 512,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "schema_ref": {
+          "const": "adlc://schemas/skilltree-contract/0.1",
+          "default": "adlc://schemas/skilltree-contract/0.1",
+          "title": "Schema Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract_id",
+        "revision",
+        "content_digest"
+      ],
+      "title": "ContractReference",
+      "type": "object"
+    },
+    "ExecutionReceipt": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Candidate Digest",
+          "type": "string"
+        },
+        "completed_at": {
+          "format": "date-time",
+          "title": "Completed At",
+          "type": "string"
+        },
+        "completion_mode": {
+          "default": "process-exit",
+          "enum": [
+            "process-exit",
+            "durable-checkpoint"
+          ],
+          "title": "Completion Mode",
+          "type": "string"
+        },
+        "execution_id": {
+          "format": "uuid",
+          "title": "Execution Id",
+          "type": "string"
+        },
+        "exit_code": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Exit Code"
+        },
+        "image_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Image Ref"
+        },
+        "observations": {
+          "items": {
+            "$ref": "#/$defs/Observation"
+          },
+          "maxItems": 16,
+          "title": "Observations",
+          "type": "array"
+        },
+        "plan_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Plan Digest",
+          "type": "string"
+        },
+        "provider": {
+          "enum": [
+            "local-fixture",
+            "sandbox-kit"
+          ],
+          "title": "Provider",
+          "type": "string"
+        },
+        "runner_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Runner Digest",
+          "type": "string"
+        },
+        "runner_ref": {
+          "const": "runner:adlc-json-fixture/0.1.0",
+          "default": "runner:adlc-json-fixture/0.1.0",
+          "title": "Runner Ref",
+          "type": "string"
+        },
+        "sandbox_session_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sandbox Session Id"
+        },
+        "schema_version": {
+          "const": "0.1",
+          "default": "0.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "tests_run": {
+          "maximum": 16,
+          "minimum": 0,
+          "title": "Tests Run",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "execution_id",
+        "plan_digest",
+        "candidate_digest",
+        "runner_digest",
+        "provider",
+        "tests_run",
+        "exit_code",
+        "observations",
+        "started_at",
+        "completed_at"
+      ],
+      "title": "ExecutionReceipt",
+      "type": "object"
+    },
+    "Observation": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "found": {
+          "title": "Found",
+          "type": "boolean"
+        },
+        "observed": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Observed"
+        },
+        "pointer": {
+          "title": "Pointer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "pointer",
+        "found",
+        "observed"
+      ],
+      "title": "Observation",
+      "type": "object"
+    },
+    "VerificationCase": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "criterion_index": {
+          "maximum": 15,
+          "minimum": 0,
+          "title": "Criterion Index",
+          "type": "integer"
+        },
+        "criterion_node_id": {
+          "format": "uuid",
+          "title": "Criterion Node Id",
+          "type": "string"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected"
+        },
+        "pointer": {
+          "maxLength": 512,
+          "pattern": "^(?:|/(?:[^~]|~[01])*)$",
+          "title": "Pointer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "pointer",
+        "expected",
+        "criterion_node_id",
+        "criterion_index"
+      ],
+      "title": "VerificationCase",
+      "type": "object"
+    },
+    "VerificationPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate": {
+          "$ref": "#/$defs/CandidateReference"
+        },
+        "cases": {
+          "items": {
+            "$ref": "#/$defs/VerificationCase"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "title": "Cases",
+          "type": "array"
+        },
+        "contract_reference": {
+          "$ref": "#/$defs/ContractReference"
+        },
+        "plan_id": {
+          "format": "uuid",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "profile_ref": {
+          "const": "verification-profile:json-fixture/0.1.0",
+          "default": "verification-profile:json-fixture/0.1.0",
+          "title": "Profile Ref",
+          "type": "string"
+        },
+        "revision": {
+          "const": 1,
+          "default": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": "0.1",
+          "default": "0.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "timeout_seconds": {
+          "default": 15,
+          "maximum": 60,
+          "minimum": 1,
+          "title": "Timeout Seconds",
+          "type": "integer"
+        },
+        "workflow_run_id": {
+          "format": "uuid",
+          "title": "Workflow Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plan_id",
+        "workflow_run_id",
+        "contract_reference",
+        "candidate",
+        "cases"
+      ],
+      "title": "VerificationPlan",
+      "type": "object"
+    },
+    "VerificationReport": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Candidate Digest",
+          "type": "string"
+        },
+        "checks": {
+          "items": {
+            "$ref": "#/$defs/Comparison"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "title": "Checks",
+          "type": "array"
+        },
+        "comparator_ref": {
+          "const": "validator:json-fixture/0.1.0",
+          "default": "validator:json-fixture/0.1.0",
+          "title": "Comparator Ref",
+          "type": "string"
+        },
+        "contract_fully_verified": {
+          "const": false,
+          "default": false,
+          "title": "Contract Fully Verified",
+          "type": "boolean"
+        },
+        "natural_language_enforced": {
+          "const": false,
+          "default": false,
+          "title": "Natural Language Enforced",
+          "type": "boolean"
+        },
+        "plan_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Plan Digest",
+          "type": "string"
+        },
+        "receipt_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Receipt Digest",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1",
+          "default": "0.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "verdict": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plan_digest",
+        "receipt_digest",
+        "candidate_digest",
+        "verdict",
+        "checks"
+      ],
+      "title": "VerificationReport",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/verification/v0.1/verification-read.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "approved_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Approved At"
+    },
+    "approved_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Approved By"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "error_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error Code"
+    },
+    "evidence_digest": {
+      "anyOf": [
+        {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Evidence Digest"
+    },
+    "execution_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Execution Id"
+    },
+    "plan": {
+      "$ref": "#/$defs/VerificationPlan"
+    },
+    "plan_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Plan Digest",
+      "type": "string"
+    },
+    "receipt": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ExecutionReceipt"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "report": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/VerificationReport"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "state": {
+      "enum": [
+        "DRAFT",
+        "APPROVED",
+        "RUNNING",
+        "DISPATCH_UNCERTAIN",
+        "READY_FOR_SUBMISSION",
+        "SUBMITTED",
+        "NOT_VERIFIED"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "submitted_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Submitted At"
+    }
+  },
+  "required": [
+    "plan",
+    "plan_digest",
+    "state",
+    "created_at"
+  ],
+  "title": "VerificationRead",
+  "type": "object"
+}

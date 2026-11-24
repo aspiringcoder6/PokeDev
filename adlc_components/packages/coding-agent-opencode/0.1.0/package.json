@@ -1,0 +1,98 @@
+{
+  "schema_version": "0.1",
+  "package_id": "coding-agent-opencode",
+  "version": "0.1.0",
+  "status": "PUBLISHED",
+  "name": "Coding Agent (OpenCode)",
+  "description": "Implements a scoped code task through OpenCode in a disposable local Git worktree.",
+  "kind": "AGENT",
+  "interface": {
+    "inputs": [
+      {
+        "name": "requirement",
+        "schema_ref": "adlc://schemas/requirement/0.1",
+        "required": true,
+        "multiple": false,
+        "description": "The scoped implementation requirement."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "source_patch",
+        "schema_ref": "adlc://schemas/source-patch/0.1",
+        "required": true,
+        "multiple": false,
+        "description": "Reference to the captured OpenCode workspace VCS diff artifact."
+      }
+    ]
+  },
+  "configuration_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {}
+  },
+  "defaults": {},
+  "override_allowlist": [
+    "/policies/timeout_ms"
+  ],
+  "implementation": {
+    "adapter_type": "AGENT_PROVIDER",
+    "adapter_ref": "agent-provider:opencode",
+    "entrypoint": "coding-task"
+  },
+  "execution_profile": {
+    "provider_ref": "agent-provider:opencode",
+    "model_ref": "model:aigateway/MiniMax/MiniMax-M3",
+    "system_prompt_ref": "prompt:opencode-coding-agent/0.1.0",
+    "rule_set_refs": [
+      "rules:adlc-safe-execution/0.1.0"
+    ],
+    "hook_refs": [
+      "hook:task-lifecycle/0.1.0"
+    ],
+    "capabilities": {
+      "tool_refs": [
+        "tool:opencode-vcs-diff"
+      ],
+      "skill_refs": [],
+      "plugin_refs": [],
+      "mcp_server_refs": []
+    },
+    "memory_policy_ref": "memory:mock-task-context/0.1.0",
+    "sandbox_policy_ref": "sandbox:local-git-worktree/0.1.0",
+    "secret_refs": {}
+  },
+  "default_policies": {
+    "retry": {
+      "max_attempts": 2
+    },
+    "timeout_ms": 300000,
+    "approval": {
+      "gate_type": null
+    },
+    "permissions": {
+      "mode": "PACKAGE_ALLOWLIST"
+    },
+    "resources": {
+      "workspace": "disposable-git-worktree"
+    },
+    "runtime_overridable": [
+      "/policies/timeout_ms"
+    ]
+  },
+  "compatibility": {
+    "engine": {
+      "minimum_version": "0.1.0"
+    },
+    "execution_contract_versions": [
+      "0.1"
+    ]
+  },
+  "metadata": {
+    "activation": "opt-in",
+    "maintainer": "adlc",
+    "provider_mode": "opencode",
+    "workspace_mode": "local-git-worktree"
+  }
+}

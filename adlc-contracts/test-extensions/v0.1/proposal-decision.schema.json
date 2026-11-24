@@ -1,0 +1,45 @@
+{
+  "$defs": {
+    "ProposalReference": {
+      "additionalProperties": false,
+      "properties": {
+        "document_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Document Digest",
+          "type": "string"
+        },
+        "proposal_id": {
+          "format": "uuid",
+          "title": "Proposal Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "proposal_id",
+        "revision",
+        "document_digest"
+      ],
+      "title": "ProposalReference",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/test-extensions/v0.1/proposal-decision.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "reference": {
+      "$ref": "#/$defs/ProposalReference"
+    }
+  },
+  "required": [
+    "reference"
+  ],
+  "title": "ProposalDecision",
+  "type": "object"
+}

@@ -1,0 +1,128 @@
+{
+  "$defs": {
+    "ContractReference": {
+      "additionalProperties": false,
+      "properties": {
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "contract_id": {
+          "format": "uuid",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 512,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "schema_ref": {
+          "const": "adlc://schemas/skilltree-contract/0.1",
+          "default": "adlc://schemas/skilltree-contract/0.1",
+          "title": "Schema Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract_id",
+        "revision",
+        "content_digest"
+      ],
+      "title": "ContractReference",
+      "type": "object"
+    },
+    "ExecutionCriterion": {
+      "additionalProperties": false,
+      "properties": {
+        "criterion_index": {
+          "maximum": 15,
+          "minimum": 0,
+          "title": "Criterion Index",
+          "type": "integer"
+        },
+        "node_id": {
+          "format": "uuid",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "verifier_ref": {
+          "enum": [
+            "verifier:contract-source-patch/0.1.0",
+            "verifier:contract-no-changes/0.1.0",
+            "verifier:contract-json-syntax/0.1.0"
+          ],
+          "title": "Verifier Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "node_id",
+        "criterion_index",
+        "verifier_ref"
+      ],
+      "title": "ExecutionCriterion",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/documents/execution/v0.1/contract-execution-policy.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "allowed_paths": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 64,
+      "minItems": 1,
+      "title": "Allowed Paths",
+      "type": "array"
+    },
+    "contract_reference": {
+      "$ref": "#/$defs/ContractReference"
+    },
+    "criteria": {
+      "items": {
+        "$ref": "#/$defs/ExecutionCriterion"
+      },
+      "maxItems": 256,
+      "minItems": 1,
+      "title": "Criteria",
+      "type": "array"
+    },
+    "denied_actions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Denied Actions",
+      "type": "array"
+    },
+    "natural_language_enforced": {
+      "const": false,
+      "default": false,
+      "title": "Natural Language Enforced",
+      "type": "boolean"
+    },
+    "policy_ref": {
+      "const": "policy:adlc-contract-repository/0.1.0",
+      "default": "policy:adlc-contract-repository/0.1.0",
+      "title": "Policy Ref",
+      "type": "string"
+    },
+    "read_only": {
+      "title": "Read Only",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "contract_reference",
+    "read_only",
+    "allowed_paths",
+    "denied_actions",
+    "criteria"
+  ],
+  "title": "ContractExecutionPolicy",
+  "type": "object"
+}

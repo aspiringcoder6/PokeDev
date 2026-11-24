@@ -1,0 +1,20 @@
+{
+  "schema_version": "0.2",
+  "spec_id": "db000001-0000-4000-8000-000000000001",
+  "revision": 1,
+  "specification": "Implement add(a, b) so it adds two numbers. Document the function in README.md, and remove legacy.txt. Preserve the supplied acceptance tests. Do exactly one implementation iteration per fresh session.",
+  "base_commit": "0000000000000000000000000000000000000000",
+  "writable_paths": ["math_utils.py", "README.md", "legacy.txt"],
+  "acceptance_criteria": [
+    {"criterion_id": "addition", "description": "Addition returns the correct result, the README describes add(a, b), and legacy.txt is absent.", "check_refs": ["acceptance"]}
+  ],
+  "verification_commands": [
+    {"check_id": "acceptance", "verifier_ref": "verifier:python-unittest/0.1.0", "test_path": "test_acceptance.py", "timeout_ms": 30000}
+  ],
+  "max_iterations": 3,
+  "max_stalled_iterations": 2,
+  "context_budget_chars": 131072,
+  "max_duration_ms": 600000,
+  "max_total_tokens": 20000,
+  "max_total_cost": 1.0
+}

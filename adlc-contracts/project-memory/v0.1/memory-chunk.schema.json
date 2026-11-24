@@ -1,0 +1,86 @@
+{
+  "$id": "https://adlc.dev/contracts/project-memory/v0.1/memory-chunk.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "chunk_id": {
+      "maxLength": 255,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+      "title": "Chunk Id",
+      "type": "string"
+    },
+    "document_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Document Digest",
+      "type": "string"
+    },
+    "document_id": {
+      "maxLength": 255,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+      "title": "Document Id",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "recorded_at": {
+      "format": "date-time",
+      "title": "Recorded At",
+      "type": "string"
+    },
+    "revision": {
+      "maxLength": 255,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$",
+      "title": "Revision",
+      "type": "string"
+    },
+    "source_commit": {
+      "anyOf": [
+        {
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Commit"
+    },
+    "source_uri": {
+      "maxLength": 1024,
+      "minLength": 1,
+      "title": "Source Uri",
+      "type": "string"
+    },
+    "text": {
+      "maxLength": 8192,
+      "minLength": 1,
+      "title": "Text",
+      "type": "string"
+    },
+    "text_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Text Digest",
+      "type": "string"
+    }
+  },
+  "required": [
+    "chunk_id",
+    "document_id",
+    "revision",
+    "source_uri",
+    "document_digest",
+    "text",
+    "text_digest",
+    "recorded_at",
+    "expires_at"
+  ],
+  "title": "MemoryChunk",
+  "type": "object"
+}

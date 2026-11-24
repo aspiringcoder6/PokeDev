@@ -1,0 +1,52 @@
+{
+  "$defs": {
+    "MockTaskLoopStep": {
+      "additionalProperties": false,
+      "description": "One scripted edit; null deletes a file. Notes are trace data, never context.",
+      "properties": {
+        "changes": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "maxLength": 16384,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": "Changes",
+          "type": "object"
+        },
+        "note": {
+          "default": "",
+          "maxLength": 1024,
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "title": "MockTaskLoopStep",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/task-loop/v0.1/mock-configuration.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "mock_steps": {
+      "items": {
+        "$ref": "#/$defs/MockTaskLoopStep"
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "title": "Mock Steps",
+      "type": "array"
+    }
+  },
+  "required": [
+    "mock_steps"
+  ],
+  "title": "MockTaskLoopConfiguration",
+  "type": "object"
+}

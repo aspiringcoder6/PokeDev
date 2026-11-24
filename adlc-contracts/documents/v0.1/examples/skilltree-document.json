@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.1",
+  "document_type": "skilltree",
+  "schema_ref": "adlc://schemas/skilltree-contract/0.1",
+  "producer_plugin": "plugin:vai-adlc-skilltree/0.1.0",
+  "renderer_ref": "adlc-renderer:skilltree/0.1",
+  "contract_id": "11111111-1111-4111-8111-111111111111",
+  "revision": 3,
+  "title": "ADLC contract plugins",
+  "scope": {
+    "objective": "Create a readable and immutable approved roadmap.",
+    "in_scope": ["Tool-owned JSON", "Human approval"],
+    "out_of_scope": ["Execution permissions", "Automatic deployment"]
+  },
+  "constraints": {"read_only": true, "allowed_paths": ["*"], "forbidden_actions": ["commit", "push", "deploy"]},
+  "supersedes": null,
+  "nodes": [
+    {"node_id": "22222222-2222-4222-8222-222222222222", "kind": "MILESTONE", "title": "H5A", "description": "Contract foundation", "acceptance_criteria": []},
+    {"node_id": "33333333-3333-4333-8333-333333333333", "kind": "TASK", "title": "Deliver the contract foundation", "description": "A declaration is not execution evidence.", "acceptance_criteria": [{"description": "A human reviews the exact revision and digest.", "verification": "HUMAN", "verifier_ref": null}]}
+  ],
+  "dependencies": [{"source_id": "22222222-2222-4222-8222-222222222222", "target_id": "33333333-3333-4333-8333-333333333333", "relation": "CONTAINS"}]
+}

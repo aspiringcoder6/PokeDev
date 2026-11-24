@@ -1,0 +1,179 @@
+{
+  "schema_version": "0.1",
+  "package_id": "coding-agent-deepseek-harness",
+  "version": "0.2.0",
+  "status": "PUBLISHED",
+  "name": "Coding Agent (DeepSeek Harness)",
+  "description": "Runs a scoped coding task in DeepSeek Harness with verified plugin bytes, human interaction, verification, and signed result delivery.",
+  "kind": "AGENT",
+  "interface": {
+    "inputs": [
+      {
+        "name": "requirement",
+        "schema_ref": "adlc://schemas/requirement/0.1",
+        "required": true,
+        "multiple": false,
+        "description": "The scoped implementation requirement."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "source_patch",
+        "schema_ref": "adlc://schemas/source-patch/0.1",
+        "required": true,
+        "multiple": false,
+        "description": "Reference to the structured source-patch result produced by the Harness session."
+      }
+    ]
+  },
+  "configuration_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "harness_profile_ref",
+      "result_schema_ref",
+      "submission_mode",
+      "callback_ref",
+      "plugin_lock"
+    ],
+    "properties": {
+      "harness_profile_ref": {
+        "const": "harness-profile:adlc-coding/0.1.0"
+      },
+      "result_schema_ref": {
+        "const": "adlc://schemas/source-patch/0.1"
+      },
+      "submission_mode": {
+        "type": "string",
+        "enum": [
+          "AUTO",
+          "MANUAL"
+        ]
+      },
+      "callback_ref": {
+        "const": "adlc-primary"
+      },
+      "plugin_lock": {
+        "const": [
+          {
+            "plugin_id": "vai-adlc-driver-deepseek",
+            "version": "0.1.0",
+            "content_digest": "sha256:b88a8a2a368de9131aa5ea06c93b6ddfdb62075908c532caf12461aeff7af4a0",
+            "required": true
+          },
+          {
+            "plugin_id": "vai-adlc-runtime",
+            "version": "0.2.0",
+            "content_digest": "sha256:9d3ec326a4ec094d7cf02ce84ddf3041fa1a66554319ca6b878e0f85f36c01b6",
+            "required": true
+          },
+          {
+            "plugin_id": "vai-adlc-verify-structured",
+            "version": "0.1.0",
+            "content_digest": "sha256:e0c50d273c1b9b8f29679a0d5e0f213cef926d5ff057850a3e0da9f039a3a843",
+            "required": true
+          }
+        ]
+      }
+    }
+  },
+  "defaults": {
+    "harness_profile_ref": "harness-profile:adlc-coding/0.1.0",
+    "result_schema_ref": "adlc://schemas/source-patch/0.1",
+    "submission_mode": "AUTO",
+    "callback_ref": "adlc-primary",
+    "plugin_lock": [
+      {
+        "plugin_id": "vai-adlc-driver-deepseek",
+        "version": "0.1.0",
+        "content_digest": "sha256:b88a8a2a368de9131aa5ea06c93b6ddfdb62075908c532caf12461aeff7af4a0",
+        "required": true
+      },
+      {
+        "plugin_id": "vai-adlc-runtime",
+        "version": "0.2.0",
+        "content_digest": "sha256:9d3ec326a4ec094d7cf02ce84ddf3041fa1a66554319ca6b878e0f85f36c01b6",
+        "required": true
+      },
+      {
+        "plugin_id": "vai-adlc-verify-structured",
+        "version": "0.1.0",
+        "content_digest": "sha256:e0c50d273c1b9b8f29679a0d5e0f213cef926d5ff057850a3e0da9f039a3a843",
+        "required": true
+      }
+    ]
+  },
+  "override_allowlist": [
+    "/configuration/submission_mode",
+    "/policies/timeout_ms"
+  ],
+  "implementation": {
+    "adapter_type": "AGENT_PROVIDER",
+    "adapter_ref": "agent-provider:deepseek-harness",
+    "entrypoint": "coding-task"
+  },
+  "execution_profile": {
+    "provider_ref": "agent-provider:deepseek-harness",
+    "model_ref": "model:deepseek-harness/configured",
+    "system_prompt_ref": "prompt:deepseek-harness-coding-agent/0.1.0",
+    "rule_set_refs": [
+      "rules:adlc-safe-execution/0.1.0"
+    ],
+    "hook_refs": [
+      "hook:task-lifecycle/0.1.0"
+    ],
+    "capabilities": {
+      "tool_refs": [
+        "tool:deepseek-harness-default"
+      ],
+      "skill_refs": [],
+      "plugin_refs": [
+        "plugin:vai-adlc-driver-deepseek/0.1.0",
+        "plugin:vai-adlc-runtime/0.2.0",
+        "plugin:vai-adlc-verify-structured/0.1.0"
+      ],
+      "mcp_server_refs": []
+    },
+    "memory_policy_ref": "memory:dsh-session/0.1.0",
+    "sandbox_policy_ref": "sandbox:vai-sandbox/1.0.0",
+    "secret_refs": {}
+  },
+  "default_policies": {
+    "retry": {
+      "max_attempts": 1
+    },
+    "timeout_ms": 900000,
+    "approval": {
+      "gate_type": null
+    },
+    "permissions": {
+      "mode": "PACKAGE_ALLOWLIST"
+    },
+    "resources": {
+      "runtime": "deepseek-harness",
+      "result_delivery": "signed-webhook",
+      "verification": "plugin",
+      "plugin_integrity": "required"
+    },
+    "runtime_overridable": [
+      "/policies/timeout_ms"
+    ]
+  },
+  "compatibility": {
+    "engine": {
+      "minimum_version": "0.1.0"
+    },
+    "execution_contract_versions": [
+      "0.1"
+    ]
+  },
+  "metadata": {
+    "activation": "opt-in",
+    "maintainer": "adlc",
+    "milestone": "H3",
+    "provider_mode": "deepseek-harness",
+    "verification_mode": "plugin",
+    "submission_mode": "auto-by-default"
+  }
+}

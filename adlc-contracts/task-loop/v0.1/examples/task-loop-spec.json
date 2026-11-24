@@ -1,0 +1,15 @@
+{
+  "schema_version": "0.1",
+  "spec_id": "da000001-0000-4000-8000-000000000001",
+  "revision": 1,
+  "specification": "Create a small addition artifact. Implement add(a, b) in math_utils.py, add settings.json declaring the add operation, and document usage in README.md. Preserve completed work across iterations and remove legacy.txt when documentation is added.",
+  "acceptance_criteria": [
+    {"criterion_id": "addition", "description": "The addition implementation exists.", "path": "math_utils.py", "expected_content": "def add(a, b):\n    return a + b\n"},
+    {"criterion_id": "configuration", "description": "The operation is configured.", "path": "settings.json", "expected_content": "{\"operation\": \"add\"}\n"},
+    {"criterion_id": "documentation", "description": "Usage is documented.", "path": "README.md", "expected_content": "Use add(a, b) to add two numbers.\n"}
+  ],
+  "initial_files": {"legacy.txt": "This file is replaced by README.md.\n"},
+  "max_iterations": 3,
+  "max_stalled_iterations": 2,
+  "context_budget_chars": 131072
+}

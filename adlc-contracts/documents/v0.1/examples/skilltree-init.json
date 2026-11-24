@@ -1,0 +1,18 @@
+{
+  "tool": "skilltree_init",
+  "arguments": {
+    "idempotency_key": "roadmap.init.1",
+    "expected_revision": 0,
+    "title": "ADLC contract plugins",
+    "scope": {
+      "objective": "Tạo roadmap có thể đọc và phê duyệt bởi con người, bằng các tool nhỏ.",
+      "in_scope": ["Contract schema", "Durable revisions", "Human approval"],
+      "out_of_scope": ["Apply source patches", "Commit, push or deploy"]
+    },
+    "constraints": {
+      "read_only": true,
+      "allowed_paths": ["*"],
+      "forbidden_actions": ["commit", "push", "deploy"]
+    }
+  }
+}

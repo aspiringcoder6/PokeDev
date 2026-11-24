@@ -1,0 +1,85 @@
+{
+  "$defs": {
+    "HarnessSessionStatus": {
+      "enum": [
+        "ACCEPTED",
+        "PROVISIONING",
+        "RUNNING",
+        "WAITING_INTERACTION",
+        "VERIFYING",
+        "READY_FOR_SUBMISSION",
+        "DELIVERING",
+        "SUCCEEDED",
+        "FAILED",
+        "CANCELLED"
+      ],
+      "title": "HarnessSessionStatus",
+      "type": "string"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/harness/v0.1/session-event.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "event_id": {
+      "format": "uuid",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "event_type": {
+      "minLength": 1,
+      "title": "Event Type",
+      "type": "string"
+    },
+    "occurred_at": {
+      "format": "date-time",
+      "title": "Occurred At",
+      "type": "string"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "title": "Payload",
+      "type": "object"
+    },
+    "previous_status": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/HarnessSessionStatus"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "sequence": {
+      "minimum": 1,
+      "title": "Sequence",
+      "type": "integer"
+    },
+    "session_id": {
+      "minLength": 1,
+      "title": "Session Id",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/HarnessSessionStatus"
+    }
+  },
+  "required": [
+    "event_id",
+    "session_id",
+    "sequence",
+    "event_type",
+    "status",
+    "occurred_at"
+  ],
+  "title": "HarnessSessionEvent",
+  "type": "object"
+}

@@ -1,0 +1,17 @@
+{
+  "$id": "https://adlc.dev/contracts/verification/v0.1/exact-verification-command.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "plan_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Plan Digest",
+      "type": "string"
+    }
+  },
+  "required": [
+    "plan_digest"
+  ],
+  "title": "ExactVerificationCommand",
+  "type": "object"
+}

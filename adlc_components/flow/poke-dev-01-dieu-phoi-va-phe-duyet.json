@@ -1,0 +1,348 @@
+{
+  "id": "4d4e82a3-cdf6-547a-87e3-c65f171fc95d",
+  "name": "Poke Dev 01 - Song song và phê duyệt (MOCK)",
+  "description": "Demo runtime thật bằng tác vụ mô phỏng: hai nhánh song song, hợp nhất và phê duyệt. Không gọi model.",
+  "is_component": false,
+  "locked": false,
+  "endpoint_name": "poke-dev-01-dieu-phoi-va-phe-duyet",
+  "tags": [
+    "Poke Dev",
+    "Live demo"
+  ],
+  "data": {
+    "adlc": {
+      "document_type": "WORKFLOW_DEFINITION",
+      "schema_version": "0.1",
+      "workflow_definition_id": "4d4e82a3-cdf6-547a-87e3-c65f171fc95d",
+      "version": 1,
+      "status": "DRAFT",
+      "default_policies": {},
+      "metadata": {
+        "sample_set": "poke-dev-live-20261009",
+        "demo_note": "Runtime và phê duyệt thật; nội dung coding/testing mô phỏng. Không dùng Propose Tasks cho bài demo này để giữ cấu hình thời gian và sơ đồ đã chuẩn bị."
+      }
+    },
+    "nodes": [
+      {
+        "id": "pd01-brief",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 40,
+          "y": 210
+        },
+        "data": {
+          "id": "pd01-brief",
+          "type": "adlcStage",
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "89a8740e-5aba-5f78-97a8-4502da5a8ee7",
+            "stage_type": "REQUIREMENTS",
+            "name": "Làm rõ yêu cầu",
+            "objective": "Mô phỏng chốt yêu cầu cho tính năng hồ sơ người dùng.",
+            "inputs": {
+              "requirement": "Mô phỏng chốt yêu cầu cho tính năng hồ sơ người dùng."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {
+              "delay_ms": 2000
+            },
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {
+              "sample_set": "poke-dev-live-20261009"
+            }
+          },
+          "node": {
+            "display_name": "Làm rõ yêu cầu",
+            "description": "Mô phỏng chốt yêu cầu cho tính năng hồ sơ người dùng.",
+            "template": {},
+            "outputs": [],
+            "type": "adlcStage",
+            "documentation": ""
+          }
+        }
+      },
+      {
+        "id": "pd01-api",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 390,
+          "y": 60
+        },
+        "data": {
+          "id": "pd01-api",
+          "type": "adlcStage",
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "cad90634-3826-5844-82b8-71b252cbaf48",
+            "stage_type": "IMPLEMENTATION",
+            "name": "Nhánh API (mô phỏng)",
+            "objective": "Mô phỏng xây dựng API hồ sơ; kết quả là artifact mô phỏng.",
+            "inputs": {
+              "requirement": "Mô phỏng xây dựng API hồ sơ; kết quả là artifact mô phỏng."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {
+              "delay_ms": 5000
+            },
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {
+              "sample_set": "poke-dev-live-20261009"
+            }
+          },
+          "node": {
+            "display_name": "Nhánh API (mô phỏng)",
+            "description": "Mô phỏng xây dựng API hồ sơ; kết quả là artifact mô phỏng.",
+            "template": {},
+            "outputs": [],
+            "type": "adlcStage",
+            "documentation": ""
+          }
+        }
+      },
+      {
+        "id": "pd01-ui",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 390,
+          "y": 360
+        },
+        "data": {
+          "id": "pd01-ui",
+          "type": "adlcStage",
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "1f1a44cb-da71-578d-a27a-9599d8b1ef5e",
+            "stage_type": "IMPLEMENTATION",
+            "name": "Nhánh giao diện (mô phỏng)",
+            "objective": "Mô phỏng xây dựng giao diện hồ sơ; kết quả là artifact mô phỏng.",
+            "inputs": {
+              "requirement": "Mô phỏng xây dựng giao diện hồ sơ; kết quả là artifact mô phỏng."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {
+              "delay_ms": 5000
+            },
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {
+              "sample_set": "poke-dev-live-20261009"
+            }
+          },
+          "node": {
+            "display_name": "Nhánh giao diện (mô phỏng)",
+            "description": "Mô phỏng xây dựng giao diện hồ sơ; kết quả là artifact mô phỏng.",
+            "template": {},
+            "outputs": [],
+            "type": "adlcStage",
+            "documentation": ""
+          }
+        }
+      },
+      {
+        "id": "pd01-review",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 750,
+          "y": 210
+        },
+        "data": {
+          "id": "pd01-review",
+          "type": "adlcStage",
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "e7c03d6c-1b5e-594d-8fb8-c4cb678b87d4",
+            "stage_type": "REVIEW",
+            "name": "Review tích hợp (mô phỏng)",
+            "objective": "Mô phỏng review sau khi cả hai nhánh hoàn tất.",
+            "inputs": {
+              "requirement": "Mô phỏng review sau khi cả hai nhánh hoàn tất."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {
+              "delay_ms": 3000
+            },
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {
+              "sample_set": "poke-dev-live-20261009"
+            }
+          },
+          "node": {
+            "display_name": "Review tích hợp (mô phỏng)",
+            "description": "Mô phỏng review sau khi cả hai nhánh hoàn tất.",
+            "template": {},
+            "outputs": [],
+            "type": "adlcStage",
+            "documentation": ""
+          }
+        }
+      },
+      {
+        "id": "pd01-approval",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 1120,
+          "y": 210
+        },
+        "data": {
+          "id": "pd01-approval",
+          "type": "adlcStage",
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "54d2994a-bcd5-5c19-9400-0d4167878f38",
+            "stage_type": "APPROVAL",
+            "name": "Người dùng phê duyệt",
+            "objective": "Kiểm tra hai nhánh và timeline trước khi Approve hoặc Reject.",
+            "inputs": {
+              "approval_context": "Kiểm tra hai nhánh và timeline trước khi Approve hoặc Reject."
+            },
+            "expected_outputs": [
+              "approval_decision"
+            ],
+            "package_ref": {
+              "package_id": "approval",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {},
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {
+              "sample_set": "poke-dev-live-20261009"
+            }
+          },
+          "node": {
+            "display_name": "Người dùng phê duyệt",
+            "description": "Kiểm tra hai nhánh và timeline trước khi Approve hoặc Reject.",
+            "template": {},
+            "outputs": [],
+            "type": "adlcStage",
+            "documentation": ""
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "pd01-brief-pd01-api",
+        "source": "pd01-brief",
+        "target": "pd01-api",
+        "type": "adlcEdge",
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_EDGE",
+            "schema_version": "0.1",
+            "edge_id": "47918f4f-f023-5a14-ac0f-62834da5035d",
+            "condition": "ON_SUCCESS",
+            "bindings": [],
+            "metadata": {}
+          }
+        }
+      },
+      {
+        "id": "pd01-brief-pd01-ui",
+        "source": "pd01-brief",
+        "target": "pd01-ui",
+        "type": "adlcEdge",
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_EDGE",
+            "schema_version": "0.1",
+            "edge_id": "6979e43c-9bb4-58b9-ba59-b40cc29405ab",
+            "condition": "ON_SUCCESS",
+            "bindings": [],
+            "metadata": {}
+          }
+        }
+      },
+      {
+        "id": "pd01-api-pd01-review",
+        "source": "pd01-api",
+        "target": "pd01-review",
+        "type": "adlcEdge",
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_EDGE",
+            "schema_version": "0.1",
+            "edge_id": "2ee75cf0-ab13-56fd-8b1d-1099dd7e48e9",
+            "condition": "ON_SUCCESS",
+            "bindings": [],
+            "metadata": {}
+          }
+        }
+      },
+      {
+        "id": "pd01-ui-pd01-review",
+        "source": "pd01-ui",
+        "target": "pd01-review",
+        "type": "adlcEdge",
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_EDGE",
+            "schema_version": "0.1",
+            "edge_id": "b3808c3b-f380-5232-b558-a03da010199c",
+            "condition": "ON_SUCCESS",
+            "bindings": [],
+            "metadata": {}
+          }
+        }
+      },
+      {
+        "id": "pd01-review-pd01-approval",
+        "source": "pd01-review",
+        "target": "pd01-approval",
+        "type": "adlcEdge",
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_EDGE",
+            "schema_version": "0.1",
+            "edge_id": "52be2488-bef2-5e37-8b03-66530a1a71ed",
+            "condition": "ON_SUCCESS",
+            "bindings": [],
+            "metadata": {}
+          }
+        }
+      }
+    ],
+    "viewport": {
+      "x": 25,
+      "y": 35,
+      "zoom": 0.85
+    }
+  }
+}

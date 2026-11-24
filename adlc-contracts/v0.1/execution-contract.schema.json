@@ -1,0 +1,1071 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:adlc:contracts:execution:0.1",
+  "title": "ADLC execution contract v0.1",
+  "description": "Bundled wire schemas. Validate an individual payload against the matching definition under $defs.",
+  "oneOf": [
+    { "$ref": "#/$defs/TaskRequest" },
+    { "$ref": "#/$defs/TaskResult" },
+    { "$ref": "#/$defs/RunEvent" },
+    { "$ref": "#/$defs/Artifact" },
+    { "$ref": "#/$defs/ServiceError" },
+    { "$ref": "#/$defs/ApprovalRequest" },
+    { "$ref": "#/$defs/CommandExecutionRequest" },
+    { "$ref": "#/$defs/CommandExecutionResponse" },
+    { "$ref": "#/$defs/ExecutionLogEntry" },
+    { "$ref": "#/$defs/ArtifactReference" }
+  ],
+  "$defs": {
+    "ContractVersion": {
+      "type": "string",
+      "const": "0.1"
+    },
+    "Uuid": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "NonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "JsonValue": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "boolean" },
+        { "type": "number" },
+        { "type": "string" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/JsonValue" }
+        },
+        {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/JsonValue" }
+        }
+      ]
+    },
+    "Metadata": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/JsonValue" }
+    },
+    "Actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["USER", "SERVICE", "AGENT", "SYSTEM"]
+        },
+        "id": {
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "display_name": {
+          "type": ["string", "null"],
+          "minLength": 1
+        }
+      }
+    },
+    "WorkflowRunStatus": {
+      "type": "string",
+      "enum": [
+        "CREATED",
+        "QUEUED",
+        "RUNNING",
+        "PAUSED",
+        "WAITING_APPROVAL",
+        "SUCCEEDED",
+        "FAILED",
+        "CANCELLED"
+      ]
+    },
+    "TaskRunStatus": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "READY",
+        "RUNNING",
+        "WAITING_APPROVAL",
+        "SUCCEEDED",
+        "FAILED",
+        "CANCELLED",
+        "SKIPPED"
+      ]
+    },
+    "ApprovalStatus": {
+      "type": "string",
+      "enum": ["PENDING", "APPROVED", "REJECTED", "CANCELLED", "EXPIRED"]
+    },
+    "GateType": {
+      "type": "string",
+      "enum": ["BEFORE_TASK", "ACTION", "AFTER_TASK"]
+    },
+    "CommandExecutionStatus": {
+      "type": "string",
+      "enum": ["QUEUED", "RUNNING", "SUCCESS", "FAILED", "TIMEOUT", "CANCELLED"]
+    },
+    "ExecutionLogStream": {
+      "type": "string",
+      "enum": ["SYSTEM", "STDOUT", "STDERR"]
+    },
+    "ExecutionLogLevel": {
+      "type": "string",
+      "enum": ["TRACE", "DEBUG", "INFO", "WARNING", "ERROR"]
+    },
+    "ArtifactReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id"],
+      "properties": {
+        "artifact_id": { "$ref": "#/$defs/Uuid" },
+        "name": { "type": "string", "minLength": 1 },
+        "media_type": { "type": "string", "minLength": 1 },
+        "uri": { "type": "string", "format": "uri" }
+      }
+    },
+    "ExecutionLogEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sequence", "occurred_at", "stream", "level", "message", "redacted"],
+      "properties": {
+        "sequence": { "type": "integer", "minimum": 1 },
+        "occurred_at": { "$ref": "#/$defs/Timestamp" },
+        "stream": { "$ref": "#/$defs/ExecutionLogStream" },
+        "level": { "$ref": "#/$defs/ExecutionLogLevel" },
+        "message": { "type": "string", "maxLength": 16384 },
+        "redacted": { "type": "boolean" },
+        "metadata": { "$ref": "#/$defs/Metadata" }
+      }
+    },
+    "TaskContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "$ref": "#/$defs/Uuid" },
+        "workspace_ref": { "type": "string", "minLength": 1 },
+        "artifact_refs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ArtifactReference" },
+          "uniqueItems": true,
+          "default": []
+        },
+        "memory_refs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "default": []
+        },
+        "variables": { "$ref": "#/$defs/Metadata" }
+      }
+    },
+    "ExecutorTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["service", "operation"],
+      "properties": {
+        "service": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+        },
+        "operation": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+        },
+        "agent_id": { "type": "string", "minLength": 1 },
+        "environment_id": { "type": "string", "minLength": 1 },
+        "capabilities": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "default": []
+        }
+      }
+    },
+    "TaskConstraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 50
+        },
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 1
+        }
+      }
+    },
+    "TaskRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "request_id",
+        "workflow_run_id",
+        "task_run_id",
+        "attempt_id",
+        "task_definition_id",
+        "task_type",
+        "name",
+        "executor",
+        "input",
+        "dependency_task_run_ids",
+        "idempotency_key",
+        "requested_at"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "#/$defs/ContractVersion" },
+        "request_id": { "$ref": "#/$defs/Uuid" },
+        "workflow_run_id": { "$ref": "#/$defs/Uuid" },
+        "task_run_id": { "$ref": "#/$defs/Uuid" },
+        "attempt_id": { "$ref": "#/$defs/Uuid" },
+        "task_definition_id": { "$ref": "#/$defs/Uuid" },
+        "task_type": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "executor": { "$ref": "#/$defs/ExecutorTarget" },
+        "input": { "$ref": "#/$defs/JsonValue" },
+        "context": { "$ref": "#/$defs/TaskContext" },
+        "dependency_task_run_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Uuid" },
+          "uniqueItems": true
+        },
+        "constraints": { "$ref": "#/$defs/TaskConstraints" },
+        "idempotency_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "requested_at": { "$ref": "#/$defs/Timestamp" },
+        "trace_context": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "metadata": { "$ref": "#/$defs/Metadata" }
+      }
+    },
+    "Checksum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "const": "SHA256"
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        }
+      }
+    },
+    "Artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "artifact_id",
+        "workflow_run_id",
+        "task_run_id",
+        "attempt_id",
+        "kind",
+        "name",
+        "media_type",
+        "uri",
+        "size_bytes",
+        "checksum",
+        "producer",
+        "created_at"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "#/$defs/ContractVersion" },
+        "artifact_id": { "$ref": "#/$defs/Uuid" },
+        "workflow_run_id": { "$ref": "#/$defs/Uuid" },
+        "task_run_id": { "$ref": "#/$defs/Uuid" },
+        "attempt_id": { "$ref": "#/$defs/Uuid" },
+        "kind": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]{1,63}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "media_type": {
+          "type": "string",
+          "pattern": "^[^/ ]+/[^/ ]+$"
+        },
+        "uri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "checksum": { "$ref": "#/$defs/Checksum" },
+        "producer": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+        },
+        "created_at": { "$ref": "#/$defs/Timestamp" },
+        "expires_at": {
+          "oneOf": [
+            { "$ref": "#/$defs/Timestamp" },
+            { "type": "null" }
+          ]
+        },
+        "metadata": { "$ref": "#/$defs/Metadata" }
+      }
+    },
+    "ServiceError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "error_id",
+        "code",
+        "category",
+        "message",
+        "retryable",
+        "service",
+        "occurred_at"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "#/$defs/ContractVersion" },
+        "error_id": { "$ref": "#/$defs/Uuid" },
+        "code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]{2,63}$"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "VALIDATION",
+            "AUTHENTICATION",
+            "AUTHORIZATION",
+            "NOT_FOUND",
+            "CONFLICT",
+            "RATE_LIMIT",
+            "TIMEOUT",
+            "DEPENDENCY",
+            "EXECUTION",
+            "CANCELLED",
+            "INTERNAL"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "retryable": { "type": "boolean" },
+        "service": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+        },
+        "http_status": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 599
+        },
+        "details": { "$ref": "#/$defs/Metadata" },
+        "correlation_id": { "type": "string", "minLength": 1 },
+        "occurred_at": { "$ref": "#/$defs/Timestamp" }
+      }
+    },
+    "TokenUsage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "input_tokens": { "type": "integer", "minimum": 0 },
+        "output_tokens": { "type": "integer", "minimum": 0 },
+        "total_tokens": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "TaskMetrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["duration_ms"],
+      "properties": {
+        "duration_ms": { "type": "integer", "minimum": 0 },
+        "token_usage": { "$ref": "#/$defs/TokenUsage" },
+        "cost": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["amount", "currency"],
+          "properties": {
+            "amount": { "type": "number", "minimum": 0 },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            }
+          }
+        },
+        "custom": { "$ref": "#/$defs/Metadata" }
+      }
+    },
+    "TaskResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "request_id",
+        "workflow_run_id",
+        "task_run_id",
+        "attempt_id",
+        "status",
+        "output",
+        "artifacts",
+        "error",
+        "started_at",
+        "completed_at"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "#/$defs/ContractVersion" },
+        "request_id": { "$ref": "#/$defs/Uuid" },
+        "workflow_run_id": { "$ref": "#/$defs/Uuid" },
+        "task_run_id": { "$ref": "#/$defs/Uuid" },
+        "attempt_id": { "$ref": "#/$defs/Uuid" },
+        "status": {
+          "type": "string",
+          "enum": ["SUCCEEDED", "FAILED", "CANCELLED"]
+        },
+        "output": { "$ref": "#/$defs/JsonValue" },
+        "artifacts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Artifact" }
+        },
+        "error": {
+          "oneOf": [
+            { "$ref": "#/$defs/ServiceError" },
+            { "type": "null" }
+          ]
+        },
+        "metrics": { "$ref": "#/$defs/TaskMetrics" },
+        "started_at": { "$ref": "#/$defs/Timestamp" },
+        "completed_at": { "$ref": "#/$defs/Timestamp" },
+        "metadata": { "$ref": "#/$defs/Metadata" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "SUCCEEDED" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": { "error": { "type": "null" } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "status": { "const": "FAILED" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": { "error": { "$ref": "#/$defs/ServiceError" } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "status": { "const": "CANCELLED" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "error": {
+                "allOf": [
+                  { "$ref": "#/$defs/ServiceError" },
+                  {
+                    "properties": { "category": { "const": "CANCELLED" } },
+                    "required": ["category"]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "CommandExecutionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "command_id",
+        "workflow_run_id",
+        "task_run_id",
+        "attempt_id",
+        "sandbox_session_id",
+        "executable",
+        "arguments",
+        "working_directory",
+        "environment",
+        "secret_refs",
+        "timeout_ms",
+        "idempotency_key",
+        "requested_at",
+        "trace_context",
+        "metadata"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "#/$defs/ContractVersion" },
+        "command_id": { "$ref": "#/$defs/Uuid" },
+        "workflow_run_id": { "$ref": "#/$defs/Uuid" },
+        "task_run_id": { "$ref": "#/$defs/Uuid" },
+        "attempt_id": { "$ref": "#/$defs/Uuid" },
+        "sandbox_session_id": { "type": "string", "minLength": 1 },
+        "executable": { "type": "string", "minLength": 1 },
+        "arguments": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "working_directory": { "type": ["string", "null"], "minLength": 1 },
+        "environment": {
+          "type": "object",
+          "propertyNames": { "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+          "additionalProperties": { "type": "string" }
+        },
+        "secret_refs": {
+          "type": "object",
+          "propertyNames": { "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
+        "timeout_ms": { "type": "integer", "minimum": 1 },
+        "idempotency_key": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "requested_at": { "$ref": "#/$defs/Timestamp" },
+        "trace_context": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "metadata": { "$ref": "#/$defs/Metadata" }
+      }
+    },
+    "CommandExecutionResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "command_id",
+        "workflow_run_id",
+        "task_run_id",
+        "attempt_id",
+        "status",
+        "exit_code",
+        "logs",
+        "logs_truncated",
+        "artifact_refs",
+        "error",
+        "queued_at",
+        "started_at",
+        "completed_at",
+        "duration_ms",
+        "metadata"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "#/$defs/ContractVersion" },
+        "command_id": { "$ref": "#/$defs/Uuid" },
+        "workflow_run_id": { "$ref": "#/$defs/Uuid" },
+        "task_run_id": { "$ref": "#/$defs/Uuid" },
+        "attempt_id": { "$ref": "#/$defs/Uuid" },
+        "status": { "$ref": "#/$defs/CommandExecutionStatus" },
+        "exit_code": { "type": ["integer", "null"] },
+        "logs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ExecutionLogEntry" }
+        },
+        "logs_truncated": { "type": "boolean" },
+        "artifact_refs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ArtifactReference" },
+          "uniqueItems": true
+        },
+        "error": {
+          "oneOf": [
+            { "$ref": "#/$defs/ServiceError" },
+            { "type": "null" }
+          ]
+        },
+        "queued_at": { "$ref": "#/$defs/Timestamp" },
+        "started_at": {
+          "oneOf": [
+            { "$ref": "#/$defs/Timestamp" },
+            { "type": "null" }
+          ]
+        },
+        "completed_at": {
+          "oneOf": [
+            { "$ref": "#/$defs/Timestamp" },
+            { "type": "null" }
+          ]
+        },
+        "duration_ms": { "type": ["integer", "null"], "minimum": 0 },
+        "metadata": { "$ref": "#/$defs/Metadata" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "QUEUED" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "started_at": { "type": "null" },
+              "completed_at": { "type": "null" },
+              "exit_code": { "type": "null" },
+              "error": { "type": "null" },
+              "duration_ms": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "RUNNING" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "started_at": { "$ref": "#/$defs/Timestamp" },
+              "completed_at": { "type": "null" },
+              "exit_code": { "type": "null" },
+              "error": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "SUCCESS" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "started_at": { "$ref": "#/$defs/Timestamp" },
+              "completed_at": { "$ref": "#/$defs/Timestamp" },
+              "exit_code": { "const": 0 },
+              "error": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "FAILED" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "completed_at": { "$ref": "#/$defs/Timestamp" },
+              "error": { "$ref": "#/$defs/ServiceError" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "TIMEOUT" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "completed_at": { "$ref": "#/$defs/Timestamp" },
+              "error": {
+                "allOf": [
+                  { "$ref": "#/$defs/ServiceError" },
+                  {
+                    "properties": { "category": { "const": "TIMEOUT" } },
+                    "required": ["category"]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "CANCELLED" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "completed_at": { "$ref": "#/$defs/Timestamp" },
+              "error": {
+                "allOf": [
+                  { "$ref": "#/$defs/ServiceError" },
+                  {
+                    "properties": { "category": { "const": "CANCELLED" } },
+                    "required": ["category"]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "AnyRunStatus": {
+      "type": "string",
+      "enum": [
+        "CREATED",
+        "QUEUED",
+        "RUNNING",
+        "PAUSED",
+        "WAITING_APPROVAL",
+        "SUCCEEDED",
+        "FAILED",
+        "CANCELLED",
+        "PENDING",
+        "READY",
+        "SKIPPED",
+        "APPROVED",
+        "REJECTED",
+        "EXPIRED"
+      ]
+    },
+    "RunEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "event_id",
+        "event_type",
+        "workflow_run_id",
+        "aggregate_type",
+        "aggregate_id",
+        "sequence",
+        "occurred_at",
+        "producer",
+        "payload"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "#/$defs/ContractVersion" },
+        "event_id": { "$ref": "#/$defs/Uuid" },
+        "event_type": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$",
+          "maxLength": 128
+        },
+        "workflow_run_id": { "$ref": "#/$defs/Uuid" },
+        "task_run_id": { "$ref": "#/$defs/Uuid" },
+        "attempt_id": { "$ref": "#/$defs/Uuid" },
+        "approval_request_id": { "$ref": "#/$defs/Uuid" },
+        "aggregate_type": {
+          "type": "string",
+          "enum": ["WORKFLOW_RUN", "TASK_RUN", "APPROVAL_REQUEST"]
+        },
+        "aggregate_id": { "$ref": "#/$defs/Uuid" },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "previous_status": {
+          "oneOf": [
+            { "$ref": "#/$defs/AnyRunStatus" },
+            { "type": "null" }
+          ]
+        },
+        "status": { "$ref": "#/$defs/AnyRunStatus" },
+        "actor": { "$ref": "#/$defs/Actor" },
+        "correlation_id": { "type": "string", "minLength": 1 },
+        "causation_event_id": { "$ref": "#/$defs/Uuid" },
+        "occurred_at": { "$ref": "#/$defs/Timestamp" },
+        "producer": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_.-]{0,127}$"
+        },
+        "payload": { "$ref": "#/$defs/Metadata" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "aggregate_type": { "const": "WORKFLOW_RUN" } },
+            "required": ["aggregate_type"]
+          },
+          "then": {
+            "properties": {
+              "previous_status": {
+                "oneOf": [
+                  { "$ref": "#/$defs/WorkflowRunStatus" },
+                  { "type": "null" }
+                ]
+              },
+              "status": { "$ref": "#/$defs/WorkflowRunStatus" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "aggregate_type": { "const": "TASK_RUN" } },
+            "required": ["aggregate_type"]
+          },
+          "then": {
+            "properties": {
+              "previous_status": {
+                "oneOf": [
+                  { "$ref": "#/$defs/TaskRunStatus" },
+                  { "type": "null" }
+                ]
+              },
+              "status": { "$ref": "#/$defs/TaskRunStatus" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "aggregate_type": { "const": "APPROVAL_REQUEST" } },
+            "required": ["aggregate_type"]
+          },
+          "then": {
+            "properties": {
+              "previous_status": {
+                "oneOf": [
+                  { "$ref": "#/$defs/ApprovalStatus" },
+                  { "type": "null" }
+                ]
+              },
+              "status": { "$ref": "#/$defs/ApprovalStatus" }
+            }
+          }
+        }
+      ]
+    },
+    "ApprovalAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action_id", "label", "effect", "comment_required"],
+      "properties": {
+        "action_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "effect": {
+          "type": "string",
+          "enum": ["APPROVE", "REJECT", "CANCEL"]
+        },
+        "comment_required": { "type": "boolean" }
+      }
+    },
+    "ApprovalDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action_id", "effect", "decided_by", "decided_at"],
+      "properties": {
+        "action_id": { "type": "string", "minLength": 1 },
+        "effect": {
+          "type": "string",
+          "enum": ["APPROVE", "REJECT", "CANCEL", "EXPIRE"]
+        },
+        "decided_by": { "$ref": "#/$defs/Actor" },
+        "comment": {
+          "type": ["string", "null"],
+          "maxLength": 4096
+        },
+        "decided_at": { "$ref": "#/$defs/Timestamp" }
+      }
+    },
+    "ApprovalContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary"],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "risk": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "requested_action": {
+          "type": "string",
+          "maxLength": 2048
+        },
+        "artifact_refs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ArtifactReference" },
+          "uniqueItems": true,
+          "default": []
+        },
+        "payload": { "$ref": "#/$defs/Metadata" }
+      }
+    },
+    "ApprovalRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "approval_request_id",
+        "workflow_run_id",
+        "task_run_id",
+        "attempt_id",
+        "gate_type",
+        "status",
+        "blocking",
+        "title",
+        "requested_by",
+        "required_role",
+        "reviewer_ids",
+        "actions",
+        "context",
+        "decision",
+        "created_at"
+      ],
+      "properties": {
+        "schema_version": { "$ref": "#/$defs/ContractVersion" },
+        "approval_request_id": { "$ref": "#/$defs/Uuid" },
+        "workflow_run_id": { "$ref": "#/$defs/Uuid" },
+        "task_run_id": { "$ref": "#/$defs/Uuid" },
+        "attempt_id": { "$ref": "#/$defs/Uuid" },
+        "gate_type": { "$ref": "#/$defs/GateType" },
+        "status": { "$ref": "#/$defs/ApprovalStatus" },
+        "blocking": {
+          "type": "boolean",
+          "const": true
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "requested_by": { "$ref": "#/$defs/Actor" },
+        "required_role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "reviewer_ids": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "actions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ApprovalAction" },
+          "minItems": 2,
+          "allOf": [
+            {
+              "contains": {
+                "properties": { "effect": { "const": "APPROVE" } },
+                "required": ["effect"]
+              }
+            },
+            {
+              "contains": {
+                "properties": { "effect": { "const": "REJECT" } },
+                "required": ["effect"]
+              }
+            }
+          ]
+        },
+        "context": { "$ref": "#/$defs/ApprovalContext" },
+        "decision": {
+          "oneOf": [
+            { "$ref": "#/$defs/ApprovalDecision" },
+            { "type": "null" }
+          ]
+        },
+        "created_at": { "$ref": "#/$defs/Timestamp" },
+        "expires_at": {
+          "oneOf": [
+            { "$ref": "#/$defs/Timestamp" },
+            { "type": "null" }
+          ]
+        },
+        "metadata": { "$ref": "#/$defs/Metadata" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "PENDING" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": { "decision": { "type": "null" } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "status": { "const": "APPROVED" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "decision": {
+                "allOf": [
+                  { "$ref": "#/$defs/ApprovalDecision" },
+                  {
+                    "properties": { "effect": { "const": "APPROVE" } },
+                    "required": ["effect"]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "status": { "const": "REJECTED" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "decision": {
+                "allOf": [
+                  { "$ref": "#/$defs/ApprovalDecision" },
+                  {
+                    "properties": { "effect": { "const": "REJECT" } },
+                    "required": ["effect"]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "status": { "const": "CANCELLED" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "decision": {
+                "allOf": [
+                  { "$ref": "#/$defs/ApprovalDecision" },
+                  {
+                    "properties": { "effect": { "const": "CANCEL" } },
+                    "required": ["effect"]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "status": { "const": "EXPIRED" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "decision": {
+                "allOf": [
+                  { "$ref": "#/$defs/ApprovalDecision" },
+                  {
+                    "properties": { "effect": { "const": "EXPIRE" } },
+                    "required": ["effect"]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

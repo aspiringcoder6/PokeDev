@@ -1,0 +1,54 @@
+{
+  "$id": "https://adlc.dev/contracts/test-extensions/v0.1/performance-budget.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Bounded planning inputs only. No performance runner is registered.",
+  "properties": {
+    "duration_seconds": {
+      "maximum": 30,
+      "minimum": 1,
+      "title": "Duration Seconds",
+      "type": "integer"
+    },
+    "failed_requests_max": {
+      "maximum": 10,
+      "minimum": 0,
+      "title": "Failed Requests Max",
+      "type": "integer"
+    },
+    "max_requests": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Max Requests",
+      "type": "integer"
+    },
+    "p95_latency_ms_max": {
+      "maximum": 10000,
+      "minimum": 1,
+      "title": "P95 Latency Ms Max",
+      "type": "integer"
+    },
+    "requests_per_second": {
+      "maximum": 5,
+      "minimum": 1,
+      "title": "Requests Per Second",
+      "type": "integer"
+    },
+    "virtual_users": {
+      "maximum": 5,
+      "minimum": 1,
+      "title": "Virtual Users",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "virtual_users",
+    "duration_seconds",
+    "requests_per_second",
+    "max_requests",
+    "p95_latency_ms_max",
+    "failed_requests_max"
+  ],
+  "title": "PerformanceBudget",
+  "type": "object"
+}

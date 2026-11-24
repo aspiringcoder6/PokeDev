@@ -1,0 +1,119 @@
+{
+  "$defs": {
+    "HarnessPluginIntegrityEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_digest": {
+          "title": "Expected Digest",
+          "type": "string"
+        },
+        "expected_version": {
+          "title": "Expected Version",
+          "type": "string"
+        },
+        "installed_digest": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Installed Digest"
+        },
+        "installed_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Installed Version"
+        },
+        "plugin_id": {
+          "minLength": 1,
+          "title": "Plugin Id",
+          "type": "string"
+        },
+        "required": {
+          "title": "Required",
+          "type": "boolean"
+        },
+        "status": {
+          "$ref": "#/$defs/HarnessPluginIntegrityStatus"
+        }
+      },
+      "required": [
+        "plugin_id",
+        "required",
+        "expected_version",
+        "expected_digest",
+        "status"
+      ],
+      "title": "HarnessPluginIntegrityEntry",
+      "type": "object"
+    },
+    "HarnessPluginIntegrityStatus": {
+      "enum": [
+        "EXACT",
+        "MISSING",
+        "VERSION_MISMATCH",
+        "DIGEST_MISMATCH",
+        "LOCK_INVALID",
+        "UNREADABLE"
+      ],
+      "title": "HarnessPluginIntegrityStatus",
+      "type": "string"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/harness/v0.1/plugin-inventory.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "checked_at": {
+      "format": "date-time",
+      "title": "Checked At",
+      "type": "string"
+    },
+    "error_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error Code"
+    },
+    "plugins": {
+      "items": {
+        "$ref": "#/$defs/HarnessPluginIntegrityEntry"
+      },
+      "title": "Plugins",
+      "type": "array"
+    },
+    "ready": {
+      "title": "Ready",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "ready",
+    "checked_at"
+  ],
+  "title": "HarnessPluginInventory",
+  "type": "object"
+}

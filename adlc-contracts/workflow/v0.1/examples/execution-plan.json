@@ -1,0 +1,265 @@
+{
+  "schema_version": "0.1",
+  "execution_plan_id": "77777777-7777-4777-8777-777777777777",
+  "workflow_definition_id": "11111111-1111-4111-8111-111111111111",
+  "workflow_definition_version": 1,
+  "plan_version": 1,
+  "status": "VALIDATED",
+  "validation_status": "VALID",
+  "validation_errors": [],
+  "warnings": [],
+  "assumptions": [
+    "The mock adapter registry remains available for this example."
+  ],
+  "approval_required": true,
+  "tasks": [
+    {
+      "plan_task_id": "55555555-5555-4555-8555-555555555555",
+      "source_workflow_stage_id": "22222222-2222-4222-8222-222222222222",
+      "resolved_node_spec_id": "d016d801-13fa-59b0-832f-f2668b23961d",
+      "resolved_node_digest": "sha256:207046d5a7d25fd019e476f1b0eccc97cfeba1b32c662342a5e77368db111663",
+      "name": "Implement",
+      "objective": "Implement the approved requirement.",
+      "task_type": "IMPLEMENTATION",
+      "dependency_task_ids": [],
+      "input_bindings": [],
+      "inputs": {
+        "requirement": "Implement the approved requirement."
+      },
+      "expected_artifacts": [
+        "source_patch"
+      ],
+      "assigned_capability": "agent-provider:mock",
+      "required_environment": "sandbox:mock-workspace/0.1.0",
+      "effective_policies": {
+        "retry": {
+          "max_attempts": 2
+        },
+        "timeout_ms": 120000,
+        "approval": {},
+        "permissions": {
+          "mode": "PACKAGE_ALLOWLIST"
+        },
+        "resources": {},
+        "runtime_overridable": [
+          "/configuration/simulate_failure",
+          "/policies/timeout_ms"
+        ]
+      },
+      "planning_rationale": "Root implementation stage.",
+      "priority": 50,
+      "metadata": {}
+    },
+    {
+      "plan_task_id": "66666666-6666-4666-8666-666666666666",
+      "source_workflow_stage_id": "33333333-3333-4333-8333-333333333333",
+      "resolved_node_spec_id": "b52ed2f5-de3b-5768-b646-ea4617fd612e",
+      "resolved_node_digest": "sha256:a3fd284892190350e19113196de74fcad16528a97efc59bf3d1b377a7e2886b8",
+      "name": "Approval",
+      "objective": "Obtain a human decision before completion.",
+      "task_type": "APPROVAL",
+      "dependency_task_ids": [
+        "55555555-5555-4555-8555-555555555555"
+      ],
+      "input_bindings": [],
+      "inputs": {
+        "approval_context": {
+          "summary": "Review the mock implementation result."
+        }
+      },
+      "expected_artifacts": [
+        "approval_decision"
+      ],
+      "assigned_capability": "control:approval",
+      "effective_policies": {
+        "retry": {
+          "max_attempts": 1
+        },
+        "timeout_ms": 86400000,
+        "approval": {
+          "gate_type": "ACTION"
+        },
+        "permissions": {
+          "mode": "PACKAGE_ALLOWLIST"
+        },
+        "resources": {},
+        "runtime_overridable": []
+      },
+      "planning_rationale": "Approval follows successful implementation.",
+      "priority": 50,
+      "metadata": {}
+    }
+  ],
+  "resolved_node_specs": [
+    {
+      "schema_version": "0.1",
+      "resolved_node_spec_id": "d016d801-13fa-59b0-832f-f2668b23961d",
+      "workflow_definition_id": "11111111-1111-4111-8111-111111111111",
+      "workflow_definition_version": 1,
+      "source_stage_id": "22222222-2222-4222-8222-222222222222",
+      "package_ref": {
+        "package_id": "coding-agent",
+        "version": "0.1.0",
+        "content_digest": "sha256:525f8a3b9f90502064e7315e504385c7c3684427cc4bdab99956b187f96d2305"
+      },
+      "kind": "AGENT",
+      "implementation": {
+        "adapter_type": "AGENT_PROVIDER",
+        "adapter_ref": "agent-provider:mock",
+        "entrypoint": "mock-task"
+      },
+      "interface": {
+        "inputs": [
+          {
+            "name": "requirement",
+            "schema_ref": "adlc://schemas/requirement/0.1",
+            "required": true,
+            "multiple": false,
+            "description": "The scoped implementation requirement."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "source_patch",
+            "schema_ref": "adlc://schemas/source-patch/0.1",
+            "required": true,
+            "multiple": false,
+            "description": "Reference to the mock source artifact."
+          }
+        ]
+      },
+      "configuration": {
+        "artifact_name": "mock-source-patch.diff",
+        "delay_ms": 10,
+        "simulate_failure": false
+      },
+      "execution_profile": {
+        "provider_ref": "agent-provider:mock",
+        "model_ref": "model:mock/deterministic",
+        "system_prompt_ref": "prompt:coding-agent/0.1.0",
+        "rule_set_refs": [
+          "rules:adlc-safe-execution/0.1.0"
+        ],
+        "hook_refs": [
+          "hook:task-lifecycle/0.1.0"
+        ],
+        "capabilities": {
+          "tool_refs": [
+            "tool:mock-artifact"
+          ],
+          "skill_refs": [],
+          "plugin_refs": [],
+          "mcp_server_refs": []
+        },
+        "memory_policy_ref": "memory:mock-task-context/0.1.0",
+        "sandbox_policy_ref": "sandbox:mock-workspace/0.1.0",
+        "secret_refs": {}
+      },
+      "policies": {
+        "retry": {
+          "max_attempts": 2
+        },
+        "timeout_ms": 120000,
+        "approval": {},
+        "permissions": {
+          "mode": "PACKAGE_ALLOWLIST"
+        },
+        "resources": {},
+        "runtime_overridable": [
+          "/configuration/simulate_failure",
+          "/policies/timeout_ms"
+        ]
+      },
+      "secret_refs": {},
+      "resolved_digest": "sha256:207046d5a7d25fd019e476f1b0eccc97cfeba1b32c662342a5e77368db111663",
+      "resolver_version": "0.1.0",
+      "resolved_at": "2026-09-08T00:00:00Z",
+      "validation_evidence": [
+        "package-digest:sha256:525f8a3b9f90502064e7315e504385c7c3684427cc4bdab99956b187f96d2305",
+        "configuration-schema:draft-2020-12",
+        "trusted-references:8"
+      ],
+      "metadata": {
+        "package_status": "PUBLISHED",
+        "stage_type": "IMPLEMENTATION",
+        "stage_metadata": {}
+      }
+    },
+    {
+      "schema_version": "0.1",
+      "resolved_node_spec_id": "b52ed2f5-de3b-5768-b646-ea4617fd612e",
+      "workflow_definition_id": "11111111-1111-4111-8111-111111111111",
+      "workflow_definition_version": 1,
+      "source_stage_id": "33333333-3333-4333-8333-333333333333",
+      "package_ref": {
+        "package_id": "approval",
+        "version": "0.1.0",
+        "content_digest": "sha256:53223eb1bfe74504ec424aebad34299d4a56da4d83e0cbcf749570dc82898ce7"
+      },
+      "kind": "APPROVAL",
+      "implementation": {
+        "adapter_type": "CONTROL",
+        "adapter_ref": "control:approval",
+        "entrypoint": "after-task"
+      },
+      "interface": {
+        "inputs": [
+          {
+            "name": "approval_context",
+            "schema_ref": "adlc://schemas/approval-context/0.1",
+            "required": false,
+            "multiple": false,
+            "description": "Optional context shown to the approver."
+          }
+        ],
+        "outputs": [
+          {
+            "name": "approval_decision",
+            "schema_ref": "adlc://schemas/approval-decision/0.1",
+            "required": true,
+            "multiple": false,
+            "description": "The recorded approve or reject decision."
+          }
+        ]
+      },
+      "configuration": {
+        "message": "Approve the mock implementation result.",
+        "required_role": "reviewer"
+      },
+      "execution_profile": null,
+      "policies": {
+        "retry": {
+          "max_attempts": 1
+        },
+        "timeout_ms": 86400000,
+        "approval": {
+          "gate_type": "ACTION"
+        },
+        "permissions": {
+          "mode": "PACKAGE_ALLOWLIST"
+        },
+        "resources": {},
+        "runtime_overridable": []
+      },
+      "secret_refs": {},
+      "resolved_digest": "sha256:a3fd284892190350e19113196de74fcad16528a97efc59bf3d1b377a7e2886b8",
+      "resolver_version": "0.1.0",
+      "resolved_at": "2026-09-08T00:00:00Z",
+      "validation_evidence": [
+        "package-digest:sha256:53223eb1bfe74504ec424aebad34299d4a56da4d83e0cbcf749570dc82898ce7",
+        "configuration-schema:draft-2020-12",
+        "trusted-references:1"
+      ],
+      "metadata": {
+        "package_status": "PUBLISHED",
+        "stage_type": "APPROVAL",
+        "stage_metadata": {}
+      }
+    }
+  ],
+  "generated_by": "service:mock-planner",
+  "generated_at": "2026-09-08T00:00:00Z",
+  "metadata": {
+    "example": true
+  }
+}

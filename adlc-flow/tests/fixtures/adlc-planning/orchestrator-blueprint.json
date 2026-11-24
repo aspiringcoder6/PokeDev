@@ -1,0 +1,84 @@
+{
+  "data": {
+    "adlc": {
+      "document_type": "WORKFLOW_DEFINITION",
+      "schema_version": "0.1",
+      "workflow_definition_id": "9f4111c0-1c7e-4a11-9ed2-000000000501",
+      "version": 1,
+      "status": "DRAFT",
+      "default_policies": {},
+      "metadata": {
+        "migration_mode": "MANUAL",
+        "source_fixture": "adlc_components/flow/orchestrator.json"
+      }
+    },
+    "nodes": [
+      {
+        "id": "orchestrator-stage",
+        "type": "genericNode",
+        "position": {
+          "x": 180,
+          "y": 160
+        },
+        "data": {
+          "id": "orchestrator-stage",
+          "type": "adlcStage",
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "9f4111c0-1c7e-4a11-9ed2-000000000511",
+            "stage_type": "IMPLEMENTATION",
+            "name": "Orchestrator",
+            "objective": "Carry out one scoped development task using the standardized coding-agent composition.",
+            "inputs": {
+              "requirement": "Execute the requested development task with the orchestrator rules, lifecycle hook, tool access, model, Memory, and Sandbox references supplied by coding-agent@0.1.0."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {
+              "artifact_name": "orchestrator-result.diff"
+            },
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {
+              "migration_mode": "MANUAL",
+              "source_component_flow": "orchestrator.json"
+            }
+          },
+          "node": {
+            "description": "Package-based replacement for the low-level orchestrator component fixture.",
+            "template": {},
+            "display_name": "Orchestrator",
+            "documentation": "",
+            "outputs": [],
+            "type": "adlcStage"
+          }
+        }
+      }
+    ],
+    "edges": [],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    }
+  },
+  "description": "Manual package-based migration of the orchestrator component fixture. Uses mock providers only.",
+  "endpoint_name": null,
+  "id": "9f4111c0-1c7e-4a11-9ed2-000000000501",
+  "is_component": false,
+  "last_tested_version": null,
+  "locked": false,
+  "name": "orchestrator-blueprint",
+  "tags": [
+    "adlc",
+    "blueprint",
+    "mock"
+  ]
+}

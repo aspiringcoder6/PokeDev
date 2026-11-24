@@ -1,0 +1,122 @@
+{
+  "schema_version": "0.1",
+  "package_id": "coding-agent",
+  "version": "0.1.0",
+  "status": "PUBLISHED",
+  "name": "Coding Agent (Mock)",
+  "description": "Implements a scoped code task through the existing mock adapter bundle.",
+  "kind": "AGENT",
+  "interface": {
+    "inputs": [
+      {
+        "name": "requirement",
+        "schema_ref": "adlc://schemas/requirement/0.1",
+        "required": true,
+        "multiple": false,
+        "description": "The scoped implementation requirement."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "source_patch",
+        "schema_ref": "adlc://schemas/source-patch/0.1",
+        "required": true,
+        "multiple": false,
+        "description": "Reference to the mock source artifact."
+      }
+    ]
+  },
+  "configuration_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "delay_ms": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 5000
+      },
+      "simulate_failure": {
+        "type": "boolean"
+      },
+      "artifact_name": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 255
+      }
+    },
+    "required": [
+      "delay_ms",
+      "simulate_failure",
+      "artifact_name"
+    ]
+  },
+  "defaults": {
+    "delay_ms": 25,
+    "simulate_failure": false,
+    "artifact_name": "mock-source-patch.diff"
+  },
+  "override_allowlist": [
+    "/configuration/delay_ms",
+    "/configuration/simulate_failure",
+    "/configuration/artifact_name",
+    "/execution_profile/model_ref",
+    "/policies/timeout_ms"
+  ],
+  "implementation": {
+    "adapter_type": "AGENT_PROVIDER",
+    "adapter_ref": "agent-provider:mock",
+    "entrypoint": "mock-task"
+  },
+  "execution_profile": {
+    "provider_ref": "agent-provider:mock",
+    "model_ref": "model:mock/deterministic",
+    "system_prompt_ref": "prompt:coding-agent/0.1.0",
+    "rule_set_refs": [
+      "rules:adlc-safe-execution/0.1.0"
+    ],
+    "hook_refs": [
+      "hook:task-lifecycle/0.1.0"
+    ],
+    "capabilities": {
+      "tool_refs": [
+        "tool:mock-artifact"
+      ],
+      "skill_refs": [],
+      "plugin_refs": [],
+      "mcp_server_refs": []
+    },
+    "memory_policy_ref": "memory:mock-task-context/0.1.0",
+    "sandbox_policy_ref": "sandbox:mock-workspace/0.1.0",
+    "secret_refs": {}
+  },
+  "default_policies": {
+    "retry": {
+      "max_attempts": 2
+    },
+    "timeout_ms": 120000,
+    "approval": {
+      "gate_type": null
+    },
+    "permissions": {
+      "mode": "PACKAGE_ALLOWLIST"
+    },
+    "resources": {},
+    "runtime_overridable": [
+      "/configuration/simulate_failure",
+      "/policies/timeout_ms"
+    ]
+  },
+  "compatibility": {
+    "engine": {
+      "minimum_version": "0.1.0"
+    },
+    "execution_contract_versions": [
+      "0.1"
+    ]
+  },
+  "metadata": {
+    "maintainer": "adlc",
+    "provider_mode": "mock"
+  }
+}

@@ -1,0 +1,569 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.dev/contracts/task-loop-operator/v0.1/task-loop-inspection.schema.json",
+  "$defs": {
+    "LoopCheckView": {
+      "additionalProperties": false,
+      "properties": {
+        "check_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Check Id",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "BEHAVIORAL",
+            "CONTRACT",
+            "MOCK"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "exit_code": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Exit Code"
+        },
+        "executed_tests": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Executed Tests"
+        },
+        "timed_out": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Timed Out"
+        }
+      },
+      "required": [
+        "check_id",
+        "label",
+        "kind",
+        "passed"
+      ],
+      "title": "LoopCheckView",
+      "type": "object"
+    },
+    "LoopFailurePattern": {
+      "additionalProperties": false,
+      "properties": {
+        "check_id": {
+          "maxLength": 160,
+          "title": "Check Id",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 1024,
+          "title": "Label",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "BEHAVIORAL",
+            "CONTRACT",
+            "MOCK"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "iterations": {
+          "items": {
+            "type": "integer"
+          },
+          "maxItems": 100,
+          "title": "Iterations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "check_id",
+        "label",
+        "kind",
+        "iterations"
+      ],
+      "title": "LoopFailurePattern",
+      "type": "object"
+    },
+    "LoopIterationView": {
+      "additionalProperties": false,
+      "properties": {
+        "iteration": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Iteration",
+          "type": "integer"
+        },
+        "attempt_id": {
+          "format": "uuid",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 512,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        },
+        "phase": {
+          "enum": [
+            "RESERVED",
+            "AGENT_RUNNING",
+            "CANDIDATE_CAPTURED",
+            "VERIFIED",
+            "FINISHED"
+          ],
+          "title": "Phase",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "IN_PROGRESS",
+            "PASSED",
+            "CHECKS_FAILED",
+            "FAILED",
+            "CANCELLED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Started At"
+        },
+        "completed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Completed At"
+        },
+        "duration_ms": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duration Ms"
+        },
+        "candidate_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Candidate Id"
+        },
+        "candidate_digest": {
+          "anyOf": [
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Candidate Digest"
+        },
+        "parent_candidate_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Candidate Id"
+        },
+        "changed_paths": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 64,
+          "title": "Changed Paths",
+          "type": "array"
+        },
+        "patch_artifact_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Patch Artifact Id"
+        },
+        "checks": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/LoopCheckView"
+          },
+          "maxItems": 288,
+          "title": "Checks",
+          "type": "array"
+        },
+        "total_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Total Tokens"
+        },
+        "cost": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cost"
+        },
+        "stop_reason": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stop Reason"
+        }
+      },
+      "required": [
+        "iteration",
+        "attempt_id",
+        "phase",
+        "status"
+      ],
+      "title": "LoopIterationView",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "workflow_run_id": {
+      "format": "uuid",
+      "title": "Workflow Run Id",
+      "type": "string"
+    },
+    "task_run_id": {
+      "format": "uuid",
+      "title": "Task Run Id",
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "COMMAND",
+        "MOCK"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "history_source": {
+      "default": "UNAVAILABLE",
+      "enum": [
+        "CHECKPOINT",
+        "MEMORY",
+        "RUN_SNAPSHOT",
+        "UNAVAILABLE",
+        "NOT_STARTED"
+      ],
+      "title": "History Source",
+      "type": "string"
+    },
+    "history_complete": {
+      "default": false,
+      "title": "History Complete",
+      "type": "boolean"
+    },
+    "unavailable_reason": {
+      "anyOf": [
+        {
+          "maxLength": 160,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Unavailable Reason"
+    },
+    "spec_digest": {
+      "anyOf": [
+        {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Spec Digest"
+    },
+    "max_iterations": {
+      "anyOf": [
+        {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Max Iterations"
+    },
+    "max_duration_ms": {
+      "anyOf": [
+        {
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Max Duration Ms"
+    },
+    "max_total_tokens": {
+      "anyOf": [
+        {
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Max Total Tokens"
+    },
+    "max_total_cost": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Max Total Cost"
+    },
+    "elapsed_ms": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Elapsed Ms"
+    },
+    "total_tokens": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Total Tokens"
+    },
+    "total_cost": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Total Cost"
+    },
+    "current_candidate_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Current Candidate Id"
+    },
+    "current_candidate_digest": {
+      "anyOf": [
+        {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Current Candidate Digest"
+    },
+    "stopped": {
+      "default": false,
+      "title": "Stopped",
+      "type": "boolean"
+    },
+    "stop_reason": {
+      "anyOf": [
+        {
+          "maxLength": 160,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Stop Reason"
+    },
+    "can_retry": {
+      "default": false,
+      "title": "Can Retry",
+      "type": "boolean"
+    },
+    "recovery_available": {
+      "default": false,
+      "title": "Recovery Available",
+      "type": "boolean"
+    },
+    "iterations": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/LoopIterationView"
+      },
+      "maxItems": 100,
+      "title": "Iterations",
+      "type": "array"
+    },
+    "failure_patterns": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/LoopFailurePattern"
+      },
+      "maxItems": 288,
+      "title": "Failure Patterns",
+      "type": "array"
+    }
+  },
+  "required": [
+    "workflow_run_id",
+    "task_run_id",
+    "mode"
+  ],
+  "title": "TaskLoopInspection",
+  "type": "object"
+}

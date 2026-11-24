@@ -1,0 +1,150 @@
+{
+  "schema_version": "0.1",
+  "machines": {
+    "harness_session": {
+      "initial": "ACCEPTED",
+      "terminal": [
+        "SUCCEEDED",
+        "FAILED",
+        "CANCELLED"
+      ],
+      "transitions": {
+        "ACCEPTED": [
+          "PROVISIONING",
+          "RUNNING",
+          "READY_FOR_SUBMISSION",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "PROVISIONING": [
+          "RUNNING",
+          "READY_FOR_SUBMISSION",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "RUNNING": [
+          "WAITING_INTERACTION",
+          "VERIFYING",
+          "READY_FOR_SUBMISSION",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "WAITING_INTERACTION": [
+          "RUNNING",
+          "READY_FOR_SUBMISSION",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "VERIFYING": [
+          "READY_FOR_SUBMISSION",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "READY_FOR_SUBMISSION": [
+          "DELIVERING",
+          "CANCELLED"
+        ],
+        "DELIVERING": [
+          "SUCCEEDED",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "SUCCEEDED": [],
+        "FAILED": [],
+        "CANCELLED": []
+      }
+    },
+    "result_delivery": {
+      "initial": "PENDING",
+      "terminal": [
+        "DELIVERED",
+        "DEAD_LETTER"
+      ],
+      "transitions": {
+        "PENDING": [
+          "DELIVERING"
+        ],
+        "DELIVERING": [
+          "PENDING",
+          "DELIVERED",
+          "DEAD_LETTER"
+        ],
+        "DELIVERED": [],
+        "DEAD_LETTER": []
+      }
+    },
+    "interaction": {
+      "initial": "PENDING",
+      "terminal": [
+        "SUBMITTED",
+        "CANCELLED",
+        "EXPIRED"
+      ],
+      "transitions": {
+        "PENDING": [
+          "SUBMITTED",
+          "CANCELLED",
+          "EXPIRED"
+        ],
+        "SUBMITTED": [],
+        "CANCELLED": [],
+        "EXPIRED": []
+      }
+    },
+    "task_attempt": {
+      "initial": "CREATED",
+      "terminal": [
+        "SUCCEEDED",
+        "FAILED",
+        "CANCELLED"
+      ],
+      "transitions": {
+        "CREATED": [
+          "DISPATCHED",
+          "RESULT_RECEIVED",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "DISPATCHED": [
+          "RUNNING",
+          "RESULT_RECEIVED",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "RUNNING": [
+          "WAITING_INTERACTION",
+          "VERIFYING",
+          "READY_TO_SUBMIT",
+          "RESULT_RECEIVED",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "WAITING_INTERACTION": [
+          "RUNNING",
+          "RESULT_RECEIVED",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "VERIFYING": [
+          "READY_TO_SUBMIT",
+          "RESULT_RECEIVED",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "READY_TO_SUBMIT": [
+          "RESULT_RECEIVED",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "RESULT_RECEIVED": [
+          "SUCCEEDED",
+          "FAILED",
+          "CANCELLED"
+        ],
+        "SUCCEEDED": [],
+        "FAILED": [],
+        "CANCELLED": []
+      }
+    }
+  }
+}

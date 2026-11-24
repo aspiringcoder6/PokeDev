@@ -1,0 +1,70 @@
+{
+  "$defs": {
+    "HarnessDeliveryStatus": {
+      "enum": [
+        "PENDING",
+        "DELIVERING",
+        "DELIVERED",
+        "DEAD_LETTER"
+      ],
+      "title": "HarnessDeliveryStatus",
+      "type": "string"
+    },
+    "HarnessSessionStatus": {
+      "enum": [
+        "ACCEPTED",
+        "PROVISIONING",
+        "RUNNING",
+        "WAITING_INTERACTION",
+        "VERIFYING",
+        "READY_FOR_SUBMISSION",
+        "DELIVERING",
+        "SUCCEEDED",
+        "FAILED",
+        "CANCELLED"
+      ],
+      "title": "HarnessSessionStatus",
+      "type": "string"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/harness/v0.1/submission-receipt.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "delivery_id": {
+      "format": "uuid",
+      "title": "Delivery Id",
+      "type": "string"
+    },
+    "delivery_status": {
+      "$ref": "#/$defs/HarnessDeliveryStatus"
+    },
+    "replayed": {
+      "default": false,
+      "title": "Replayed",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "session_id": {
+      "minLength": 1,
+      "title": "Session Id",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/HarnessSessionStatus"
+    }
+  },
+  "required": [
+    "session_id",
+    "status",
+    "delivery_id",
+    "delivery_status"
+  ],
+  "title": "HarnessSubmissionReceipt",
+  "type": "object"
+}

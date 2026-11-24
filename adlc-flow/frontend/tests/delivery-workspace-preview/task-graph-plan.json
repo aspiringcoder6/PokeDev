@@ -1,0 +1,741 @@
+{
+  "workflow": {
+    "adlc": {
+      "document_type": "WORKFLOW_DEFINITION",
+      "schema_version": "0.1",
+      "workflow_definition_id": "88a00000-0000-4000-8000-000000000001",
+      "version": 1
+    },
+    "nodes": [
+      {
+        "id": "req",
+        "type": "genericNode",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "00000000-0000-4000-8000-000000000001",
+            "stage_type": "REQUIREMENTS",
+            "name": "Requirements",
+            "objective": "Gather requirements.",
+            "inputs": {
+              "requirement": "Gather requirements."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent",
+              "version": "0.1.0"
+            }
+          }
+        }
+      },
+      {
+        "id": "impl_a",
+        "type": "genericNode",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "00000000-0000-4000-8000-000000000002",
+            "stage_type": "IMPLEMENTATION",
+            "name": "Implement A",
+            "objective": "Implement scope A.",
+            "inputs": {
+              "requirement": "Implement scope A."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent",
+              "version": "0.1.0"
+            }
+          }
+        }
+      },
+      {
+        "id": "impl_b",
+        "type": "genericNode",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "00000000-0000-4000-8000-000000000003",
+            "stage_type": "IMPLEMENTATION",
+            "name": "Implement B",
+            "objective": "Implement scope B.",
+            "inputs": {
+              "requirement": "Implement scope B."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent",
+              "version": "0.1.0"
+            }
+          }
+        }
+      },
+      {
+        "id": "verify",
+        "type": "genericNode",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "00000000-0000-4000-8000-000000000004",
+            "stage_type": "TESTING",
+            "name": "Verify",
+            "objective": "Verify the result.",
+            "inputs": {
+              "requirement": "Verify the result."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent",
+              "version": "0.1.0"
+            }
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "req",
+        "target": "impl_a"
+      },
+      {
+        "source": "req",
+        "target": "impl_b"
+      },
+      {
+        "source": "impl_a",
+        "target": "verify"
+      },
+      {
+        "source": "impl_b",
+        "target": "verify"
+      }
+    ],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    }
+  },
+  "plan": {
+    "schema_version": "0.1",
+    "execution_plan_id": "de8393dd-d7fa-51f3-a326-bd37cad054b9",
+    "workflow_definition_id": "88a00000-0000-4000-8000-000000000001",
+    "workflow_definition_version": 1,
+    "plan_version": 1,
+    "status": "VALIDATED",
+    "validation_status": "VALID",
+    "validation_errors": [],
+    "warnings": [],
+    "assumptions": [],
+    "approval_required": false,
+    "tasks": [
+      {
+        "plan_task_id": "50e614b2-9167-5535-b695-91fa16d909de",
+        "source_workflow_stage_id": "00000000-0000-4000-8000-000000000001",
+        "resolved_node_spec_id": "f0d3121a-7e03-5a0d-87d9-bf9b3f8a5687",
+        "resolved_node_digest": "sha256:8349df1c98af946de2ca72aa9fd3b0c5404a6adad17144ca62b4b294dbf1c415",
+        "name": "Requirements",
+        "objective": "Gather requirements.",
+        "task_type": "REQUIREMENTS",
+        "dependency_task_ids": [],
+        "dependency_conditions": [],
+        "input_bindings": [],
+        "inputs": {
+          "requirement": "Gather requirements."
+        },
+        "expected_artifacts": [
+          "source_patch"
+        ],
+        "assigned_capability": "agent-provider:mock",
+        "required_environment": "sandbox:mock-workspace/0.1.0",
+        "effective_policies": {
+          "retry": {
+            "max_attempts": 2
+          },
+          "timeout_ms": 120000,
+          "approval": {
+            "gate_type": null
+          },
+          "permissions": {
+            "mode": "PACKAGE_ALLOWLIST"
+          },
+          "resources": {},
+          "runtime_overridable": [
+            "/configuration/simulate_failure",
+            "/policies/timeout_ms"
+          ]
+        },
+        "planning_rationale": "Compiled from stage 00000000-0000-4000-8000-000000000001 using coding-agent@0.1.0.",
+        "priority": 50,
+        "metadata": {
+          "package_id": "coding-agent",
+          "package_version": "0.1.0"
+        }
+      },
+      {
+        "plan_task_id": "5141a3a8-63cb-5ca6-8748-3f13c5512e47",
+        "source_workflow_stage_id": "00000000-0000-4000-8000-000000000002",
+        "resolved_node_spec_id": "869f2d00-c098-5c96-9386-5f14cc72539b",
+        "resolved_node_digest": "sha256:87fd2cbba3a02d242e57ed6d3902f7e34934f60e8cd8d297fec29210f206853e",
+        "name": "Implement A",
+        "objective": "Implement scope A.",
+        "task_type": "IMPLEMENTATION",
+        "dependency_task_ids": [
+          "50e614b2-9167-5535-b695-91fa16d909de"
+        ],
+        "dependency_conditions": [
+          "ON_SUCCESS"
+        ],
+        "input_bindings": [],
+        "inputs": {
+          "requirement": "Implement scope A."
+        },
+        "expected_artifacts": [
+          "source_patch"
+        ],
+        "assigned_capability": "agent-provider:mock",
+        "required_environment": "sandbox:mock-workspace/0.1.0",
+        "effective_policies": {
+          "retry": {
+            "max_attempts": 2
+          },
+          "timeout_ms": 120000,
+          "approval": {
+            "gate_type": null
+          },
+          "permissions": {
+            "mode": "PACKAGE_ALLOWLIST"
+          },
+          "resources": {},
+          "runtime_overridable": [
+            "/configuration/simulate_failure",
+            "/policies/timeout_ms"
+          ]
+        },
+        "planning_rationale": "Compiled from stage 00000000-0000-4000-8000-000000000002 using coding-agent@0.1.0.",
+        "priority": 50,
+        "metadata": {
+          "package_id": "coding-agent",
+          "package_version": "0.1.0"
+        }
+      },
+      {
+        "plan_task_id": "a3e7f478-e499-5803-9a43-dfbcd4ede41c",
+        "source_workflow_stage_id": "00000000-0000-4000-8000-000000000003",
+        "resolved_node_spec_id": "117d0799-40fc-5406-8eca-3a37cfad75ab",
+        "resolved_node_digest": "sha256:ccedd7d5560d8266ce20da3b83970a0fa56e01ec3919595349dcf31cb924c844",
+        "name": "Implement B",
+        "objective": "Implement scope B.",
+        "task_type": "IMPLEMENTATION",
+        "dependency_task_ids": [
+          "50e614b2-9167-5535-b695-91fa16d909de"
+        ],
+        "dependency_conditions": [
+          "ON_SUCCESS"
+        ],
+        "input_bindings": [],
+        "inputs": {
+          "requirement": "Implement scope B."
+        },
+        "expected_artifacts": [
+          "source_patch"
+        ],
+        "assigned_capability": "agent-provider:mock",
+        "required_environment": "sandbox:mock-workspace/0.1.0",
+        "effective_policies": {
+          "retry": {
+            "max_attempts": 2
+          },
+          "timeout_ms": 120000,
+          "approval": {
+            "gate_type": null
+          },
+          "permissions": {
+            "mode": "PACKAGE_ALLOWLIST"
+          },
+          "resources": {},
+          "runtime_overridable": [
+            "/configuration/simulate_failure",
+            "/policies/timeout_ms"
+          ]
+        },
+        "planning_rationale": "Compiled from stage 00000000-0000-4000-8000-000000000003 using coding-agent@0.1.0.",
+        "priority": 50,
+        "metadata": {
+          "package_id": "coding-agent",
+          "package_version": "0.1.0"
+        }
+      },
+      {
+        "plan_task_id": "96fbecef-0515-5d87-a496-374e5412760b",
+        "source_workflow_stage_id": "00000000-0000-4000-8000-000000000004",
+        "resolved_node_spec_id": "e426da16-e309-57d1-a906-b0ad4749d648",
+        "resolved_node_digest": "sha256:2c02918f1502f2e51747a1d2704941b4345f70e0137367a1e9b454c2849361ff",
+        "name": "Verify",
+        "objective": "Verify the result.",
+        "task_type": "TESTING",
+        "dependency_task_ids": [
+          "5141a3a8-63cb-5ca6-8748-3f13c5512e47",
+          "a3e7f478-e499-5803-9a43-dfbcd4ede41c"
+        ],
+        "dependency_conditions": [
+          "ON_SUCCESS",
+          "ON_SUCCESS"
+        ],
+        "input_bindings": [],
+        "inputs": {
+          "requirement": "Verify the result."
+        },
+        "expected_artifacts": [
+          "source_patch"
+        ],
+        "assigned_capability": "agent-provider:mock",
+        "required_environment": "sandbox:mock-workspace/0.1.0",
+        "effective_policies": {
+          "retry": {
+            "max_attempts": 2
+          },
+          "timeout_ms": 120000,
+          "approval": {
+            "gate_type": null
+          },
+          "permissions": {
+            "mode": "PACKAGE_ALLOWLIST"
+          },
+          "resources": {},
+          "runtime_overridable": [
+            "/configuration/simulate_failure",
+            "/policies/timeout_ms"
+          ]
+        },
+        "planning_rationale": "Compiled from stage 00000000-0000-4000-8000-000000000004 using coding-agent@0.1.0.",
+        "priority": 50,
+        "metadata": {
+          "package_id": "coding-agent",
+          "package_version": "0.1.0"
+        }
+      }
+    ],
+    "resolved_node_specs": [
+      {
+        "schema_version": "0.1",
+        "resolved_node_spec_id": "f0d3121a-7e03-5a0d-87d9-bf9b3f8a5687",
+        "workflow_definition_id": "88a00000-0000-4000-8000-000000000001",
+        "workflow_definition_version": 1,
+        "source_stage_id": "00000000-0000-4000-8000-000000000001",
+        "package_ref": {
+          "package_id": "coding-agent",
+          "version": "0.1.0",
+          "content_digest": "sha256:525f8a3b9f90502064e7315e504385c7c3684427cc4bdab99956b187f96d2305"
+        },
+        "kind": "AGENT",
+        "implementation": {
+          "adapter_type": "AGENT_PROVIDER",
+          "adapter_ref": "agent-provider:mock",
+          "entrypoint": "mock-task"
+        },
+        "interface": {
+          "inputs": [
+            {
+              "name": "requirement",
+              "schema_ref": "adlc://schemas/requirement/0.1",
+              "required": true,
+              "multiple": false,
+              "description": "The scoped implementation requirement."
+            }
+          ],
+          "outputs": [
+            {
+              "name": "source_patch",
+              "schema_ref": "adlc://schemas/source-patch/0.1",
+              "required": true,
+              "multiple": false,
+              "description": "Reference to the mock source artifact."
+            }
+          ]
+        },
+        "configuration": {
+          "artifact_name": "mock-source-patch.diff",
+          "delay_ms": 25,
+          "simulate_failure": false
+        },
+        "execution_profile": {
+          "provider_ref": "agent-provider:mock",
+          "model_ref": "model:mock/deterministic",
+          "system_prompt_ref": "prompt:coding-agent/0.1.0",
+          "rule_set_refs": [
+            "rules:adlc-safe-execution/0.1.0"
+          ],
+          "hook_refs": [
+            "hook:task-lifecycle/0.1.0"
+          ],
+          "capabilities": {
+            "tool_refs": [
+              "tool:mock-artifact"
+            ],
+            "skill_refs": [],
+            "plugin_refs": [],
+            "mcp_server_refs": []
+          },
+          "memory_policy_ref": "memory:mock-task-context/0.1.0",
+          "sandbox_policy_ref": "sandbox:mock-workspace/0.1.0",
+          "secret_refs": {}
+        },
+        "policies": {
+          "retry": {
+            "max_attempts": 2
+          },
+          "timeout_ms": 120000,
+          "approval": {
+            "gate_type": null
+          },
+          "permissions": {
+            "mode": "PACKAGE_ALLOWLIST"
+          },
+          "resources": {},
+          "runtime_overridable": [
+            "/configuration/simulate_failure",
+            "/policies/timeout_ms"
+          ]
+        },
+        "secret_refs": {},
+        "resolved_digest": "sha256:8349df1c98af946de2ca72aa9fd3b0c5404a6adad17144ca62b4b294dbf1c415",
+        "resolver_version": "0.1.0",
+        "resolved_at": "2026-10-18T00:00:00Z",
+        "validation_evidence": [
+          "package-digest:sha256:525f8a3b9f90502064e7315e504385c7c3684427cc4bdab99956b187f96d2305",
+          "configuration-schema:draft-2020-12",
+          "trusted-references:8"
+        ],
+        "metadata": {
+          "package_status": "PUBLISHED",
+          "stage_type": "REQUIREMENTS",
+          "stage_metadata": {}
+        }
+      },
+      {
+        "schema_version": "0.1",
+        "resolved_node_spec_id": "869f2d00-c098-5c96-9386-5f14cc72539b",
+        "workflow_definition_id": "88a00000-0000-4000-8000-000000000001",
+        "workflow_definition_version": 1,
+        "source_stage_id": "00000000-0000-4000-8000-000000000002",
+        "package_ref": {
+          "package_id": "coding-agent",
+          "version": "0.1.0",
+          "content_digest": "sha256:525f8a3b9f90502064e7315e504385c7c3684427cc4bdab99956b187f96d2305"
+        },
+        "kind": "AGENT",
+        "implementation": {
+          "adapter_type": "AGENT_PROVIDER",
+          "adapter_ref": "agent-provider:mock",
+          "entrypoint": "mock-task"
+        },
+        "interface": {
+          "inputs": [
+            {
+              "name": "requirement",
+              "schema_ref": "adlc://schemas/requirement/0.1",
+              "required": true,
+              "multiple": false,
+              "description": "The scoped implementation requirement."
+            }
+          ],
+          "outputs": [
+            {
+              "name": "source_patch",
+              "schema_ref": "adlc://schemas/source-patch/0.1",
+              "required": true,
+              "multiple": false,
+              "description": "Reference to the mock source artifact."
+            }
+          ]
+        },
+        "configuration": {
+          "artifact_name": "mock-source-patch.diff",
+          "delay_ms": 25,
+          "simulate_failure": false
+        },
+        "execution_profile": {
+          "provider_ref": "agent-provider:mock",
+          "model_ref": "model:mock/deterministic",
+          "system_prompt_ref": "prompt:coding-agent/0.1.0",
+          "rule_set_refs": [
+            "rules:adlc-safe-execution/0.1.0"
+          ],
+          "hook_refs": [
+            "hook:task-lifecycle/0.1.0"
+          ],
+          "capabilities": {
+            "tool_refs": [
+              "tool:mock-artifact"
+            ],
+            "skill_refs": [],
+            "plugin_refs": [],
+            "mcp_server_refs": []
+          },
+          "memory_policy_ref": "memory:mock-task-context/0.1.0",
+          "sandbox_policy_ref": "sandbox:mock-workspace/0.1.0",
+          "secret_refs": {}
+        },
+        "policies": {
+          "retry": {
+            "max_attempts": 2
+          },
+          "timeout_ms": 120000,
+          "approval": {
+            "gate_type": null
+          },
+          "permissions": {
+            "mode": "PACKAGE_ALLOWLIST"
+          },
+          "resources": {},
+          "runtime_overridable": [
+            "/configuration/simulate_failure",
+            "/policies/timeout_ms"
+          ]
+        },
+        "secret_refs": {},
+        "resolved_digest": "sha256:87fd2cbba3a02d242e57ed6d3902f7e34934f60e8cd8d297fec29210f206853e",
+        "resolver_version": "0.1.0",
+        "resolved_at": "2026-10-18T00:00:00Z",
+        "validation_evidence": [
+          "package-digest:sha256:525f8a3b9f90502064e7315e504385c7c3684427cc4bdab99956b187f96d2305",
+          "configuration-schema:draft-2020-12",
+          "trusted-references:8"
+        ],
+        "metadata": {
+          "package_status": "PUBLISHED",
+          "stage_type": "IMPLEMENTATION",
+          "stage_metadata": {}
+        }
+      },
+      {
+        "schema_version": "0.1",
+        "resolved_node_spec_id": "117d0799-40fc-5406-8eca-3a37cfad75ab",
+        "workflow_definition_id": "88a00000-0000-4000-8000-000000000001",
+        "workflow_definition_version": 1,
+        "source_stage_id": "00000000-0000-4000-8000-000000000003",
+        "package_ref": {
+          "package_id": "coding-agent",
+          "version": "0.1.0",
+          "content_digest": "sha256:525f8a3b9f90502064e7315e504385c7c3684427cc4bdab99956b187f96d2305"
+        },
+        "kind": "AGENT",
+        "implementation": {
+          "adapter_type": "AGENT_PROVIDER",
+          "adapter_ref": "agent-provider:mock",
+          "entrypoint": "mock-task"
+        },
+        "interface": {
+          "inputs": [
+            {
+              "name": "requirement",
+              "schema_ref": "adlc://schemas/requirement/0.1",
+              "required": true,
+              "multiple": false,
+              "description": "The scoped implementation requirement."
+            }
+          ],
+          "outputs": [
+            {
+              "name": "source_patch",
+              "schema_ref": "adlc://schemas/source-patch/0.1",
+              "required": true,
+              "multiple": false,
+              "description": "Reference to the mock source artifact."
+            }
+          ]
+        },
+        "configuration": {
+          "artifact_name": "mock-source-patch.diff",
+          "delay_ms": 25,
+          "simulate_failure": false
+        },
+        "execution_profile": {
+          "provider_ref": "agent-provider:mock",
+          "model_ref": "model:mock/deterministic",
+          "system_prompt_ref": "prompt:coding-agent/0.1.0",
+          "rule_set_refs": [
+            "rules:adlc-safe-execution/0.1.0"
+          ],
+          "hook_refs": [
+            "hook:task-lifecycle/0.1.0"
+          ],
+          "capabilities": {
+            "tool_refs": [
+              "tool:mock-artifact"
+            ],
+            "skill_refs": [],
+            "plugin_refs": [],
+            "mcp_server_refs": []
+          },
+          "memory_policy_ref": "memory:mock-task-context/0.1.0",
+          "sandbox_policy_ref": "sandbox:mock-workspace/0.1.0",
+          "secret_refs": {}
+        },
+        "policies": {
+          "retry": {
+            "max_attempts": 2
+          },
+          "timeout_ms": 120000,
+          "approval": {
+            "gate_type": null
+          },
+          "permissions": {
+            "mode": "PACKAGE_ALLOWLIST"
+          },
+          "resources": {},
+          "runtime_overridable": [
+            "/configuration/simulate_failure",
+            "/policies/timeout_ms"
+          ]
+        },
+        "secret_refs": {},
+        "resolved_digest": "sha256:ccedd7d5560d8266ce20da3b83970a0fa56e01ec3919595349dcf31cb924c844",
+        "resolver_version": "0.1.0",
+        "resolved_at": "2026-10-18T00:00:00Z",
+        "validation_evidence": [
+          "package-digest:sha256:525f8a3b9f90502064e7315e504385c7c3684427cc4bdab99956b187f96d2305",
+          "configuration-schema:draft-2020-12",
+          "trusted-references:8"
+        ],
+        "metadata": {
+          "package_status": "PUBLISHED",
+          "stage_type": "IMPLEMENTATION",
+          "stage_metadata": {}
+        }
+      },
+      {
+        "schema_version": "0.1",
+        "resolved_node_spec_id": "e426da16-e309-57d1-a906-b0ad4749d648",
+        "workflow_definition_id": "88a00000-0000-4000-8000-000000000001",
+        "workflow_definition_version": 1,
+        "source_stage_id": "00000000-0000-4000-8000-000000000004",
+        "package_ref": {
+          "package_id": "coding-agent",
+          "version": "0.1.0",
+          "content_digest": "sha256:525f8a3b9f90502064e7315e504385c7c3684427cc4bdab99956b187f96d2305"
+        },
+        "kind": "AGENT",
+        "implementation": {
+          "adapter_type": "AGENT_PROVIDER",
+          "adapter_ref": "agent-provider:mock",
+          "entrypoint": "mock-task"
+        },
+        "interface": {
+          "inputs": [
+            {
+              "name": "requirement",
+              "schema_ref": "adlc://schemas/requirement/0.1",
+              "required": true,
+              "multiple": false,
+              "description": "The scoped implementation requirement."
+            }
+          ],
+          "outputs": [
+            {
+              "name": "source_patch",
+              "schema_ref": "adlc://schemas/source-patch/0.1",
+              "required": true,
+              "multiple": false,
+              "description": "Reference to the mock source artifact."
+            }
+          ]
+        },
+        "configuration": {
+          "artifact_name": "mock-source-patch.diff",
+          "delay_ms": 25,
+          "simulate_failure": false
+        },
+        "execution_profile": {
+          "provider_ref": "agent-provider:mock",
+          "model_ref": "model:mock/deterministic",
+          "system_prompt_ref": "prompt:coding-agent/0.1.0",
+          "rule_set_refs": [
+            "rules:adlc-safe-execution/0.1.0"
+          ],
+          "hook_refs": [
+            "hook:task-lifecycle/0.1.0"
+          ],
+          "capabilities": {
+            "tool_refs": [
+              "tool:mock-artifact"
+            ],
+            "skill_refs": [],
+            "plugin_refs": [],
+            "mcp_server_refs": []
+          },
+          "memory_policy_ref": "memory:mock-task-context/0.1.0",
+          "sandbox_policy_ref": "sandbox:mock-workspace/0.1.0",
+          "secret_refs": {}
+        },
+        "policies": {
+          "retry": {
+            "max_attempts": 2
+          },
+          "timeout_ms": 120000,
+          "approval": {
+            "gate_type": null
+          },
+          "permissions": {
+            "mode": "PACKAGE_ALLOWLIST"
+          },
+          "resources": {},
+          "runtime_overridable": [
+            "/configuration/simulate_failure",
+            "/policies/timeout_ms"
+          ]
+        },
+        "secret_refs": {},
+        "resolved_digest": "sha256:2c02918f1502f2e51747a1d2704941b4345f70e0137367a1e9b454c2849361ff",
+        "resolver_version": "0.1.0",
+        "resolved_at": "2026-10-18T00:00:00Z",
+        "validation_evidence": [
+          "package-digest:sha256:525f8a3b9f90502064e7315e504385c7c3684427cc4bdab99956b187f96d2305",
+          "configuration-schema:draft-2020-12",
+          "trusted-references:8"
+        ],
+        "metadata": {
+          "package_status": "PUBLISHED",
+          "stage_type": "TESTING",
+          "stage_metadata": {}
+        }
+      }
+    ],
+    "generated_by": "fixture",
+    "generated_at": "2026-10-18T00:00:00Z",
+    "metadata": {
+      "workflow_digest": "sha256:af8977b57e7a06c8d7a0c0a259a25fea2c71bb01f0bf122600d880f5f08425e9",
+      "resolution_digest": "sha256:ff3563d5a1c52ea345cb9ae7762f7229426a60298c9655f5b8e81202fa0988b6",
+      "max_concurrency": null
+    }
+  }
+}

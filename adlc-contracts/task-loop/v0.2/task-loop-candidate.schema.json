@@ -1,0 +1,96 @@
+{
+  "$defs": {
+    "LiveLoopFile": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "maxLength": 16384,
+          "title": "Content",
+          "type": "string"
+        },
+        "mode": {
+          "default": "100644",
+          "enum": [
+            "100644",
+            "100755"
+          ],
+          "title": "Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "content"
+      ],
+      "title": "LiveLoopFile",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/task-loop/v0.2/task-loop-candidate.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Complete cumulative text overlay relative to the pinned base; null deletes.",
+  "properties": {
+    "base_commit": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Base Commit",
+      "type": "string"
+    },
+    "candidate_id": {
+      "format": "uuid",
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "changes": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/LiveLoopFile"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "title": "Changes",
+      "type": "object"
+    },
+    "content_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Content Digest",
+      "type": "string"
+    },
+    "iteration": {
+      "minimum": 0,
+      "title": "Iteration",
+      "type": "integer"
+    },
+    "parent_candidate_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Parent Candidate Id"
+    },
+    "schema_version": {
+      "const": "0.2",
+      "default": "0.2",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "candidate_id",
+    "parent_candidate_id",
+    "iteration",
+    "base_commit",
+    "changes",
+    "content_digest"
+  ],
+  "title": "LiveLoopCandidate",
+  "type": "object"
+}

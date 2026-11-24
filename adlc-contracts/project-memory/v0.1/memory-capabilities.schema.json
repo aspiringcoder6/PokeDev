@@ -1,0 +1,59 @@
+{
+  "$id": "https://adlc.dev/contracts/project-memory/v0.1/memory-capabilities.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "blockers": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Blockers",
+      "type": "array"
+    },
+    "configured": {
+      "title": "Configured",
+      "type": "boolean"
+    },
+    "deletion_enabled": {
+      "const": false,
+      "default": false,
+      "title": "Deletion Enabled",
+      "type": "boolean"
+    },
+    "enabled": {
+      "title": "Enabled",
+      "type": "boolean"
+    },
+    "ingestion_enabled": {
+      "const": false,
+      "default": false,
+      "title": "Ingestion Enabled",
+      "type": "boolean"
+    },
+    "live_certified": {
+      "const": false,
+      "default": false,
+      "title": "Live Certified",
+      "type": "boolean"
+    },
+    "profile_ref": {
+      "const": "memory-profile:project-context/0.1.0",
+      "default": "memory-profile:project-context/0.1.0",
+      "title": "Profile Ref",
+      "type": "string"
+    },
+    "synthesis_enabled": {
+      "const": false,
+      "default": false,
+      "title": "Synthesis Enabled",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "enabled",
+    "configured",
+    "blockers"
+  ],
+  "title": "MemoryCapabilities",
+  "type": "object"
+}

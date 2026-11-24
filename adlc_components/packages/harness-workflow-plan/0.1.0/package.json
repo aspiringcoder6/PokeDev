@@ -1,0 +1,130 @@
+{
+  "schema_version": "0.1",
+  "package_id": "harness-workflow-plan",
+  "version": "0.1.0",
+  "status": "PUBLISHED",
+  "name": "Harness · Soạn kế hoạch",
+  "description": "Lập kế hoạch có cấu trúc cho yêu cầu đã khóa; chưa sửa source hoặc push.",
+  "kind": "AGENT",
+  "interface": {
+    "inputs": [
+      {
+        "name": "requirement",
+        "schema_ref": "adlc://schemas/requirement/0.1",
+        "required": true,
+        "multiple": false,
+        "description": "Yêu cầu của task pagination đã khóa."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "session",
+        "schema_ref": "adlc://schemas/harness-workflow-session/0.1",
+        "required": true,
+        "multiple": false,
+        "description": "Phiên Harness gắn với workflow run."
+      },
+      {
+        "name": "review",
+        "schema_ref": "adlc://schemas/harness-workflow-review/0.1",
+        "required": true,
+        "multiple": false,
+        "description": "Kế hoạch hoặc commit/bằng chứng cần người dùng duyệt."
+      },
+      {
+        "name": "result",
+        "schema_ref": "adlc://schemas/harness-workflow-result/0.1",
+        "required": true,
+        "multiple": false,
+        "description": "Kết quả được giữ lại trong ADLC."
+      }
+    ]
+  },
+  "configuration_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "repository": {
+        "const": "aspiringcoder6/vanguard"
+      },
+      "provider": {
+        "const": "my-codex"
+      },
+      "model": {
+        "const": "cx/gpt-5.6-luna"
+      },
+      "native_version": {
+        "const": "0.1.1"
+      }
+    },
+    "required": [
+      "repository",
+      "provider",
+      "model",
+      "native_version"
+    ]
+  },
+  "defaults": {
+    "repository": "aspiringcoder6/vanguard",
+    "provider": "my-codex",
+    "model": "cx/gpt-5.6-luna",
+    "native_version": "0.1.1"
+  },
+  "override_allowlist": [],
+  "implementation": {
+    "adapter_type": "AGENT_PROVIDER",
+    "adapter_ref": "agent-provider:harness-workflow",
+    "entrypoint": "PLAN"
+  },
+  "execution_profile": {
+    "provider_ref": "agent-provider:harness-workflow",
+    "model_ref": "model:my-codex/cx/gpt-5.6-luna",
+    "system_prompt_ref": "prompt:harness-workflow-scoped/0.1.0",
+    "rule_set_refs": [
+      "rules:harness-workflow-human-gates/0.1.0"
+    ],
+    "hook_refs": [],
+    "capabilities": {
+      "tool_refs": [],
+      "skill_refs": [],
+      "plugin_refs": [
+        "plugin:vai-adlc-demo-session/0.1.1"
+      ],
+      "mcp_server_refs": []
+    },
+    "memory_policy_ref": "memory:harness-project-advisory/0.1.0",
+    "sandbox_policy_ref": "sandbox:harness-pagination-docker/0.1.0",
+    "secret_refs": {}
+  },
+  "default_policies": {
+    "retry": {
+      "max_attempts": 1
+    },
+    "timeout_ms": 240000,
+    "approval": {
+      "gate_type": null
+    },
+    "permissions": {
+      "mode": "PACKAGE_ALLOWLIST"
+    },
+    "resources": {},
+    "runtime_overridable": []
+  },
+  "compatibility": {
+    "engine": {
+      "minimum_version": "0.1.0"
+    },
+    "execution_contract_versions": [
+      "0.1"
+    ]
+  },
+  "metadata": {
+    "maintainer": "adlc",
+    "provider_mode": "live",
+    "profile": "pagination-python",
+    "human_gate_required_before": null,
+    "native_plugin_digest": "sha256:2b5e36d0508c3fca87645ac86e7776dc1dac45602e92f47a330ce69fc01bb440"
+  }
+}
+

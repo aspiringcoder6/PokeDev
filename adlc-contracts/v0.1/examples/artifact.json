@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.1",
+  "artifact_id": "66666666-6666-4666-8666-666666666666",
+  "workflow_run_id": "11111111-1111-4111-8111-111111111111",
+  "task_run_id": "22222222-2222-4222-8222-222222222222",
+  "attempt_id": "33333333-3333-4333-8333-333333333333",
+  "kind": "SOURCE_PATCH",
+  "name": "account-validation.patch",
+  "media_type": "text/x-diff",
+  "uri": "urn:adlc:artifact:66666666-6666-4666-8666-666666666666",
+  "size_bytes": 1842,
+  "checksum": {
+    "algorithm": "SHA256",
+    "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "producer": "coding-agent",
+  "created_at": "2026-08-31T03:04:58Z",
+  "expires_at": null,
+  "metadata": {
+    "repository_path": "src/accounts/validation.py"
+  }
+}

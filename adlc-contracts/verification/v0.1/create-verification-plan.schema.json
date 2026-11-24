@@ -1,0 +1,152 @@
+{
+  "$defs": {
+    "ContractReference": {
+      "additionalProperties": false,
+      "properties": {
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "contract_id": {
+          "format": "uuid",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 512,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "schema_ref": {
+          "const": "adlc://schemas/skilltree-contract/0.1",
+          "default": "adlc://schemas/skilltree-contract/0.1",
+          "title": "Schema Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract_id",
+        "revision",
+        "content_digest"
+      ],
+      "title": "ContractReference",
+      "type": "object"
+    },
+    "VerificationCase": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "criterion_index": {
+          "maximum": 15,
+          "minimum": 0,
+          "title": "Criterion Index",
+          "type": "integer"
+        },
+        "criterion_node_id": {
+          "format": "uuid",
+          "title": "Criterion Node Id",
+          "type": "string"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected"
+        },
+        "pointer": {
+          "maxLength": 512,
+          "pattern": "^(?:|/(?:[^~]|~[01])*)$",
+          "title": "Pointer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "pointer",
+        "expected",
+        "criterion_node_id",
+        "criterion_index"
+      ],
+      "title": "VerificationCase",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/verification/v0.1/create-verification-plan.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "artifact_id": {
+      "format": "uuid",
+      "title": "Artifact Id",
+      "type": "string"
+    },
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/VerificationCase"
+      },
+      "maxItems": 16,
+      "minItems": 1,
+      "title": "Cases",
+      "type": "array"
+    },
+    "contract_reference": {
+      "$ref": "#/$defs/ContractReference"
+    },
+    "file": {
+      "maxLength": 255,
+      "minLength": 1,
+      "title": "File",
+      "type": "string"
+    },
+    "idempotency_key": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[a-zA-Z0-9._:-]+$",
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "source_task_id": {
+      "format": "uuid",
+      "title": "Source Task Id",
+      "type": "string"
+    },
+    "timeout_seconds": {
+      "default": 15,
+      "maximum": 60,
+      "minimum": 1,
+      "title": "Timeout Seconds",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "source_task_id",
+    "artifact_id",
+    "contract_reference",
+    "file",
+    "cases",
+    "idempotency_key"
+  ],
+  "title": "CreateVerificationPlan",
+  "type": "object"
+}

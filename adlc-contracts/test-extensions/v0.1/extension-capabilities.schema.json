@@ -1,0 +1,58 @@
+{
+  "$id": "https://adlc.dev/contracts/test-extensions/v0.1/extension-capabilities.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "blockers": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Blockers",
+      "type": "array"
+    },
+    "enabled": {
+      "title": "Enabled",
+      "type": "boolean"
+    },
+    "exploration_ready": {
+      "const": false,
+      "default": false,
+      "title": "Exploration Ready",
+      "type": "boolean"
+    },
+    "human_actions_configured": {
+      "title": "Human Actions Configured",
+      "type": "boolean"
+    },
+    "performance_ready": {
+      "const": false,
+      "default": false,
+      "title": "Performance Ready",
+      "type": "boolean"
+    },
+    "profile_ref": {
+      "const": "test-extension-profile:proposals/0.1.0",
+      "default": "test-extension-profile:proposals/0.1.0",
+      "title": "Profile Ref",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "screenshot_capture_ready": {
+      "const": false,
+      "default": false,
+      "title": "Screenshot Capture Ready",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "enabled",
+    "human_actions_configured"
+  ],
+  "title": "ExtensionCapabilities",
+  "type": "object"
+}

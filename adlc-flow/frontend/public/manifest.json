@@ -1,0 +1,19 @@
+{
+  "name": "PokeDev",
+  "short_name": "PokeDev",
+  "description": "PokeDev: đội ngũ phát triển trong tầm tay. Thiết kế, thực thi và đánh giá workflow phát triển phần mềm với AI.",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["developer", "productivity", "utilities"],
+  "screenshots": [],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "theme_color": "#d32222",
+  "background_color": "#ffffff"
+}

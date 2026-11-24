@@ -1,0 +1,57 @@
+{
+  "$id": "https://adlc.dev/contracts/test-extensions/v0.1/screenshot-upload.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "caption": {
+      "maxLength": 240,
+      "minLength": 1,
+      "title": "Caption",
+      "type": "string"
+    },
+    "case_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$",
+      "title": "Case Id",
+      "type": "string"
+    },
+    "execution_id": {
+      "format": "uuid",
+      "title": "Execution Id",
+      "type": "string"
+    },
+    "idempotency_key": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._:-]+$",
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "input_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Input Digest",
+      "type": "string"
+    },
+    "plan_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Plan Digest",
+      "type": "string"
+    },
+    "png_base64": {
+      "maxLength": 349528,
+      "minLength": 1,
+      "title": "Png Base64",
+      "type": "string"
+    }
+  },
+  "required": [
+    "plan_digest",
+    "execution_id",
+    "case_id",
+    "caption",
+    "png_base64",
+    "input_digest",
+    "idempotency_key"
+  ],
+  "title": "ScreenshotUpload",
+  "type": "object"
+}

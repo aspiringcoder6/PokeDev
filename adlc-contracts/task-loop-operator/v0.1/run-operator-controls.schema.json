@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.dev/contracts/task-loop-operator/v0.1/run-operator-controls.schema.json",
+  "additionalProperties": false,
+  "properties": {
+    "workflow_run_id": {
+      "format": "uuid",
+      "title": "Workflow Run Id",
+      "type": "string"
+    },
+    "can_pause": {
+      "title": "Can Pause",
+      "type": "boolean"
+    },
+    "can_resume": {
+      "title": "Can Resume",
+      "type": "boolean"
+    },
+    "can_cancel": {
+      "title": "Can Cancel",
+      "type": "boolean"
+    },
+    "pause_requested": {
+      "title": "Pause Requested",
+      "type": "boolean"
+    },
+    "pause_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Pause Reason"
+    }
+  },
+  "required": [
+    "workflow_run_id",
+    "can_pause",
+    "can_resume",
+    "can_cancel",
+    "pause_requested"
+  ],
+  "title": "RunOperatorControls",
+  "type": "object"
+}

@@ -1,0 +1,338 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.dev/contracts/workflow/v0.1/workflow-definition.schema.json",
+  "$defs": {
+    "PackageReference": {
+      "additionalProperties": false,
+      "properties": {
+        "package_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?$",
+          "title": "Package Id",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 128,
+          "minLength": 5,
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+          "title": "Version",
+          "type": "string"
+        },
+        "content_digest": {
+          "anyOf": [
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Digest"
+        }
+      },
+      "required": [
+        "package_id",
+        "version"
+      ],
+      "title": "PackageReference",
+      "type": "object"
+    },
+    "SlotBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "source_output": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Source Output",
+          "type": "string"
+        },
+        "target_input": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Target Input",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_output",
+        "target_input"
+      ],
+      "title": "SlotBinding",
+      "type": "object"
+    },
+    "StagePosition": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "StagePosition",
+      "type": "object"
+    },
+    "WorkflowDefinitionStatus": {
+      "enum": [
+        "DRAFT",
+        "PUBLISHED",
+        "ARCHIVED"
+      ],
+      "title": "WorkflowDefinitionStatus",
+      "type": "string"
+    },
+    "WorkflowEdge": {
+      "additionalProperties": false,
+      "properties": {
+        "edge_id": {
+          "format": "uuid",
+          "title": "Edge Id",
+          "type": "string"
+        },
+        "source_stage_id": {
+          "format": "uuid",
+          "title": "Source Stage Id",
+          "type": "string"
+        },
+        "target_stage_id": {
+          "format": "uuid",
+          "title": "Target Stage Id",
+          "type": "string"
+        },
+        "condition": {
+          "enum": [
+            "ON_SUCCESS",
+            "ON_FAILURE",
+            "ALWAYS",
+            "ON_DONE"
+          ],
+          "title": "Condition",
+          "type": "string"
+        },
+        "bindings": {
+          "items": {
+            "$ref": "#/$defs/SlotBinding"
+          },
+          "title": "Bindings",
+          "type": "array"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        }
+      },
+      "required": [
+        "edge_id",
+        "source_stage_id",
+        "target_stage_id",
+        "condition",
+        "bindings",
+        "metadata"
+      ],
+      "title": "WorkflowEdge",
+      "type": "object"
+    },
+    "WorkflowStage": {
+      "additionalProperties": false,
+      "properties": {
+        "stage_id": {
+          "format": "uuid",
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "stage_type": {
+          "minLength": 1,
+          "title": "Stage Type",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "objective": {
+          "minLength": 1,
+          "title": "Objective",
+          "type": "string"
+        },
+        "inputs": {
+          "patternProperties": {
+            "^[a-z][a-z0-9_]*$": {}
+          },
+          "propertyNames": {
+            "maxLength": 128,
+            "minLength": 1
+          },
+          "title": "Inputs",
+          "type": "object"
+        },
+        "expected_outputs": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "title": "Expected Outputs",
+          "type": "array"
+        },
+        "package_ref": {
+          "$ref": "#/$defs/PackageReference"
+        },
+        "configuration_overrides": {
+          "additionalProperties": true,
+          "title": "Configuration Overrides",
+          "type": "object"
+        },
+        "execution_profile_overrides": {
+          "additionalProperties": true,
+          "title": "Execution Profile Overrides",
+          "type": "object"
+        },
+        "policy_overrides": {
+          "additionalProperties": true,
+          "title": "Policy Overrides",
+          "type": "object"
+        },
+        "secret_refs": {
+          "additionalProperties": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Secret Refs",
+          "type": "object"
+        },
+        "position": {
+          "$ref": "#/$defs/StagePosition"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        }
+      },
+      "required": [
+        "stage_id",
+        "stage_type",
+        "name",
+        "objective",
+        "inputs",
+        "expected_outputs",
+        "package_ref",
+        "configuration_overrides",
+        "execution_profile_overrides",
+        "policy_overrides",
+        "secret_refs",
+        "position",
+        "metadata"
+      ],
+      "title": "WorkflowStage",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "workflow_definition_id": {
+      "format": "uuid",
+      "title": "Workflow Definition Id",
+      "type": "string"
+    },
+    "project_id": {
+      "format": "uuid",
+      "title": "Project Id",
+      "type": "string"
+    },
+    "name": {
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "description": {
+      "default": "",
+      "title": "Description",
+      "type": "string"
+    },
+    "version": {
+      "minimum": 1,
+      "title": "Version",
+      "type": "integer"
+    },
+    "status": {
+      "$ref": "#/$defs/WorkflowDefinitionStatus"
+    },
+    "stages": {
+      "items": {
+        "$ref": "#/$defs/WorkflowStage"
+      },
+      "title": "Stages",
+      "type": "array"
+    },
+    "edges": {
+      "items": {
+        "$ref": "#/$defs/WorkflowEdge"
+      },
+      "title": "Edges",
+      "type": "array"
+    },
+    "default_policies": {
+      "additionalProperties": true,
+      "title": "Default Policies",
+      "type": "object"
+    },
+    "created_by": {
+      "minLength": 1,
+      "title": "Created By",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "title": "Updated At",
+      "type": "string"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "workflow_definition_id",
+    "project_id",
+    "name",
+    "version",
+    "status",
+    "stages",
+    "edges",
+    "default_policies",
+    "created_by",
+    "created_at",
+    "updated_at",
+    "metadata"
+  ],
+  "title": "WorkflowDefinition",
+  "type": "object"
+}

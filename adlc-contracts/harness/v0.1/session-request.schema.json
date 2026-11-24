@@ -1,0 +1,180 @@
+{
+  "$defs": {
+    "HarnessCorrelation": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt_id": {
+          "format": "uuid",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "request_id": {
+          "format": "uuid",
+          "title": "Request Id",
+          "type": "string"
+        },
+        "task_run_id": {
+          "format": "uuid",
+          "title": "Task Run Id",
+          "type": "string"
+        },
+        "workflow_run_id": {
+          "format": "uuid",
+          "title": "Workflow Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "request_id",
+        "workflow_run_id",
+        "task_run_id",
+        "attempt_id"
+      ],
+      "title": "HarnessCorrelation",
+      "type": "object"
+    },
+    "HarnessExecutionSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "minLength": 1,
+          "title": "Operation",
+          "type": "string"
+        },
+        "plugin_lock": {
+          "items": {
+            "$ref": "#/$defs/HarnessPluginLockEntry"
+          },
+          "title": "Plugin Lock",
+          "type": "array"
+        },
+        "profile_ref": {
+          "minLength": 1,
+          "title": "Profile Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "profile_ref",
+        "operation"
+      ],
+      "title": "HarnessExecutionSpec",
+      "type": "object"
+    },
+    "HarnessPluginLockEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "plugin_id": {
+          "maxLength": 255,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9@][A-Za-z0-9@._/-]*$",
+          "title": "Plugin Id",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "version": {
+          "maxLength": 128,
+          "minLength": 5,
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plugin_id",
+        "version",
+        "content_digest"
+      ],
+      "title": "HarnessPluginLockEntry",
+      "type": "object"
+    },
+    "HarnessSubmissionMode": {
+      "enum": [
+        "AUTO",
+        "MANUAL"
+      ],
+      "title": "HarnessSubmissionMode",
+      "type": "string"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/harness/v0.1/session-request.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "callback_ref": {
+      "default": "adlc-primary",
+      "minLength": 1,
+      "title": "Callback Ref",
+      "type": "string"
+    },
+    "constraints": {
+      "additionalProperties": true,
+      "title": "Constraints",
+      "type": "object"
+    },
+    "context": {
+      "additionalProperties": true,
+      "title": "Context",
+      "type": "object"
+    },
+    "correlation": {
+      "$ref": "#/$defs/HarnessCorrelation"
+    },
+    "execution": {
+      "$ref": "#/$defs/HarnessExecutionSpec"
+    },
+    "idempotency_key": {
+      "maxLength": 255,
+      "minLength": 1,
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "input": {
+      "title": "Input"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    },
+    "objective": {
+      "minLength": 1,
+      "title": "Objective",
+      "type": "string"
+    },
+    "result_schema_ref": {
+      "minLength": 1,
+      "title": "Result Schema Ref",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "submission_mode": {
+      "$ref": "#/$defs/HarnessSubmissionMode",
+      "default": "AUTO"
+    }
+  },
+  "required": [
+    "correlation",
+    "idempotency_key",
+    "objective",
+    "input",
+    "execution",
+    "result_schema_ref"
+  ],
+  "title": "HarnessSessionRequest",
+  "type": "object"
+}

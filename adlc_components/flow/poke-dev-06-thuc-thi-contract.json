@@ -1,0 +1,81 @@
+{
+  "id": "5c491286-e316-5e3c-8dd9-7597a2247584",
+  "name": "Poke Dev 06 - Contract đã duyệt và bằng chứng (LIVE)",
+  "description": "Mẫu cần điền approved_contract_ref từ mẫu 05 trước khi Validate. Read-only, kiểm tra không có thay đổi và Submit thủ công.",
+  "is_component": false,
+  "locked": false,
+  "endpoint_name": "poke-dev-06-thuc-thi-contract",
+  "tags": [
+    "Poke Dev",
+    "Live demo"
+  ],
+  "data": {
+    "adlc": {
+      "document_type": "WORKFLOW_DEFINITION",
+      "schema_version": "0.1",
+      "workflow_definition_id": "5c491286-e316-5e3c-8dd9-7597a2247584",
+      "version": 1,
+      "status": "DRAFT",
+      "default_policies": {},
+      "metadata": {
+        "sample_set": "poke-dev-live-20261009",
+        "demo_note": "Chưa có approved_contract_ref nên plan validation phải từ chối. Đây là chặn có chủ đích, không phải workflow hỏng. Điền đủ schema_ref, contract_id, revision, content_digest của bản đã được tài khoản owner duyệt. Read-only sẽ có patch rỗng và verifier no-changes, không có code diff để review."
+      }
+    },
+    "nodes": [
+      {
+        "id": "pd06-execute",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 120,
+          "y": 170
+        },
+        "data": {
+          "id": "pd06-execute",
+          "type": "adlcStage",
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "7df921c1-a735-5a6b-a657-7ad2ff1cf52c",
+            "stage_type": "IMPLEMENTATION",
+            "name": "Đọc manifest theo contract đã duyệt",
+            "objective": "Follow the exact approved contract selected by the owner. Use contract_get_context first. Read only client/package.json using the scoped contract tools. Report the package name and available scripts. Do not modify any file, call shell/network tools or choose another contract. Leave the repository unchanged and finish so the kernel can evaluate the declared no-changes criterion. Do not claim broad test coverage or approval. The result is delivered with manual submission.",
+            "inputs": {
+              "requirement": "Follow the exact approved contract selected by the owner. Use contract_get_context first. Read only client/package.json using the scoped contract tools. Report the package name and available scripts. Do not modify any file, call shell/network tools or choose another contract. Leave the repository unchanged and finish so the kernel can evaluate the declared no-changes criterion. Do not claim broad test coverage or approval. The result is delivered with manual submission."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent-contract-harness",
+              "version": "0.2.0"
+            },
+            "configuration_overrides": {
+              "approved_contract_ref": null
+            },
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {
+              "sample_set": "poke-dev-live-20261009"
+            }
+          },
+          "node": {
+            "display_name": "Đọc manifest theo contract đã duyệt",
+            "description": "Follow the exact approved contract selected by the owner. Use contract_get_context first. Read only client/package.json using the scoped contract tools. Report the package name and available scripts. Do not modify any file, call shell/network tools or choose another contract. Leave the repository unchanged and finish so the kernel can evaluate the declared no-changes criterion. Do not claim broad test coverage or approval. The result is delivered with manual submission.",
+            "template": {},
+            "outputs": [],
+            "type": "adlcStage",
+            "documentation": ""
+          }
+        }
+      }
+    ],
+    "edges": [],
+    "viewport": {
+      "x": 25,
+      "y": 35,
+      "zoom": 0.85
+    }
+  }
+}

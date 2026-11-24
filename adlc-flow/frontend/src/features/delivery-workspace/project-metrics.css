@@ -1,0 +1,244 @@
+.pm-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 10px 4px 32px;
+  color: hsl(var(--foreground));
+}
+.pm-heading,
+.pm-heading > div:last-child,
+.pm-lineage header,
+.pm-price-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.pm-heading h2 {
+  font-size: 25px;
+  font-weight: 650;
+  letter-spacing: -0.6px;
+  margin: 6px 0;
+}
+.pm-heading p,
+.pm-lineage p,
+.pm-pricing p {
+  color: hsl(var(--muted-foreground));
+  font-size: 13px;
+  line-height: 1.6;
+}
+.pm-heading button,
+.pm-heading select,
+.pm-pricing button,
+.pm-pricing input {
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  background: hsl(var(--background));
+  padding: 9px 12px;
+  font-size: 12px;
+}
+.pm-heading button,
+.pm-price-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.pm-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.pm-cards article {
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  background: hsl(var(--card));
+}
+.pm-cards svg {
+  color: hsl(var(--primary));
+  margin-bottom: 3px;
+}
+.pm-cards article > span {
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+}
+.pm-cards strong {
+  font-size: 25px;
+  letter-spacing: -0.5px;
+  font-weight: 600;
+}
+.pm-cards small {
+  font-size: 11px;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+.pm-source {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+.pm-source small {
+  margin-left: auto;
+  color: hsl(var(--muted-foreground));
+}
+.pm-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: hsl(var(--primary));
+}
+.pm-notes {
+  margin-top: -12px;
+  font-size: 12px;
+  line-height: 1.65;
+  color: hsl(var(--muted-foreground));
+  max-width: 1000px;
+}
+.pm-lineage {
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  overflow: hidden;
+}
+.pm-lineage header {
+  padding: 20px 22px;
+  background: hsl(var(--card));
+}
+.pm-lineage h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.pm-table-wrap {
+  overflow-x: auto;
+}
+.pm-lineage table {
+  width: 100%;
+  font-size: 12px;
+  text-align: left;
+  border-collapse: collapse;
+}
+.pm-lineage th {
+  padding: 12px 15px;
+  color: hsl(var(--muted-foreground));
+  font-size: 11px;
+  font-weight: 500;
+  border-top: 1px solid hsl(var(--border));
+  background: hsl(var(--muted) / 0.3);
+  white-space: nowrap;
+}
+.pm-lineage td {
+  padding: 18px 15px;
+  border-top: 1px solid hsl(var(--border));
+  vertical-align: top;
+  line-height: 1.6;
+  min-width: 110px;
+}
+.pm-lineage td:first-child {
+  min-width: 180px;
+  max-width: 260px;
+}
+.pm-lineage td strong {
+  display: block;
+  font-weight: 500;
+}
+.pm-lineage td small {
+  display: block;
+  color: hsl(var(--muted-foreground));
+  font-size: 10px;
+  margin-top: 4px;
+}
+.pm-lineage a {
+  color: hsl(var(--primary));
+  font-size: 11px;
+}
+.pm-run-link {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  white-space: nowrap;
+}
+.pm-pricing {
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  padding: 18px 22px;
+}
+.pm-pricing summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 550;
+}
+.pm-pricing summary small {
+  margin-left: auto;
+  color: hsl(var(--muted-foreground));
+  font-weight: 400;
+}
+.pm-pricing p {
+  margin: 16px 0;
+}
+.pm-pricing fieldset {
+  padding: 12px 0;
+  border-top: 1px solid hsl(var(--border));
+  margin: 18px 0;
+}
+.pm-pricing legend {
+  font-size: 12px;
+  font-weight: 600;
+}
+.pm-price-row {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  margin: 10px 0;
+}
+.pm-price-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  font-size: 11px;
+  color: hsl(var(--muted-foreground));
+  min-width: 0;
+}
+.pm-price-row input {
+  width: 100%;
+}
+.pm-price-actions {
+  justify-content: flex-end;
+}
+.pm-pricing .lw-primary {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.wc-port {
+  position: relative;
+  min-height: 15px;
+  margin-top: 7px;
+  text-align: right;
+  color: hsl(var(--muted-foreground));
+  font-size: 10px;
+}
+.wc-port .react-flow__handle {
+  right: -19px;
+  top: 50%;
+}
+.pw-control-template {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: hsl(var(--primary));
+  margin: 0 0 20px;
+  padding: 10px 0;
+}
+.wc-inspector label small {
+  line-height: 1.6;
+}

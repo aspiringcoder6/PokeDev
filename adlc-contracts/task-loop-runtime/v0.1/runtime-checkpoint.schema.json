@@ -1,0 +1,358 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.dev/contracts/task-loop-runtime/v0.1/runtime-checkpoint.schema.json",
+  "$defs": {
+    "LoopCandidateReference": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_id": {
+          "format": "uuid",
+          "title": "Candidate Id",
+          "type": "string"
+        },
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "iteration": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Iteration",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "candidate_id",
+        "content_digest",
+        "iteration"
+      ],
+      "title": "LoopCandidateReference",
+      "type": "object"
+    },
+    "LoopRuntimeBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "protocol_ref": {
+          "const": "task-loop-runtime:iteration/0.1.0",
+          "default": "task-loop-runtime:iteration/0.1.0",
+          "title": "Protocol Ref",
+          "type": "string"
+        },
+        "runtime_ref": {
+          "maxLength": 160,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_./:-]+$",
+          "title": "Runtime Ref",
+          "type": "string"
+        },
+        "family": {
+          "enum": [
+            "OPENCODE",
+            "HARNESS",
+            "CUSTOM"
+          ],
+          "title": "Family",
+          "type": "string"
+        },
+        "provider_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_./:-]+$",
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "model_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_./:-]+$",
+          "title": "Model Id",
+          "type": "string"
+        },
+        "agent": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_./:-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Agent"
+        },
+        "modes": {
+          "items": {
+            "enum": [
+              "WORKSPACE_EDIT",
+              "FILE_PROPOSAL"
+            ],
+            "type": "string"
+          },
+          "maxItems": 2,
+          "minItems": 1,
+          "title": "Modes",
+          "type": "array"
+        },
+        "fresh_sessions": {
+          "const": true,
+          "default": true,
+          "title": "Fresh Sessions",
+          "type": "boolean"
+        },
+        "reported_usage": {
+          "const": true,
+          "default": true,
+          "title": "Reported Usage",
+          "type": "boolean"
+        },
+        "cancellation": {
+          "const": true,
+          "default": true,
+          "title": "Cancellation",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "runtime_ref",
+        "family",
+        "provider_id",
+        "model_id",
+        "modes"
+      ],
+      "title": "LoopRuntimeBinding",
+      "type": "object"
+    },
+    "LoopRuntimeSession": {
+      "additionalProperties": false,
+      "description": "Acknowledgement, not a provider transcript. Kernel checks it before prompting.",
+      "properties": {
+        "schema_version": {
+          "const": "0.1",
+          "default": "0.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "runtime": {
+          "$ref": "#/$defs/LoopRuntimeBinding"
+        },
+        "request_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Request Digest",
+          "type": "string"
+        },
+        "session_id": {
+          "maxLength": 512,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.:-]+$",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "fresh_context": {
+          "title": "Fresh Context",
+          "type": "boolean"
+        },
+        "tools_disabled": {
+          "title": "Tools Disabled",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "runtime",
+        "request_digest",
+        "session_id",
+        "fresh_context",
+        "tools_disabled"
+      ],
+      "title": "LoopRuntimeSession",
+      "type": "object"
+    },
+    "LoopRuntimeUsage": {
+      "additionalProperties": false,
+      "properties": {
+        "input_tokens": {
+          "minimum": 0,
+          "title": "Input Tokens",
+          "type": "integer"
+        },
+        "output_tokens": {
+          "minimum": 0,
+          "title": "Output Tokens",
+          "type": "integer"
+        },
+        "total_tokens": {
+          "minimum": 0,
+          "title": "Total Tokens",
+          "type": "integer"
+        },
+        "cost": {
+          "minimum": 0,
+          "title": "Cost",
+          "type": "number"
+        }
+      },
+      "required": [
+        "input_tokens",
+        "output_tokens",
+        "total_tokens",
+        "cost"
+      ],
+      "title": "LoopRuntimeUsage",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Portable checkpoint header; source/proof bytes stay in the kernel's sealed ledger.",
+  "properties": {
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "runtime": {
+      "$ref": "#/$defs/LoopRuntimeBinding"
+    },
+    "workflow_run_id": {
+      "format": "uuid",
+      "title": "Workflow Run Id",
+      "type": "string"
+    },
+    "task_run_id": {
+      "format": "uuid",
+      "title": "Task Run Id",
+      "type": "string"
+    },
+    "request_id": {
+      "format": "uuid",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "attempt_id": {
+      "format": "uuid",
+      "title": "Attempt Id",
+      "type": "string"
+    },
+    "iteration": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Iteration",
+      "type": "integer"
+    },
+    "request_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Request Digest",
+      "type": "string"
+    },
+    "spec_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Spec Digest",
+      "type": "string"
+    },
+    "policy_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Policy Digest",
+      "type": "string"
+    },
+    "parent_candidate": {
+      "$ref": "#/$defs/LoopCandidateReference"
+    },
+    "mode": {
+      "enum": [
+        "WORKSPACE_EDIT",
+        "FILE_PROPOSAL"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "phase": {
+      "enum": [
+        "RESERVED",
+        "AGENT_RUNNING",
+        "CANDIDATE_CAPTURED",
+        "VERIFIED",
+        "FINISHED"
+      ],
+      "title": "Phase",
+      "type": "string"
+    },
+    "session": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/LoopRuntimeSession"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "usage": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/LoopRuntimeUsage"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "outcome_digest": {
+      "anyOf": [
+        {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Outcome Digest"
+    },
+    "candidate": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/LoopCandidateReference"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "verification_digest": {
+      "anyOf": [
+        {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Verification Digest"
+    }
+  },
+  "required": [
+    "runtime",
+    "workflow_run_id",
+    "task_run_id",
+    "request_id",
+    "attempt_id",
+    "iteration",
+    "request_digest",
+    "spec_digest",
+    "policy_digest",
+    "parent_candidate",
+    "mode",
+    "phase"
+  ],
+  "title": "LoopRuntimeCheckpoint",
+  "type": "object"
+}

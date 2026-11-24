@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "product": "PokeDev",
+  "github_repository": "aspiringcoder6/PokeDev",
+  "upstream_repository": "https://github.com/VDT-2026/VDT-ADLC.git",
+  "upstream_commit": "e3f96e1d1a018ad2be85e6997a8fa36addc87b93",
+  "upstream_branch": "agentHarness",
+  "snapshot": "current working tree including uncommitted source changes",
+  "history": "new local history; upstream Git objects are not copied",
+  "target_control_plane": "vaiplatform",
+  "workloop_migration": "required",
+  "source_files": 7939,
+  "source_manifest_sha256": "5e975da11e848c5e89b05bfb12e2e1465134a2dbcb45a13b7dbb8376882ee7a4",
+  "excluded": [
+    "credentials and private env",
+    "application databases and sessions",
+    "runtime downloads",
+    "dependencies and builds",
+    "reports and demo evidence",
+    "upstream Git history"
+  ],
+  "initial_corrections": [
+    "Refresh the package registry expectation for the three additional packages already present in the source tree."
+  ],
+  "verification": {
+    "export_tests_passed": 6,
+    "core_tests_passed": 24,
+    "frontend_tests_passed": 15,
+    "frontend_production_build": "passed"
+  },
+  "github_state": "remote_configured_not_published"
+}

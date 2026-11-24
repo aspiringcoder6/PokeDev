@@ -1,0 +1,683 @@
+{
+  "$defs": {
+    "Artifact": {
+      "properties": {
+        "artifact_id": {
+          "format": "uuid",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "attempt_id": {
+          "format": "uuid",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "checksum": {
+          "$ref": "#/$defs/Checksum"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "expires_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expires At"
+        },
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "media_type": {
+          "title": "Media Type",
+          "type": "string"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "producer": {
+          "title": "Producer",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1",
+          "default": "0.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "size_bytes": {
+          "title": "Size Bytes",
+          "type": "integer"
+        },
+        "task_run_id": {
+          "format": "uuid",
+          "title": "Task Run Id",
+          "type": "string"
+        },
+        "uri": {
+          "title": "Uri",
+          "type": "string"
+        },
+        "workflow_run_id": {
+          "format": "uuid",
+          "title": "Workflow Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "workflow_run_id",
+        "task_run_id",
+        "attempt_id",
+        "kind",
+        "name",
+        "media_type",
+        "uri",
+        "size_bytes",
+        "checksum",
+        "producer",
+        "created_at"
+      ],
+      "title": "Artifact",
+      "type": "object"
+    },
+    "Checksum": {
+      "properties": {
+        "algorithm": {
+          "const": "SHA256",
+          "default": "SHA256",
+          "title": "Algorithm",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value"
+      ],
+      "title": "Checksum",
+      "type": "object"
+    },
+    "HarnessCorrelation": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt_id": {
+          "format": "uuid",
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "request_id": {
+          "format": "uuid",
+          "title": "Request Id",
+          "type": "string"
+        },
+        "task_run_id": {
+          "format": "uuid",
+          "title": "Task Run Id",
+          "type": "string"
+        },
+        "workflow_run_id": {
+          "format": "uuid",
+          "title": "Workflow Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "request_id",
+        "workflow_run_id",
+        "task_run_id",
+        "attempt_id"
+      ],
+      "title": "HarnessCorrelation",
+      "type": "object"
+    },
+    "HarnessInteractionKind": {
+      "enum": [
+        "APPROVAL",
+        "FORM"
+      ],
+      "title": "HarnessInteractionKind",
+      "type": "string"
+    },
+    "HarnessInteractionRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "input_schema": {
+          "additionalProperties": true,
+          "title": "Input Schema",
+          "type": "object"
+        },
+        "interaction_id": {
+          "format": "uuid",
+          "title": "Interaction Id",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/HarnessInteractionKind"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "prompt": {
+          "minLength": 1,
+          "title": "Prompt",
+          "type": "string"
+        },
+        "requested_at": {
+          "format": "date-time",
+          "title": "Requested At",
+          "type": "string"
+        },
+        "resolved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Resolved At"
+        },
+        "response": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Response"
+        },
+        "schema_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Schema Ref"
+        },
+        "status": {
+          "$ref": "#/$defs/HarnessInteractionStatus"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "ui_schema": {
+          "additionalProperties": true,
+          "title": "Ui Schema",
+          "type": "object"
+        }
+      },
+      "required": [
+        "interaction_id",
+        "kind",
+        "status",
+        "title",
+        "prompt",
+        "requested_at"
+      ],
+      "title": "HarnessInteractionRecord",
+      "type": "object"
+    },
+    "HarnessInteractionStatus": {
+      "enum": [
+        "PENDING",
+        "SUBMITTED",
+        "CANCELLED",
+        "EXPIRED"
+      ],
+      "title": "HarnessInteractionStatus",
+      "type": "string"
+    },
+    "HarnessPluginLockEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "plugin_id": {
+          "maxLength": 255,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9@][A-Za-z0-9@._/-]*$",
+          "title": "Plugin Id",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "version": {
+          "maxLength": 128,
+          "minLength": 5,
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plugin_id",
+        "version",
+        "content_digest"
+      ],
+      "title": "HarnessPluginLockEntry",
+      "type": "object"
+    },
+    "HarnessSessionResult": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/Artifact"
+          },
+          "title": "Artifacts",
+          "type": "array"
+        },
+        "completed_at": {
+          "format": "date-time",
+          "title": "Completed At",
+          "type": "string"
+        },
+        "correlation": {
+          "$ref": "#/$defs/HarnessCorrelation"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ServiceError"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "interaction_records": {
+          "items": {
+            "$ref": "#/$defs/HarnessInteractionRecord"
+          },
+          "title": "Interaction Records",
+          "type": "array"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "metrics": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TaskMetrics"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "output": {
+          "title": "Output"
+        },
+        "plugin_lock": {
+          "items": {
+            "$ref": "#/$defs/HarnessPluginLockEntry"
+          },
+          "title": "Plugin Lock",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.1",
+          "default": "0.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "session_id": {
+          "minLength": 1,
+          "title": "Session Id",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/TaskResultStatus"
+        },
+        "trace_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trace Ref"
+        },
+        "verification_reports": {
+          "items": {
+            "$ref": "#/$defs/HarnessVerificationReport"
+          },
+          "title": "Verification Reports",
+          "type": "array"
+        }
+      },
+      "required": [
+        "session_id",
+        "correlation",
+        "status",
+        "output",
+        "artifacts",
+        "error",
+        "started_at",
+        "completed_at"
+      ],
+      "title": "HarnessSessionResult",
+      "type": "object"
+    },
+    "HarnessVerificationCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "check_id": {
+          "minLength": 1,
+          "title": "Check Id",
+          "type": "string"
+        },
+        "evidence_artifact_refs": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Evidence Artifact Refs",
+          "type": "array"
+        },
+        "status": {
+          "$ref": "#/$defs/HarnessVerificationStatus"
+        },
+        "summary": {
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "check_id",
+        "status",
+        "summary"
+      ],
+      "title": "HarnessVerificationCheck",
+      "type": "object"
+    },
+    "HarnessVerificationReport": {
+      "additionalProperties": false,
+      "properties": {
+        "checks": {
+          "items": {
+            "$ref": "#/$defs/HarnessVerificationCheck"
+          },
+          "title": "Checks",
+          "type": "array"
+        },
+        "completed_at": {
+          "format": "date-time",
+          "title": "Completed At",
+          "type": "string"
+        },
+        "evidence_artifact_refs": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Evidence Artifact Refs",
+          "type": "array"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/HarnessVerificationStatus"
+        },
+        "verifier_ref": {
+          "minLength": 1,
+          "title": "Verifier Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "verifier_ref",
+        "status",
+        "started_at",
+        "completed_at"
+      ],
+      "title": "HarnessVerificationReport",
+      "type": "object"
+    },
+    "HarnessVerificationStatus": {
+      "enum": [
+        "PASSED",
+        "FAILED",
+        "ERROR",
+        "SKIPPED"
+      ],
+      "title": "HarnessVerificationStatus",
+      "type": "string"
+    },
+    "ServiceError": {
+      "properties": {
+        "category": {
+          "enum": [
+            "VALIDATION",
+            "AUTHENTICATION",
+            "AUTHORIZATION",
+            "NOT_FOUND",
+            "CONFLICT",
+            "RATE_LIMIT",
+            "TIMEOUT",
+            "DEPENDENCY",
+            "EXECUTION",
+            "CANCELLED",
+            "INTERNAL"
+          ],
+          "title": "Category",
+          "type": "string"
+        },
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "correlation_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Correlation Id"
+        },
+        "details": {
+          "additionalProperties": true,
+          "title": "Details",
+          "type": "object"
+        },
+        "error_id": {
+          "format": "uuid",
+          "title": "Error Id",
+          "type": "string"
+        },
+        "http_status": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Http Status"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "retryable": {
+          "title": "Retryable",
+          "type": "boolean"
+        },
+        "schema_version": {
+          "const": "0.1",
+          "default": "0.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "service": {
+          "title": "Service",
+          "type": "string"
+        }
+      },
+      "required": [
+        "error_id",
+        "code",
+        "category",
+        "message",
+        "retryable",
+        "service",
+        "occurred_at"
+      ],
+      "title": "ServiceError",
+      "type": "object"
+    },
+    "TaskMetrics": {
+      "properties": {
+        "custom": {
+          "additionalProperties": true,
+          "title": "Custom",
+          "type": "object"
+        },
+        "duration_ms": {
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "token_usage": {
+          "$ref": "#/$defs/TokenUsage"
+        }
+      },
+      "required": [
+        "duration_ms"
+      ],
+      "title": "TaskMetrics",
+      "type": "object"
+    },
+    "TaskResultStatus": {
+      "enum": [
+        "SUCCEEDED",
+        "FAILED",
+        "CANCELLED"
+      ],
+      "title": "TaskResultStatus",
+      "type": "string"
+    },
+    "TokenUsage": {
+      "properties": {
+        "input_tokens": {
+          "default": 0,
+          "title": "Input Tokens",
+          "type": "integer"
+        },
+        "output_tokens": {
+          "default": 0,
+          "title": "Output Tokens",
+          "type": "integer"
+        },
+        "total_tokens": {
+          "default": 0,
+          "title": "Total Tokens",
+          "type": "integer"
+        }
+      },
+      "title": "TokenUsage",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/harness/v0.1/result-delivery.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "callback_ref": {
+      "minLength": 1,
+      "title": "Callback Ref",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "delivery_id": {
+      "format": "uuid",
+      "title": "Delivery Id",
+      "type": "string"
+    },
+    "result": {
+      "$ref": "#/$defs/HarnessSessionResult"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "delivery_id",
+    "callback_ref",
+    "created_at",
+    "result"
+  ],
+  "title": "HarnessResultDelivery",
+  "type": "object"
+}

@@ -1,0 +1,295 @@
+.hi-run:empty {
+  display: none;
+}
+.hi-run {
+  margin: 18px 0;
+}
+.hi-heading {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #865509;
+}
+.hi-card {
+  border: 1px solid #e7cc8f;
+  border-radius: 14px;
+  background: #fffcf4;
+  padding: 20px;
+  margin: 12px 0;
+  color: #27333b;
+}
+.hi-card > header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 20px;
+  color: #865509;
+}
+.hi-card h3 {
+  margin: 0;
+  font-weight: 650;
+  font-size: 16px;
+}
+.hi-card header p {
+  margin: 4px 0 0;
+  color: #62707d;
+  font-size: 12px;
+}
+.hi-card header > span {
+  margin-left: auto;
+  white-space: nowrap;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 20px;
+  background: #f6ead0;
+}
+.hi-card fieldset {
+  padding: 0;
+  border: 0;
+  margin: 0 0 20px;
+  min-width: 0;
+}
+.hi-card legend {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin-bottom: 12px;
+}
+.hi-options {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.hi-card .hi-options label {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+  background: white;
+  border: 1px solid #e0e4e7;
+  padding: 11px 12px;
+  border-radius: 9px;
+  cursor: pointer;
+  margin: 0;
+}
+.hi-card .hi-options input {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  margin-top: 3px;
+  flex: none;
+  accent-color: hsl(var(--primary));
+}
+.hi-options strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+}
+.hi-options small {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+  color: #68757d;
+}
+.hi-custom {
+  display: block;
+  font-size: 12px;
+  color: #53616e;
+  margin-bottom: 6px;
+}
+.hi-card textarea {
+  resize: vertical;
+  width: 100%;
+  border: 1px solid #cfd8dd;
+  border-radius: 8px;
+  background: white;
+  padding: 10px;
+  font-size: 13px;
+}
+.hi-card button,
+.hi-enable {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  background: white;
+  border: 1px solid #cbd5db;
+}
+.hi-card .hi-primary {
+  color: white;
+  background: hsl(var(--primary));
+  border-color: hsl(var(--primary));
+}
+.hi-card button:disabled,
+.hi-card fieldset:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.hi-card button:focus-visible,
+.hi-card textarea:focus-visible,
+.hi-bell:focus-visible {
+  outline: 2px solid #2e858c;
+  outline-offset: 3px;
+}
+.hi-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.hi-permission-tool {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+.hi-prompt {
+  white-space: pre-wrap;
+  font-size: 14px;
+}
+.hi-card details {
+  font-size: 12px;
+  margin-top: 12px;
+}
+.hi-card pre {
+  padding: 12px;
+  margin-top: 8px;
+  background: #f1f4f6;
+  overflow: auto;
+  max-height: 220px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.hi-error {
+  color: #a32929;
+  font-size: 13px;
+  margin-top: 12px;
+}
+.hi-help {
+  color: #65717e;
+  font-size: 12px;
+  margin: 8px 0;
+}
+.hi-sent {
+  color: #286c71;
+  background: #eef7f3;
+  border: 1px solid #c5e3d5;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+.hi-bell {
+  position: fixed;
+  bottom: 18px;
+  right: 22px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 24px;
+  border: 1px solid #d8e0e5;
+  padding: 11px 16px;
+  box-shadow: 0 4px 18px #18333f15;
+  color: #455d65;
+  background: white;
+  font-size: 12px;
+}
+.hi-bell-pending {
+  background: #fff5db;
+  border-color: #e7c87d;
+  color: #7b510d;
+  font-weight: 600;
+}
+.hi-inbox-items {
+  display: grid;
+  gap: 10px;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+.hi-inbox-items a {
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid #e0e5e9;
+  border-radius: 10px;
+}
+.hi-inbox-items strong {
+  font-size: 13px;
+}
+.hi-inbox-items p {
+  font-size: 12px;
+  margin-top: 4px;
+  color: #65717e;
+}
+.hi-inbox-items a > span {
+  flex: none;
+  font-size: 12px;
+  color: #286c71;
+}
+.dark .hi-card {
+  background: #29251b;
+  color: #e6edf2;
+  border-color: #6e5a2c;
+}
+.dark .hi-card header,
+.dark .hi-heading {
+  color: #e7c575;
+}
+.dark .hi-card header > span {
+  background: #483b22;
+}
+.dark .hi-card textarea,
+.dark .hi-options label,
+.dark .hi-card button,
+.dark .hi-bell {
+  background: #19232b;
+  color: #e6edf2;
+  border-color: #45525d;
+}
+.dark .hi-card .hi-primary {
+  background: hsl(var(--primary));
+}
+.dark .hi-help,
+.dark .hi-custom,
+.dark .hi-options small,
+.dark .hi-card header p {
+  color: #abb8c5;
+}
+.dark .hi-bell-pending {
+  background: #3e341e;
+  color: #edce85;
+  border-color: #796331;
+}
+.hi-gate-context {
+  padding: 12px 14px;
+  background: hsl(var(--muted) / 0.4);
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 14px 0;
+}
+.hi-gate-context small {
+  display: block;
+  color: hsl(var(--muted-foreground));
+}
+.lw-feedback-label {
+  font-size: 8px;
+  fill: hsl(var(--muted-foreground));
+}
+@media (max-width: 640px) {
+  .hi-card {
+    padding: 14px;
+  }
+  .hi-card header > span {
+    display: none;
+  }
+  .hi-bell {
+    bottom: 12px;
+    right: 12px;
+  }
+}

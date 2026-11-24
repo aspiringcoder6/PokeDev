@@ -1,0 +1,6 @@
+{
+  "artifact_id": "55555555-5555-4555-8555-555555555555",
+  "name": "pytest-report.xml",
+  "media_type": "application/xml",
+  "uri": "mock://artifacts/pytest-report.xml"
+}

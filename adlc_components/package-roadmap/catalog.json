@@ -1,0 +1,112 @@
+{
+  "schema_version": "design-0.1",
+  "catalog_kind": "PLANNED_PACKAGES",
+  "status": "WIP",
+  "executable": false,
+  "packages": [
+    {
+      "package_id": "architecture-agent",
+      "status": "WIP",
+      "executable": false,
+      "name": "Architecture Agent",
+      "kind": "AGENT",
+      "category": "Planning",
+      "icon": "blocks",
+      "description": "Turn requirements into an implementation design and technical decisions.",
+      "inputs": ["requirement", "project_context"],
+      "outputs": ["architecture_plan", "decision_records"],
+      "delivery_gate": "Versioned design artifacts, an authorized agent implementation, source provenance, and human design review."
+    },
+    {
+      "package_id": "testing-agent",
+      "status": "WIP",
+      "executable": false,
+      "name": "Testing Agent",
+      "kind": "TESTING",
+      "category": "Quality",
+      "icon": "flask-conical",
+      "description": "Run functional and integration checks against an exact candidate.",
+      "inputs": ["candidate", "test_policy"],
+      "outputs": ["verification_report"],
+      "delivery_gate": "A real testing provider, protected test policy, isolated execution, and candidate-bound reports."
+    },
+    {
+      "package_id": "code-review-agent",
+      "status": "WIP",
+      "executable": false,
+      "name": "Code Review Agent",
+      "kind": "REVIEW",
+      "category": "Quality",
+      "icon": "scan-text",
+      "description": "Explain code risks and request focused revisions before human approval.",
+      "inputs": ["source_patch", "requirement", "verification_report"],
+      "outputs": ["review_findings"],
+      "delivery_gate": "An authorized review provider, immutable patch identity, structured findings, and no automatic approval authority."
+    },
+    {
+      "package_id": "security-scan",
+      "status": "WIP",
+      "executable": false,
+      "name": "Security Scan",
+      "kind": "TESTING",
+      "category": "Quality",
+      "icon": "shield-check",
+      "description": "Inspect source and dependencies for vulnerabilities with retained evidence.",
+      "inputs": ["candidate", "security_policy"],
+      "outputs": ["security_report"],
+      "delivery_gate": "Pinned scanner versions, scoped execution, severity policy, and reports tied to the exact candidate."
+    },
+    {
+      "package_id": "knowledge-retrieval",
+      "status": "WIP",
+      "executable": false,
+      "name": "Knowledge Retrieval",
+      "kind": "AGENT",
+      "category": "Context",
+      "icon": "book-open",
+      "description": "Retrieve approved project knowledge with source and revision references.",
+      "inputs": ["query", "project_scope"],
+      "outputs": ["context_bundle"],
+      "delivery_gate": "A real retrieval provider, document permissions, source/version provenance, retention, and project isolation."
+    },
+    {
+      "package_id": "pull-request",
+      "status": "WIP",
+      "executable": false,
+      "name": "Pull Request",
+      "kind": "ACTION",
+      "category": "Delivery",
+      "icon": "git-pull-request",
+      "description": "Propose an approved candidate for team review in its repository.",
+      "inputs": ["accepted_candidate", "approval_decision"],
+      "outputs": ["pull_request_reference"],
+      "delivery_gate": "A repository connector, explicit write grants, approved source identity, and idempotent creation with audit evidence."
+    },
+    {
+      "package_id": "release",
+      "status": "WIP",
+      "executable": false,
+      "name": "Release",
+      "kind": "ACTION",
+      "category": "Delivery",
+      "icon": "rocket",
+      "description": "Promote approved work into a controlled release environment.",
+      "inputs": ["accepted_candidate", "verification_report", "release_approval"],
+      "outputs": ["release_reference"],
+      "delivery_gate": "A real release executor, environment scope, release policy, explicit approval, and retained deployment evidence."
+    },
+    {
+      "package_id": "feedback-intake",
+      "status": "WIP",
+      "executable": false,
+      "name": "Feedback Intake",
+      "kind": "AGENT",
+      "category": "Feedback",
+      "icon": "message-square",
+      "description": "Turn issues and product feedback into traceable successor requirements.",
+      "inputs": ["feedback_events", "release_reference"],
+      "outputs": ["successor_requirement"],
+      "delivery_gate": "Authorized feedback connectors, deduplication, attribution, and explicit lineage to a new requirement."
+    }
+  ]
+}

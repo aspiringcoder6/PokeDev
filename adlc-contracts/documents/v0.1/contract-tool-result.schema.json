@@ -1,0 +1,610 @@
+{
+  "$defs": {
+    "AcceptanceCriterion": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "verification": {
+          "default": "HUMAN",
+          "enum": [
+            "HUMAN",
+            "TEST",
+            "ARTIFACT"
+          ],
+          "title": "Verification",
+          "type": "string"
+        },
+        "verifier_ref": {
+          "anyOf": [
+            {
+              "maxLength": 255,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9:._/@-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Verifier Ref"
+        }
+      },
+      "required": [
+        "description"
+      ],
+      "title": "AcceptanceCriterion",
+      "type": "object"
+    },
+    "ContractApproval": {
+      "additionalProperties": false,
+      "properties": {
+        "approval_id": {
+          "format": "uuid",
+          "title": "Approval Id",
+          "type": "string"
+        },
+        "approved_at": {
+          "format": "date-time",
+          "title": "Approved At",
+          "type": "string"
+        },
+        "approved_by": {
+          "title": "Approved By",
+          "type": "string"
+        },
+        "comment": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comment"
+        },
+        "reference": {
+          "$ref": "#/$defs/ContractReference"
+        }
+      },
+      "required": [
+        "approval_id",
+        "reference",
+        "approved_by",
+        "approved_at"
+      ],
+      "title": "ContractApproval",
+      "type": "object"
+    },
+    "ContractCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "check_id": {
+          "title": "Check Id",
+          "type": "string"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "check_id",
+        "passed",
+        "summary"
+      ],
+      "title": "ContractCheck",
+      "type": "object"
+    },
+    "ContractRead": {
+      "additionalProperties": false,
+      "properties": {
+        "approval": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContractApproval"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "authored_by": {
+          "title": "Authored By",
+          "type": "string"
+        },
+        "authored_via": {
+          "enum": [
+            "HUMAN",
+            "HARNESS_TOOL"
+          ],
+          "title": "Authored Via",
+          "type": "string"
+        },
+        "binding": {
+          "$ref": "#/$defs/ContractScope"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "document": {
+          "$ref": "#/$defs/SkilltreeDocument"
+        },
+        "reference": {
+          "$ref": "#/$defs/ContractReference"
+        },
+        "schema_version": {
+          "const": "0.1",
+          "default": "0.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "DRAFT",
+            "VALIDATED",
+            "APPROVED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "validation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContractValidation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "document",
+        "reference",
+        "binding",
+        "status",
+        "created_at",
+        "authored_by",
+        "authored_via"
+      ],
+      "title": "ContractRead",
+      "type": "object"
+    },
+    "ContractReference": {
+      "additionalProperties": false,
+      "properties": {
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "contract_id": {
+          "format": "uuid",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 512,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "schema_ref": {
+          "const": "adlc://schemas/skilltree-contract/0.1",
+          "default": "adlc://schemas/skilltree-contract/0.1",
+          "title": "Schema Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract_id",
+        "revision",
+        "content_digest"
+      ],
+      "title": "ContractReference",
+      "type": "object"
+    },
+    "ContractScope": {
+      "additionalProperties": false,
+      "description": "Server-assigned ownership binding; never an agent tool argument.",
+      "properties": {
+        "attempt_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Attempt Id"
+        },
+        "request_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Request Id"
+        },
+        "session_id": {
+          "anyOf": [
+            {
+              "maxLength": 255,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9._-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Session Id"
+        },
+        "task_run_id": {
+          "format": "uuid",
+          "title": "Task Run Id",
+          "type": "string"
+        },
+        "workflow_run_id": {
+          "format": "uuid",
+          "title": "Workflow Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workflow_run_id",
+        "task_run_id"
+      ],
+      "title": "ContractScope",
+      "type": "object"
+    },
+    "ContractValidation": {
+      "additionalProperties": false,
+      "properties": {
+        "checked_at": {
+          "format": "date-time",
+          "title": "Checked At",
+          "type": "string"
+        },
+        "checks": {
+          "items": {
+            "$ref": "#/$defs/ContractCheck"
+          },
+          "title": "Checks",
+          "type": "array"
+        },
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "criteria_executed": {
+          "const": false,
+          "default": false,
+          "title": "Criteria Executed",
+          "type": "boolean"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "validator_ref": {
+          "const": "adlc-validator:skilltree/0.1",
+          "default": "adlc-validator:skilltree/0.1",
+          "title": "Validator Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "content_digest",
+        "passed",
+        "checks",
+        "checked_at"
+      ],
+      "title": "ContractValidation",
+      "type": "object"
+    },
+    "RoadmapConstraints": {
+      "additionalProperties": false,
+      "description": "Declared commitments, not execution permissions until the H5C policy adapter.",
+      "properties": {
+        "allowed_paths": {
+          "items": {
+            "maxLength": 255,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Allowed Paths",
+          "type": "array"
+        },
+        "forbidden_actions": {
+          "items": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 32,
+          "title": "Forbidden Actions",
+          "type": "array"
+        },
+        "read_only": {
+          "default": true,
+          "title": "Read Only",
+          "type": "boolean"
+        }
+      },
+      "title": "RoadmapConstraints",
+      "type": "object"
+    },
+    "RoadmapScope": {
+      "additionalProperties": false,
+      "properties": {
+        "in_scope": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 32,
+          "title": "In Scope",
+          "type": "array"
+        },
+        "objective": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Objective",
+          "type": "string"
+        },
+        "out_of_scope": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 32,
+          "title": "Out Of Scope",
+          "type": "array"
+        }
+      },
+      "required": [
+        "objective"
+      ],
+      "title": "RoadmapScope",
+      "type": "object"
+    },
+    "SkilltreeDependency": {
+      "additionalProperties": false,
+      "properties": {
+        "relation": {
+          "default": "REQUIRES",
+          "enum": [
+            "REQUIRES",
+            "CONTAINS"
+          ],
+          "title": "Relation",
+          "type": "string"
+        },
+        "source_id": {
+          "format": "uuid",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "target_id": {
+          "format": "uuid",
+          "title": "Target Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "target_id"
+      ],
+      "title": "SkilltreeDependency",
+      "type": "object"
+    },
+    "SkilltreeDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "constraints": {
+          "$ref": "#/$defs/RoadmapConstraints"
+        },
+        "contract_id": {
+          "format": "uuid",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "dependencies": {
+          "items": {
+            "$ref": "#/$defs/SkilltreeDependency"
+          },
+          "maxItems": 256,
+          "title": "Dependencies",
+          "type": "array"
+        },
+        "document_type": {
+          "const": "skilltree",
+          "default": "skilltree",
+          "title": "Document Type",
+          "type": "string"
+        },
+        "nodes": {
+          "items": {
+            "$ref": "#/$defs/SkilltreeNode"
+          },
+          "maxItems": 128,
+          "title": "Nodes",
+          "type": "array"
+        },
+        "producer_plugin": {
+          "const": "plugin:vai-adlc-skilltree/0.1.0",
+          "default": "plugin:vai-adlc-skilltree/0.1.0",
+          "title": "Producer Plugin",
+          "type": "string"
+        },
+        "renderer_ref": {
+          "const": "adlc-renderer:skilltree/0.1",
+          "default": "adlc-renderer:skilltree/0.1",
+          "title": "Renderer Ref",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 512,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "schema_ref": {
+          "const": "adlc://schemas/skilltree-contract/0.1",
+          "default": "adlc://schemas/skilltree-contract/0.1",
+          "title": "Schema Ref",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1",
+          "default": "0.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scope": {
+          "$ref": "#/$defs/RoadmapScope"
+        },
+        "supersedes": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContractReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "title": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract_id",
+        "revision",
+        "title",
+        "scope"
+      ],
+      "title": "SkilltreeDocument",
+      "type": "object"
+    },
+    "SkilltreeNode": {
+      "additionalProperties": false,
+      "properties": {
+        "acceptance_criteria": {
+          "items": {
+            "$ref": "#/$defs/AcceptanceCriterion"
+          },
+          "maxItems": 16,
+          "title": "Acceptance Criteria",
+          "type": "array"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 4000,
+          "title": "Description",
+          "type": "string"
+        },
+        "kind": {
+          "default": "TASK",
+          "enum": [
+            "MILESTONE",
+            "TASK",
+            "DECISION"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "node_id": {
+          "format": "uuid",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "node_id"
+      ],
+      "title": "SkilltreeNode",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/documents/v0.1/contract-tool-result.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "contract": {
+      "$ref": "#/$defs/ContractRead"
+    },
+    "node_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Node Id"
+    },
+    "replayed": {
+      "default": false,
+      "title": "Replayed",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "contract"
+  ],
+  "title": "ContractToolResult",
+  "type": "object"
+}

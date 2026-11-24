@@ -1,0 +1,71 @@
+{
+  "$defs": {
+    "TaskLoopCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "criterion_id": {
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "criterion_id",
+        "passed",
+        "message"
+      ],
+      "title": "TaskLoopCheck",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/task-loop/v0.1/task-loop-verification.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "candidate_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Candidate Digest",
+      "type": "string"
+    },
+    "candidate_id": {
+      "format": "uuid",
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "checks": {
+      "items": {
+        "$ref": "#/$defs/TaskLoopCheck"
+      },
+      "maxItems": 32,
+      "minItems": 1,
+      "title": "Checks",
+      "type": "array"
+    },
+    "mode": {
+      "const": "MOCK",
+      "default": "MOCK",
+      "title": "Mode",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "candidate_id",
+    "candidate_digest",
+    "checks"
+  ],
+  "title": "TaskLoopVerification",
+  "type": "object"
+}

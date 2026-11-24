@@ -1,0 +1,43 @@
+{
+  "schema_version": "0.1",
+  "package_id": "task-loop-opencode",
+  "version": "0.1.0",
+  "status": "PUBLISHED",
+  "name": "Task Loop (OpenCode)",
+  "description": "One fixed specification, fresh OpenCode sessions, durable text candidates, and protected behavioral tests before final human approval.",
+  "kind": "AGENT",
+  "interface": {
+    "inputs": [
+      {"name": "task_loop_spec", "schema_ref": "adlc://schemas/task-loop-spec/0.2", "required": true, "multiple": false, "description": "Pinned base commit, complete specification, writable files, acceptance checks, and loop budgets."}
+    ],
+    "outputs": [
+      {"name": "candidate", "schema_ref": "adlc://schemas/task-loop-candidate/0.2", "required": true, "multiple": false, "description": "Checksummed cumulative UTF-8 overlay on the pinned base."},
+      {"name": "verification_report", "schema_ref": "adlc://schemas/task-loop-verification/0.2", "required": true, "multiple": false, "description": "Real protected unittest command results tied to the exact candidate."}
+    ]
+  },
+  "configuration_schema": {"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object", "additionalProperties": false, "properties": {}},
+  "defaults": {},
+  "override_allowlist": ["/policies/retry/max_attempts", "/policies/timeout_ms"],
+  "implementation": {"adapter_type": "AGENT_PROVIDER", "adapter_ref": "agent-provider:task-loop-opencode", "entrypoint": "live-task-loop"},
+  "execution_profile": {
+    "provider_ref": "agent-provider:task-loop-opencode",
+    "model_ref": "model:aigateway/MiniMax/MiniMax-M3",
+    "system_prompt_ref": "prompt:task-loop-full-spec/0.2.0",
+    "rule_set_refs": ["rules:adlc-safe-execution/0.1.0"],
+    "hook_refs": ["hook:task-lifecycle/0.1.0"],
+    "capabilities": {"tool_refs": ["tool:opencode-vcs-diff", "verifier:python-unittest/0.1.0"], "skill_refs": [], "plugin_refs": [], "mcp_server_refs": []},
+    "memory_policy_ref": "memory:task-loop-fresh-context/0.1.0",
+    "sandbox_policy_ref": "sandbox:task-loop-pinned-worktrees/0.1.0",
+    "secret_refs": {}
+  },
+  "default_policies": {
+    "retry": {"max_attempts": 3},
+    "timeout_ms": 120000,
+    "approval": {"gate_type": "AFTER_TASK"},
+    "permissions": {"mode": "PACKAGE_ALLOWLIST"},
+    "resources": {"verification_mode": "COMMAND", "candidate_storage": "sqlite", "workspace_mode": "local-detached-git-worktrees"},
+    "runtime_overridable": []
+  },
+  "compatibility": {"engine": {"minimum_version": "0.1.0"}, "execution_contract_versions": ["0.1"]},
+  "metadata": {"maintainer": "adlc", "provider_mode": "live", "delivery": "B"}
+}

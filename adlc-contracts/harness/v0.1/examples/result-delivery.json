@@ -1,0 +1,33 @@
+{
+  "schema_version": "0.1",
+  "delivery_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+  "callback_ref": "adlc-primary",
+  "created_at": "2026-09-23T02:00:03Z",
+  "result": {
+    "schema_version": "0.1",
+    "session_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+    "correlation": {
+      "request_id": "11111111-1111-4111-8111-111111111111",
+      "workflow_run_id": "22222222-2222-4222-8222-222222222222",
+      "task_run_id": "33333333-3333-4333-8333-333333333333",
+      "attempt_id": "44444444-4444-4444-8444-444444444444"
+    },
+    "status": "SUCCEEDED",
+    "output": {
+      "summary": "Harness fake pipeline completed.",
+      "outputs": {
+        "source_patch": "harness://aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/artifacts/source_patch"
+      }
+    },
+    "artifacts": [],
+    "verification_reports": [],
+    "interaction_records": [],
+    "plugin_lock": [],
+    "metrics": null,
+    "trace_ref": "harness://aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/events",
+    "error": null,
+    "started_at": "2026-09-23T02:00:00Z",
+    "completed_at": "2026-09-23T02:00:02Z",
+    "metadata": {}
+  }
+}

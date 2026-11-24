@@ -1,0 +1,900 @@
+{
+  "$defs": {
+    "CandidateReference": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Artifact Digest",
+          "type": "string"
+        },
+        "artifact_id": {
+          "format": "uuid",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "base_commit": {
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$",
+          "title": "Base Commit",
+          "type": "string"
+        },
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "encoding": {
+          "const": "canonical-json",
+          "default": "canonical-json",
+          "title": "Encoding",
+          "type": "string"
+        },
+        "file": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "File",
+          "type": "string"
+        },
+        "project_id": {
+          "format": "uuid",
+          "title": "Project Id",
+          "type": "string"
+        },
+        "source_attempt_id": {
+          "format": "uuid",
+          "title": "Source Attempt Id",
+          "type": "string"
+        },
+        "source_ref": {
+          "title": "Source Ref",
+          "type": "string"
+        },
+        "source_session_id": {
+          "pattern": "^[A-Za-z0-9._-]{1,255}$",
+          "title": "Source Session Id",
+          "type": "string"
+        },
+        "source_task_id": {
+          "format": "uuid",
+          "title": "Source Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_task_id",
+        "source_attempt_id",
+        "source_session_id",
+        "artifact_id",
+        "artifact_digest",
+        "base_commit",
+        "project_id",
+        "source_ref",
+        "file",
+        "content_digest"
+      ],
+      "title": "CandidateReference",
+      "type": "object"
+    },
+    "ContractReference": {
+      "additionalProperties": false,
+      "properties": {
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "contract_id": {
+          "format": "uuid",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 512,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "schema_ref": {
+          "const": "adlc://schemas/skilltree-contract/0.1",
+          "default": "adlc://schemas/skilltree-contract/0.1",
+          "title": "Schema Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract_id",
+        "revision",
+        "content_digest"
+      ],
+      "title": "ContractReference",
+      "type": "object"
+    },
+    "ReplayCase": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "criterion_index": {
+          "maximum": 15,
+          "minimum": 0,
+          "title": "Criterion Index",
+          "type": "integer"
+        },
+        "criterion_node_id": {
+          "format": "uuid",
+          "title": "Criterion Node Id",
+          "type": "string"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected"
+        },
+        "expected_status": {
+          "default": 200,
+          "maximum": 599,
+          "minimum": 100,
+          "title": "Expected Status",
+          "type": "integer"
+        },
+        "method": {
+          "const": "GET",
+          "default": "GET",
+          "title": "Method",
+          "type": "string"
+        },
+        "path": {
+          "const": "/fixture",
+          "default": "/fixture",
+          "title": "Path",
+          "type": "string"
+        },
+        "pointer": {
+          "maxLength": 512,
+          "pattern": "^(?:|/(?:[^~]|~[01])*)$",
+          "title": "Pointer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "pointer",
+        "expected",
+        "criterion_node_id",
+        "criterion_index"
+      ],
+      "title": "ReplayCase",
+      "type": "object"
+    },
+    "ReplayComparison": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "title": "Case Id",
+          "type": "string"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected"
+        },
+        "expected_status": {
+          "title": "Expected Status",
+          "type": "integer"
+        },
+        "found": {
+          "title": "Found",
+          "type": "boolean"
+        },
+        "observed": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Observed"
+        },
+        "observed_status": {
+          "title": "Observed Status",
+          "type": "integer"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "pointer": {
+          "title": "Pointer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "pointer",
+        "expected",
+        "observed",
+        "found",
+        "expected_status",
+        "observed_status",
+        "passed"
+      ],
+      "title": "ReplayComparison",
+      "type": "object"
+    },
+    "ReplayObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "found": {
+          "title": "Found",
+          "type": "boolean"
+        },
+        "http_status": {
+          "maximum": 599,
+          "minimum": 100,
+          "title": "Http Status",
+          "type": "integer"
+        },
+        "observed": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Observed"
+        },
+        "outcome": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ],
+          "title": "Outcome",
+          "type": "string"
+        },
+        "pointer": {
+          "title": "Pointer",
+          "type": "string"
+        },
+        "response_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Response Digest",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "pointer",
+        "found",
+        "observed",
+        "http_status",
+        "response_digest",
+        "outcome"
+      ],
+      "title": "ReplayObservation",
+      "type": "object"
+    },
+    "ReplayPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate": {
+          "$ref": "#/$defs/CandidateReference"
+        },
+        "cases": {
+          "items": {
+            "$ref": "#/$defs/ReplayCase"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "title": "Cases",
+          "type": "array"
+        },
+        "config_digest": {
+          "default": "sha256:d634ef15e33d6ab44ac44f2d62da5d80ae97e718da7e5222a3e83566f742e191",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Config Digest",
+          "type": "string"
+        },
+        "contract_reference": {
+          "$ref": "#/$defs/ContractReference"
+        },
+        "credential_ref": {
+          "const": "credential-profile:ephemeral-fixture/0.1.0",
+          "default": "credential-profile:ephemeral-fixture/0.1.0",
+          "title": "Credential Ref",
+          "type": "string"
+        },
+        "heal": {
+          "const": false,
+          "default": false,
+          "title": "Heal",
+          "type": "boolean"
+        },
+        "models": {
+          "const": false,
+          "default": false,
+          "title": "Models",
+          "type": "boolean"
+        },
+        "plan_id": {
+          "format": "uuid",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "profile_ref": {
+          "const": "verification-profile:http-json-replay/0.1.0",
+          "default": "verification-profile:http-json-replay/0.1.0",
+          "title": "Profile Ref",
+          "type": "string"
+        },
+        "revision": {
+          "const": 1,
+          "default": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "risk_class": {
+          "const": "read-only-non-production",
+          "default": "read-only-non-production",
+          "title": "Risk Class",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1",
+          "default": "0.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "skip_policy": {
+          "const": "no-required-skips",
+          "default": "no-required-skips",
+          "title": "Skip Policy",
+          "type": "string"
+        },
+        "suite_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Suite Digest",
+          "type": "string"
+        },
+        "target_profile_ref": {
+          "const": "target-profile:disposable-http-json/0.1.0",
+          "default": "target-profile:disposable-http-json/0.1.0",
+          "title": "Target Profile Ref",
+          "type": "string"
+        },
+        "timeout_seconds": {
+          "default": 15,
+          "maximum": 60,
+          "minimum": 1,
+          "title": "Timeout Seconds",
+          "type": "integer"
+        },
+        "workflow_run_id": {
+          "format": "uuid",
+          "title": "Workflow Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plan_id",
+        "workflow_run_id",
+        "contract_reference",
+        "candidate",
+        "cases",
+        "suite_digest"
+      ],
+      "title": "ReplayPlan",
+      "type": "object"
+    },
+    "ReplayReceipt": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Candidate Digest",
+          "type": "string"
+        },
+        "completed_at": {
+          "format": "date-time",
+          "title": "Completed At",
+          "type": "string"
+        },
+        "completion_mode": {
+          "enum": [
+            "process-exit",
+            "durable-checkpoint"
+          ],
+          "title": "Completion Mode",
+          "type": "string"
+        },
+        "config_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Config Digest",
+          "type": "string"
+        },
+        "credential_ref": {
+          "const": "credential-profile:ephemeral-fixture/0.1.0",
+          "title": "Credential Ref",
+          "type": "string"
+        },
+        "execution_id": {
+          "format": "uuid",
+          "title": "Execution Id",
+          "type": "string"
+        },
+        "exit_code": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Exit Code"
+        },
+        "heal": {
+          "const": false,
+          "title": "Heal",
+          "type": "boolean"
+        },
+        "junit_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Junit Digest",
+          "type": "string"
+        },
+        "junit_xml": {
+          "maxLength": 32768,
+          "title": "Junit Xml",
+          "type": "string"
+        },
+        "models_used": {
+          "const": false,
+          "title": "Models Used",
+          "type": "boolean"
+        },
+        "observations": {
+          "items": {
+            "$ref": "#/$defs/ReplayObservation"
+          },
+          "maxItems": 16,
+          "title": "Observations",
+          "type": "array"
+        },
+        "plan_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Plan Digest",
+          "type": "string"
+        },
+        "provider": {
+          "const": "local-http-fixture",
+          "title": "Provider",
+          "type": "string"
+        },
+        "runner_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Runner Digest",
+          "type": "string"
+        },
+        "runner_ref": {
+          "const": "runner:adlc-http-json-replay/0.1.0",
+          "title": "Runner Ref",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "suite_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Suite Digest",
+          "type": "string"
+        },
+        "target_instance_id": {
+          "format": "uuid",
+          "title": "Target Instance Id",
+          "type": "string"
+        },
+        "target_origin": {
+          "pattern": "^http://127\\.0\\.0\\.1:[1-9][0-9]{0,4}$",
+          "title": "Target Origin",
+          "type": "string"
+        },
+        "target_profile_ref": {
+          "const": "target-profile:disposable-http-json/0.1.0",
+          "title": "Target Profile Ref",
+          "type": "string"
+        },
+        "target_released": {
+          "const": true,
+          "title": "Target Released",
+          "type": "boolean"
+        },
+        "tests_run": {
+          "maximum": 16,
+          "minimum": 0,
+          "title": "Tests Run",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "execution_id",
+        "plan_digest",
+        "candidate_digest",
+        "suite_digest",
+        "config_digest",
+        "runner_ref",
+        "runner_digest",
+        "provider",
+        "target_profile_ref",
+        "credential_ref",
+        "target_instance_id",
+        "target_origin",
+        "target_released",
+        "heal",
+        "models_used",
+        "tests_run",
+        "completion_mode",
+        "exit_code",
+        "observations",
+        "junit_xml",
+        "junit_digest",
+        "started_at",
+        "completed_at"
+      ],
+      "title": "ReplayReceipt",
+      "type": "object"
+    },
+    "ReplayReport": {
+      "additionalProperties": false,
+      "properties": {
+        "application_verified": {
+          "const": false,
+          "default": false,
+          "title": "Application Verified",
+          "type": "boolean"
+        },
+        "candidate_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Candidate Digest",
+          "type": "string"
+        },
+        "checks": {
+          "items": {
+            "$ref": "#/$defs/ReplayComparison"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "title": "Checks",
+          "type": "array"
+        },
+        "comparator_ref": {
+          "const": "validator:http-json-replay/0.1.0",
+          "default": "validator:http-json-replay/0.1.0",
+          "title": "Comparator Ref",
+          "type": "string"
+        },
+        "completed_cases": {
+          "title": "Completed Cases",
+          "type": "integer"
+        },
+        "config_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Config Digest",
+          "type": "string"
+        },
+        "contract_fully_verified": {
+          "const": false,
+          "default": false,
+          "title": "Contract Fully Verified",
+          "type": "boolean"
+        },
+        "junit_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Junit Digest",
+          "type": "string"
+        },
+        "natural_language_enforced": {
+          "const": false,
+          "default": false,
+          "title": "Natural Language Enforced",
+          "type": "boolean"
+        },
+        "plan_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Plan Digest",
+          "type": "string"
+        },
+        "receipt_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Receipt Digest",
+          "type": "string"
+        },
+        "required_cases": {
+          "title": "Required Cases",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": "0.1",
+          "default": "0.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "suite_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Suite Digest",
+          "type": "string"
+        },
+        "verdict": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plan_digest",
+        "receipt_digest",
+        "candidate_digest",
+        "suite_digest",
+        "config_digest",
+        "junit_digest",
+        "verdict",
+        "required_cases",
+        "completed_cases",
+        "checks"
+      ],
+      "title": "ReplayReport",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/verification-replay/v0.1/replay-read.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "approved_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Approved At"
+    },
+    "approved_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Approved By"
+    },
+    "cancel_requested_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cancel Requested At"
+    },
+    "cancel_requested_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cancel Requested By"
+    },
+    "cancelled_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cancelled At"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "error_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error Code"
+    },
+    "evidence_digest": {
+      "anyOf": [
+        {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Evidence Digest"
+    },
+    "execution_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Execution Id"
+    },
+    "plan": {
+      "$ref": "#/$defs/ReplayPlan"
+    },
+    "plan_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Plan Digest",
+      "type": "string"
+    },
+    "receipt": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ReplayReceipt"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "report": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ReplayReport"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "state": {
+      "enum": [
+        "DRAFT",
+        "APPROVED",
+        "RUNNING",
+        "DISPATCH_UNCERTAIN",
+        "CANCEL_REQUESTED",
+        "CANCELLED",
+        "READY_FOR_SUBMISSION",
+        "SUBMITTED",
+        "NOT_VERIFIED"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "submitted_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Submitted At"
+    }
+  },
+  "required": [
+    "plan",
+    "plan_digest",
+    "state",
+    "created_at"
+  ],
+  "title": "ReplayRead",
+  "type": "object"
+}

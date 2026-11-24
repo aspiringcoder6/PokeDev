@@ -1,0 +1,61 @@
+{
+  "$id": "https://adlc.dev/contracts/verification-replay/v0.1/replay-capabilities.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "enabled": {
+      "title": "Enabled",
+      "type": "boolean"
+    },
+    "human_actions_configured": {
+      "title": "Human Actions Configured",
+      "type": "boolean"
+    },
+    "profile_ref": {
+      "default": "verification-profile:http-json-replay/0.1.0",
+      "title": "Profile Ref",
+      "type": "string"
+    },
+    "provider": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Provider"
+    },
+    "scope_description": {
+      "default": "Frozen GET /fixture assertions against a disposable authenticated loopback JSON target. No project application, browser automation, TestForge backend, model or production account is executed.",
+      "title": "Scope Description",
+      "type": "string"
+    },
+    "testforge_blockers": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Testforge Blockers",
+      "type": "array"
+    },
+    "testforge_ready": {
+      "const": false,
+      "default": false,
+      "title": "Testforge Ready",
+      "type": "boolean"
+    },
+    "worker_ready": {
+      "title": "Worker Ready",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "enabled",
+    "human_actions_configured",
+    "worker_ready"
+  ],
+  "title": "ReplayCapabilities",
+  "type": "object"
+}

@@ -1,0 +1,23 @@
+{
+  "$id": "https://adlc.dev/contracts/harness/v0.1/interaction-response.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "response": {
+      "additionalProperties": true,
+      "title": "Response",
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "response"
+  ],
+  "title": "HarnessInteractionResponse",
+  "type": "object"
+}

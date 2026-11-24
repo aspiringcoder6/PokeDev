@@ -1,0 +1,9 @@
+{
+  "tool": "skilltree_init",
+  "arguments": {
+    "idempotency_key": "invalid.file.1",
+    "title": "Rejected draft",
+    "scope": {"objective": "This argument is not a filesystem writer."},
+    "file": "../../outside/roadmap.json"
+  }
+}

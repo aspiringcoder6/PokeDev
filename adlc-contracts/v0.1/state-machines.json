@@ -1,0 +1,72 @@
+{
+  "schema_version": "0.1",
+  "workflow_run": {
+    "initial_state": "CREATED",
+    "states": [
+      "CREATED",
+      "QUEUED",
+      "RUNNING",
+      "PAUSED",
+      "WAITING_APPROVAL",
+      "SUCCEEDED",
+      "FAILED",
+      "CANCELLED"
+    ],
+    "terminal_states": ["SUCCEEDED", "FAILED", "CANCELLED"],
+    "transitions": {
+      "CREATED": ["QUEUED", "FAILED", "CANCELLED"],
+      "QUEUED": ["RUNNING", "PAUSED", "FAILED", "CANCELLED"],
+      "RUNNING": ["PAUSED", "WAITING_APPROVAL", "SUCCEEDED", "FAILED", "CANCELLED"],
+      "PAUSED": ["QUEUED", "FAILED", "CANCELLED"],
+      "WAITING_APPROVAL": ["QUEUED", "FAILED", "CANCELLED"],
+      "SUCCEEDED": [],
+      "FAILED": [],
+      "CANCELLED": []
+    }
+  },
+  "task_run": {
+    "initial_state": "PENDING",
+    "states": [
+      "PENDING",
+      "READY",
+      "RUNNING",
+      "WAITING_APPROVAL",
+      "SUCCEEDED",
+      "FAILED",
+      "CANCELLED",
+      "SKIPPED"
+    ],
+    "terminal_states": ["SUCCEEDED", "CANCELLED", "SKIPPED"],
+    "reopenable_states": ["FAILED"],
+    "transitions": {
+      "PENDING": ["READY", "FAILED", "CANCELLED", "SKIPPED"],
+      "READY": ["RUNNING", "FAILED", "CANCELLED", "SKIPPED"],
+      "RUNNING": ["READY", "WAITING_APPROVAL", "SUCCEEDED", "FAILED", "CANCELLED"],
+      "WAITING_APPROVAL": ["READY", "RUNNING", "SUCCEEDED", "FAILED", "CANCELLED"],
+      "SUCCEEDED": [],
+      "FAILED": ["READY"],
+      "CANCELLED": [],
+      "SKIPPED": []
+    },
+    "guards": {
+      "RUNNING->READY": "retry_policy_allows_new_attempt",
+      "WAITING_APPROVAL->READY": "before_task_approval_approved",
+      "WAITING_APPROVAL->RUNNING": "action_approval_approved_and_checkpoint_resumable",
+      "WAITING_APPROVAL->SUCCEEDED": "after_task_approval_approved",
+      "FAILED->READY": "authorized_manual_retry"
+    }
+  },
+  "command_execution": {
+    "initial_state": "QUEUED",
+    "states": ["QUEUED", "RUNNING", "SUCCESS", "FAILED", "TIMEOUT", "CANCELLED"],
+    "terminal_states": ["SUCCESS", "FAILED", "TIMEOUT", "CANCELLED"],
+    "transitions": {
+      "QUEUED": ["RUNNING", "FAILED", "TIMEOUT", "CANCELLED"],
+      "RUNNING": ["SUCCESS", "FAILED", "TIMEOUT", "CANCELLED"],
+      "SUCCESS": [],
+      "FAILED": [],
+      "TIMEOUT": [],
+      "CANCELLED": []
+    }
+  }
+}

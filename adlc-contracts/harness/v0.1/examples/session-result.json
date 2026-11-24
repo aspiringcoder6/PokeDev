@@ -1,0 +1,80 @@
+{
+  "schema_version": "0.1",
+  "session_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+  "correlation": {
+    "request_id": "11111111-1111-4111-8111-111111111111",
+    "workflow_run_id": "22222222-2222-4222-8222-222222222222",
+    "task_run_id": "33333333-3333-4333-8333-333333333333",
+    "attempt_id": "44444444-4444-4444-8444-444444444444"
+  },
+  "status": "SUCCEEDED",
+  "output": {
+    "summary": "DeepSeek Harness completed the scoped task.",
+    "outputs": {
+      "source_patch": "workspace://artifacts/source_patch"
+    }
+  },
+  "artifacts": [],
+  "verification_reports": [
+    {
+      "verifier_ref": "plugin:vai-adlc-verify-structured/0.1.0",
+      "status": "PASSED",
+      "checks": [
+        {
+          "check_id": "structured-result",
+          "status": "PASSED",
+          "summary": "The result satisfies the configured structured-output boundary.",
+          "evidence_artifact_refs": []
+        }
+      ],
+      "evidence_artifact_refs": [],
+      "started_at": "2026-09-23T02:00:01Z",
+      "completed_at": "2026-09-23T02:00:02Z"
+    }
+  ],
+  "interaction_records": [],
+  "plugin_lock": [
+    {
+      "plugin_id": "vai-adlc-driver-deepseek",
+      "version": "0.2.0",
+      "content_digest": "sha256:fd008789399cf9ce4770281e0b955c38a45dbd7e863425fdac82a35c806a5a63",
+      "required": true
+    },
+    {
+      "plugin_id": "vai-adlc-runtime",
+      "version": "0.3.0",
+      "content_digest": "sha256:0739d9e137ece1ebd6c5b97264b39100b4f56b466a7a5b2c18f1e18233f8b6e7",
+      "required": true
+    },
+    {
+      "plugin_id": "vai-adlc-verify-structured",
+      "version": "0.1.0",
+      "content_digest": "sha256:e0c50d273c1b9b8f29679a0d5e0f213cef926d5ff057850a3e0da9f039a3a843",
+      "required": true
+    },
+    {
+      "plugin_id": "vai-adlc-artifacts-git",
+      "version": "0.2.0",
+      "content_digest": "sha256:f4dccc95a0266a47611bd163b970c621fc598801497b65078d1276e6da7bf9fc",
+      "required": true
+    }
+  ],
+  "metrics": {
+    "duration_ms": 2000,
+    "token_usage": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0
+    },
+    "custom": {
+      "execution_driver": "plugin:vai-adlc-driver-deepseek/0.1.0"
+    }
+  },
+  "trace_ref": "harness://aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/events",
+  "error": null,
+  "started_at": "2026-09-23T02:00:00Z",
+  "completed_at": "2026-09-23T02:00:02Z",
+  "metadata": {
+    "execution_driver": "plugin:vai-adlc-driver-deepseek/0.1.0"
+  }
+}

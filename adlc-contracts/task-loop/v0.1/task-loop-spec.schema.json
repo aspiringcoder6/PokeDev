@@ -1,0 +1,119 @@
+{
+  "$defs": {
+    "TaskLoopCriterion": {
+      "additionalProperties": false,
+      "properties": {
+        "criterion_id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "description": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "expected_content": {
+          "maxLength": 16384,
+          "title": "Expected Content",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "verifier_ref": {
+          "const": "verifier:task-loop-mock-file/0.1.0",
+          "default": "verifier:task-loop-mock-file/0.1.0",
+          "title": "Verifier Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "criterion_id",
+        "description",
+        "path",
+        "expected_content"
+      ],
+      "title": "TaskLoopCriterion",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/task-loop/v0.1/task-loop-spec.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Full immutable objective and machine criteria, repeated in every prompt.",
+  "properties": {
+    "acceptance_criteria": {
+      "items": {
+        "$ref": "#/$defs/TaskLoopCriterion"
+      },
+      "maxItems": 32,
+      "minItems": 1,
+      "title": "Acceptance Criteria",
+      "type": "array"
+    },
+    "context_budget_chars": {
+      "default": 131072,
+      "maximum": 262144,
+      "minimum": 1024,
+      "title": "Context Budget Chars",
+      "type": "integer"
+    },
+    "initial_files": {
+      "additionalProperties": {
+        "maxLength": 16384,
+        "type": "string"
+      },
+      "title": "Initial Files",
+      "type": "object"
+    },
+    "max_iterations": {
+      "default": 3,
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Max Iterations",
+      "type": "integer"
+    },
+    "max_stalled_iterations": {
+      "default": 2,
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Max Stalled Iterations",
+      "type": "integer"
+    },
+    "revision": {
+      "default": 1,
+      "minimum": 1,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "spec_id": {
+      "format": "uuid",
+      "title": "Spec Id",
+      "type": "string"
+    },
+    "specification": {
+      "maxLength": 16384,
+      "minLength": 1,
+      "title": "Specification",
+      "type": "string"
+    }
+  },
+  "required": [
+    "spec_id",
+    "specification",
+    "acceptance_criteria"
+  ],
+  "title": "TaskLoopSpec",
+  "type": "object"
+}

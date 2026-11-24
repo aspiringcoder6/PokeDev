@@ -1,0 +1,17 @@
+{
+  "tool": "skilltree_upsert_node",
+  "arguments": {
+    "contract_id": "11111111-1111-4111-8111-111111111111",
+    "expected_revision": 1,
+    "idempotency_key": "roadmap.task.1",
+    "node": {
+      "kind": "TASK",
+      "title": "Deliver the contract foundation",
+      "description": "Preserve complete requirements and stable IDs; do not treat declaration validation as executed tests.",
+      "acceptance_criteria": [
+        {"description": "A human can review the exact revision and digest.", "verification": "HUMAN"},
+        {"description": "Stale edits and post-approval writes are rejected.", "verification": "TEST", "verifier_ref": "adlc-verifier:contract-regression/0.1"}
+      ]
+    }
+  }
+}

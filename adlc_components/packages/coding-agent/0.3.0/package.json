@@ -1,0 +1,625 @@
+{
+  "schema_version": "0.1",
+  "status": "PUBLISHED",
+  "kind": "AGENT",
+  "implementation": {
+    "adapter_type": "AGENT_PROVIDER",
+    "adapter_ref": "agent-provider:deepseek-harness",
+    "entrypoint": "coding-task"
+  },
+  "execution_profile": {
+    "provider_ref": "agent-provider:deepseek-harness",
+    "model_ref": "model:deepseek-harness/configured",
+    "system_prompt_ref": "prompt:deepseek-harness-coding-agent/0.1.0",
+    "rule_set_refs": [
+      "rules:adlc-safe-execution/0.1.0"
+    ],
+    "hook_refs": [
+      "hook:task-lifecycle/0.1.0"
+    ],
+    "capabilities": {
+      "tool_refs": [
+        "tool:deepseek-harness-default"
+      ],
+      "skill_refs": [],
+      "plugin_refs": [
+        "plugin:vai-adlc-driver-deepseek/0.2.0",
+        "plugin:vai-adlc-runtime/0.3.0",
+        "plugin:vai-adlc-verify-structured/0.1.0",
+        "plugin:vai-adlc-artifacts-git/0.2.0",
+        "plugin:vai-adlc-local-projects/0.1.0"
+      ],
+      "mcp_server_refs": []
+    },
+    "memory_policy_ref": "memory:dsh-session/0.1.0",
+    "sandbox_policy_ref": "sandbox:harness-isolated-git/0.1.0",
+    "secret_refs": {}
+  },
+  "default_policies": {
+    "retry": {
+      "max_attempts": 1
+    },
+    "timeout_ms": 900000,
+    "approval": {
+      "gate_type": null
+    },
+    "permissions": {
+      "mode": "PACKAGE_ALLOWLIST"
+    },
+    "resources": {
+      "runtime": "deepseek-harness",
+      "result_delivery": "signed-webhook",
+      "verification": "plugin",
+      "plugin_integrity": "required",
+      "artifact_capture": "isolated-git-diff"
+    },
+    "runtime_overridable": [
+      "/policies/timeout_ms"
+    ]
+  },
+  "compatibility": {
+    "engine": {
+      "minimum_version": "0.1.0"
+    },
+    "execution_contract_versions": [
+      "0.1"
+    ]
+  },
+  "package_id": "coding-agent",
+  "version": "0.3.0",
+  "name": "Coding Agent",
+  "description": "Selected-project Coding Agent with explicit Harness or OpenCode iteration runtime and kernel-owned verification.",
+  "interface": {
+    "inputs": [
+      {
+        "name": "requirement",
+        "schema_ref": "adlc://schemas/requirement/0.1",
+        "required": true,
+        "multiple": false,
+        "description": "The scoped implementation requirement."
+      },
+      {
+        "name": "task_loop_spec",
+        "schema_ref": "adlc://schemas/task-loop-spec/0.2",
+        "required": false,
+        "multiple": false,
+        "description": "Pinned base commit, complete specification, writable files, acceptance checks, and loop budgets."
+      }
+    ],
+    "outputs": [
+      {
+        "name": "source_patch",
+        "schema_ref": "adlc://schemas/source-patch/0.1",
+        "required": true,
+        "multiple": false,
+        "description": "Publisher-owned reference to the captured local Git diff."
+      },
+      {
+        "name": "contract_reference",
+        "schema_ref": "adlc://schemas/contract-reference/0.1",
+        "required": false,
+        "multiple": false
+      },
+      {
+        "name": "candidate",
+        "schema_ref": "adlc://schemas/task-loop-candidate/0.2",
+        "required": false,
+        "multiple": false,
+        "description": "Checksummed cumulative UTF-8 overlay on the pinned base."
+      },
+      {
+        "name": "verification_report",
+        "schema_ref": "adlc://schemas/task-loop-verification/0.2",
+        "required": false,
+        "multiple": false,
+        "description": "Real protected unittest command results tied to the exact candidate."
+      },
+      {
+        "name": "contract_verification_report",
+        "schema_ref": "adlc://schemas/coding-agent-contract-verification/0.1",
+        "required": false,
+        "multiple": false,
+        "description": "Kernel-owned contract checks bound to the verified loop candidate."
+      }
+    ]
+  },
+  "configuration_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "approved_contract_ref": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "additionalProperties": false,
+        "required": [
+          "schema_ref",
+          "contract_id",
+          "revision",
+          "content_digest"
+        ],
+        "properties": {
+          "schema_ref": {
+            "const": "adlc://schemas/skilltree-contract/0.1"
+          },
+          "contract_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 512
+          },
+          "content_digest": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        }
+      },
+      "task_loop_enabled": {
+        "type": "boolean",
+        "description": "Repeat fresh implementation sessions until the supplied task loop checks pass."
+      },
+      "submission_mode": {
+        "type": "string",
+        "enum": [
+          "AUTO",
+          "MANUAL"
+        ]
+      },
+      "loop_runtime": {
+        "type": "string",
+        "enum": [
+          "HARNESS",
+          "OPENCODE"
+        ],
+        "description": "Runtime for new task loops; does not reroute accepted plans."
+      }
+    }
+  },
+  "defaults": {
+    "approved_contract_ref": null,
+    "task_loop_enabled": false,
+    "submission_mode": "MANUAL",
+    "loop_runtime": "HARNESS"
+  },
+  "override_allowlist": [
+    "/configuration/approved_contract_ref",
+    "/configuration/task_loop_enabled",
+    "/configuration/submission_mode",
+    "/policies/retry/max_attempts",
+    "/policies/timeout_ms",
+    "/configuration/loop_runtime"
+  ],
+  "metadata": {
+    "maintainer": "adlc",
+    "activation": "opt-in",
+    "execution_variants": {
+      "simple": {
+        "implementation": {
+          "adapter_type": "AGENT_PROVIDER",
+          "adapter_ref": "agent-provider:deepseek-harness",
+          "entrypoint": "coding-task"
+        },
+        "execution_profile": {
+          "provider_ref": "agent-provider:deepseek-harness",
+          "model_ref": "model:deepseek-harness/configured",
+          "system_prompt_ref": "prompt:deepseek-harness-coding-agent/0.1.0",
+          "rule_set_refs": [
+            "rules:adlc-safe-execution/0.1.0"
+          ],
+          "hook_refs": [
+            "hook:task-lifecycle/0.1.0"
+          ],
+          "capabilities": {
+            "tool_refs": [
+              "tool:deepseek-harness-default"
+            ],
+            "skill_refs": [],
+            "plugin_refs": [
+              "plugin:vai-adlc-driver-deepseek/0.2.0",
+              "plugin:vai-adlc-runtime/0.3.0",
+              "plugin:vai-adlc-verify-structured/0.1.0",
+              "plugin:vai-adlc-artifacts-git/0.2.0",
+              "plugin:vai-adlc-local-projects/0.1.0"
+            ],
+            "mcp_server_refs": []
+          },
+          "memory_policy_ref": "memory:dsh-session/0.1.0",
+          "sandbox_policy_ref": "sandbox:harness-isolated-git/0.1.0",
+          "secret_refs": {}
+        },
+        "default_policies": {
+          "retry": {
+            "max_attempts": 1
+          },
+          "timeout_ms": 900000,
+          "approval": {
+            "gate_type": null
+          },
+          "permissions": {
+            "mode": "PACKAGE_ALLOWLIST"
+          },
+          "resources": {
+            "runtime": "deepseek-harness",
+            "result_delivery": "signed-webhook",
+            "verification": "plugin",
+            "plugin_integrity": "required",
+            "artifact_capture": "isolated-git-diff"
+          },
+          "runtime_overridable": [
+            "/policies/timeout_ms"
+          ]
+        },
+        "defaults": {
+          "harness_profile_ref": "harness-profile:adlc-coding-artifacts/0.1.0",
+          "result_schema_ref": "adlc://schemas/source-patch/0.1",
+          "submission_mode": "MANUAL",
+          "callback_ref": "adlc-primary",
+          "plugin_lock": [
+            {
+              "plugin_id": "vai-adlc-driver-deepseek",
+              "version": "0.2.0",
+              "content_digest": "sha256:fd008789399cf9ce4770281e0b955c38a45dbd7e863425fdac82a35c806a5a63",
+              "required": true
+            },
+            {
+              "plugin_id": "vai-adlc-runtime",
+              "version": "0.3.0",
+              "content_digest": "sha256:0739d9e137ece1ebd6c5b97264b39100b4f56b466a7a5b2c18f1e18233f8b6e7",
+              "required": true
+            },
+            {
+              "plugin_id": "vai-adlc-verify-structured",
+              "version": "0.1.0",
+              "content_digest": "sha256:e0c50d273c1b9b8f29679a0d5e0f213cef926d5ff057850a3e0da9f039a3a843",
+              "required": true
+            },
+            {
+              "plugin_id": "vai-adlc-artifacts-git",
+              "version": "0.2.0",
+              "content_digest": "sha256:f4dccc95a0266a47611bd163b970c621fc598801497b65078d1276e6da7bf9fc",
+              "required": true
+            },
+            {
+              "plugin_id": "vai-adlc-local-projects",
+              "version": "0.1.0",
+              "content_digest": "sha256:6cfa74d38fb0fc60efa1993f855c3f94e694e77978b55146a941ff4fdff6c691",
+              "required": true
+            }
+          ]
+        }
+      },
+      "contract": {
+        "implementation": {
+          "adapter_type": "AGENT_PROVIDER",
+          "adapter_ref": "agent-provider:deepseek-harness",
+          "entrypoint": "contract-coding"
+        },
+        "execution_profile": {
+          "provider_ref": "agent-provider:deepseek-harness",
+          "model_ref": "model:my-codex/cx/gpt-5.6-luna",
+          "system_prompt_ref": "prompt:adlc-contract-coding/0.1.0",
+          "rule_set_refs": [
+            "rules:adlc-contract-repository/0.1.0"
+          ],
+          "hook_refs": [
+            "hook:task-lifecycle/0.1.0"
+          ],
+          "capabilities": {
+            "tool_refs": [
+              "tool:contract_get_context/0.1.0",
+              "tool:contract_list_files/0.1.0",
+              "tool:contract_read_file/0.1.0",
+              "tool:contract_write_file/0.1.0"
+            ],
+            "skill_refs": [],
+            "mcp_server_refs": [],
+            "plugin_refs": [
+              "plugin:vai-adlc-driver-deepseek/0.2.0",
+              "plugin:vai-adlc-runtime/0.3.0",
+              "plugin:vai-adlc-artifacts-git/0.2.0",
+              "plugin:vai-adlc-contract-execution/0.1.0",
+              "plugin:vai-adlc-contract-recovery/0.1.0",
+              "plugin:vai-adlc-local-projects/0.1.0"
+            ]
+          },
+          "memory_policy_ref": "memory:dsh-session/0.1.0",
+          "sandbox_policy_ref": "sandbox:harness-contract-tools-only/0.1.0",
+          "secret_refs": {}
+        },
+        "default_policies": {
+          "retry": {
+            "max_attempts": 1
+          },
+          "timeout_ms": 900000,
+          "approval": {
+            "gate_type": null
+          },
+          "permissions": {
+            "mode": "PACKAGE_ALLOWLIST"
+          },
+          "resources": {
+            "runtime": "deepseek-harness-contract-recovery",
+            "result_delivery": "signed-webhook",
+            "verification": "captured-contract-predicates",
+            "plugin_integrity": "required",
+            "recovery": "exact-checkpoint-no-model-replay"
+          },
+          "runtime_overridable": [
+            "/policies/timeout_ms"
+          ]
+        },
+        "defaults": {
+          "approved_contract_ref": null,
+          "harness_profile_ref": "harness-profile:adlc-contract-coding/0.1.0",
+          "result_schema_ref": "adlc://schemas/contract-execution-result/0.1",
+          "submission_mode": "MANUAL",
+          "callback_ref": "adlc-primary",
+          "plugin_lock": [
+            {
+              "plugin_id": "vai-adlc-driver-deepseek",
+              "version": "0.2.0",
+              "content_digest": "sha256:fd008789399cf9ce4770281e0b955c38a45dbd7e863425fdac82a35c806a5a63",
+              "required": true
+            },
+            {
+              "plugin_id": "vai-adlc-runtime",
+              "version": "0.3.0",
+              "content_digest": "sha256:0739d9e137ece1ebd6c5b97264b39100b4f56b466a7a5b2c18f1e18233f8b6e7",
+              "required": true
+            },
+            {
+              "plugin_id": "vai-adlc-artifacts-git",
+              "version": "0.2.0",
+              "content_digest": "sha256:f4dccc95a0266a47611bd163b970c621fc598801497b65078d1276e6da7bf9fc",
+              "required": true
+            },
+            {
+              "plugin_id": "vai-adlc-contract-execution",
+              "version": "0.1.0",
+              "content_digest": "sha256:353d8ac60417dd69c550059cb8acdd14171d096608feb7d0d049645c56de3231",
+              "required": true
+            },
+            {
+              "plugin_id": "vai-adlc-contract-recovery",
+              "version": "0.1.0",
+              "content_digest": "sha256:5d16929b6919c74233619ff6674f5d1bde1e12075c6242efa06ffc0a039bf139",
+              "required": true
+            },
+            {
+              "plugin_id": "vai-adlc-local-projects",
+              "version": "0.1.0",
+              "content_digest": "sha256:6cfa74d38fb0fc60efa1993f855c3f94e694e77978b55146a941ff4fdff6c691",
+              "required": true
+            }
+          ],
+          "recovery_ref": "plugin:vai-adlc-contract-recovery/0.1.0"
+        }
+      },
+      "task_loop": {
+        "implementation": {
+          "adapter_type": "AGENT_PROVIDER",
+          "adapter_ref": "agent-provider:task-loop-opencode",
+          "entrypoint": "coding-task-loop"
+        },
+        "execution_profile": {
+          "provider_ref": "agent-provider:task-loop-opencode",
+          "model_ref": "model:aigateway/MiniMax/MiniMax-M3",
+          "system_prompt_ref": "prompt:task-loop-full-spec/0.2.0",
+          "rule_set_refs": [
+            "rules:adlc-safe-execution/0.1.0"
+          ],
+          "hook_refs": [
+            "hook:task-lifecycle/0.1.0"
+          ],
+          "capabilities": {
+            "tool_refs": [
+              "tool:opencode-vcs-diff",
+              "verifier:python-unittest/0.1.0"
+            ],
+            "skill_refs": [],
+            "plugin_refs": [],
+            "mcp_server_refs": []
+          },
+          "memory_policy_ref": "memory:task-loop-fresh-context/0.1.0",
+          "sandbox_policy_ref": "sandbox:task-loop-pinned-worktrees/0.1.0",
+          "secret_refs": {}
+        },
+        "default_policies": {
+          "retry": {
+            "max_attempts": 3
+          },
+          "timeout_ms": 120000,
+          "approval": {
+            "gate_type": "AFTER_TASK"
+          },
+          "permissions": {
+            "mode": "PACKAGE_ALLOWLIST"
+          },
+          "resources": {
+            "verification_mode": "COMMAND",
+            "candidate_storage": "sqlite",
+            "workspace_mode": "local-detached-git-worktrees"
+          },
+          "runtime_overridable": []
+        },
+        "defaults": {}
+      },
+      "contract_task_loop": {
+        "implementation": {
+          "adapter_type": "AGENT_PROVIDER",
+          "adapter_ref": "agent-provider:coding-agent-contract-loop",
+          "entrypoint": "coding-task-loop"
+        },
+        "execution_profile": {
+          "provider_ref": "agent-provider:coding-agent-contract-loop",
+          "model_ref": "model:aigateway/MiniMax/MiniMax-M3",
+          "system_prompt_ref": "prompt:coding-agent-contract-loop/0.1.0",
+          "rule_set_refs": [
+            "rules:adlc-contract-repository/0.1.0"
+          ],
+          "hook_refs": [
+            "hook:task-lifecycle/0.1.0"
+          ],
+          "capabilities": {
+            "tool_refs": [
+              "tool:coding-agent-apply-proposal/0.1.0",
+              "verifier:python-unittest/0.1.0"
+            ],
+            "skill_refs": [],
+            "plugin_refs": [],
+            "mcp_server_refs": []
+          },
+          "memory_policy_ref": "memory:task-loop-fresh-context/0.1.0",
+          "sandbox_policy_ref": "sandbox:coding-agent-contract-proposals/0.1.0",
+          "secret_refs": {}
+        },
+        "default_policies": {
+          "retry": {
+            "max_attempts": 3
+          },
+          "timeout_ms": 120000,
+          "approval": {
+            "gate_type": "AFTER_TASK"
+          },
+          "permissions": {
+            "mode": "PACKAGE_ALLOWLIST"
+          },
+          "resources": {
+            "verification_mode": "COMMAND",
+            "candidate_storage": "sqlite",
+            "workspace_mode": "local-detached-git-worktrees",
+            "contract_enforcement": "kernel-file-proposals"
+          },
+          "runtime_overridable": []
+        },
+        "defaults": {}
+      },
+      "harness_task_loop": {
+        "implementation": {
+          "adapter_type": "AGENT_PROVIDER",
+          "adapter_ref": "agent-provider:task-loop-harness",
+          "entrypoint": "coding-task-loop"
+        },
+        "execution_profile": {
+          "provider_ref": "agent-provider:task-loop-harness",
+          "model_ref": "model:my-codex/cx/gpt-5.6-luna",
+          "system_prompt_ref": "prompt:harness-loop-proposal/0.1.0",
+          "rule_set_refs": [
+            "rules:adlc-safe-execution/0.1.0"
+          ],
+          "hook_refs": [
+            "hook:task-lifecycle/0.1.0"
+          ],
+          "capabilities": {
+            "tool_refs": [
+              "tool:kernel-apply-file-proposal/0.1.0",
+              "verifier:python-unittest/0.1.0"
+            ],
+            "skill_refs": [],
+            "plugin_refs": [
+              "plugin:vai-adlc-task-loop/0.1.0",
+              "plugin:vai-adlc-runtime/0.3.0"
+            ],
+            "mcp_server_refs": []
+          },
+          "memory_policy_ref": "memory:task-loop-fresh-context/0.1.0",
+          "sandbox_policy_ref": "sandbox:harness-loop-no-tools/0.1.0",
+          "secret_refs": {}
+        },
+        "default_policies": {
+          "retry": {
+            "max_attempts": 3
+          },
+          "timeout_ms": 120000,
+          "approval": {
+            "gate_type": "AFTER_TASK"
+          },
+          "permissions": {
+            "mode": "PACKAGE_ALLOWLIST"
+          },
+          "resources": {
+            "runtime": "deepseek-harness-iterations",
+            "verification_mode": "COMMAND",
+            "candidate_storage": "sqlite",
+            "workspace_mode": "kernel-owned-worktrees",
+            "proposal_mode": "file-replacements-only",
+            "cost_reporting": "unavailable",
+            "contract_enforcement": "not-attached"
+          },
+          "runtime_overridable": []
+        },
+        "defaults": {}
+      },
+      "harness_contract_task_loop": {
+        "implementation": {
+          "adapter_type": "AGENT_PROVIDER",
+          "adapter_ref": "agent-provider:coding-agent-harness-contract-loop",
+          "entrypoint": "coding-task-loop"
+        },
+        "execution_profile": {
+          "provider_ref": "agent-provider:coding-agent-harness-contract-loop",
+          "model_ref": "model:my-codex/cx/gpt-5.6-luna",
+          "system_prompt_ref": "prompt:harness-loop-proposal/0.1.0",
+          "rule_set_refs": [
+            "rules:adlc-contract-repository/0.1.0"
+          ],
+          "hook_refs": [
+            "hook:task-lifecycle/0.1.0"
+          ],
+          "capabilities": {
+            "tool_refs": [
+              "tool:kernel-apply-file-proposal/0.1.0",
+              "verifier:python-unittest/0.1.0"
+            ],
+            "skill_refs": [],
+            "plugin_refs": [
+              "plugin:vai-adlc-task-loop/0.1.0",
+              "plugin:vai-adlc-runtime/0.3.0"
+            ],
+            "mcp_server_refs": []
+          },
+          "memory_policy_ref": "memory:task-loop-fresh-context/0.1.0",
+          "sandbox_policy_ref": "sandbox:harness-loop-no-tools/0.1.0",
+          "secret_refs": {}
+        },
+        "default_policies": {
+          "retry": {
+            "max_attempts": 3
+          },
+          "timeout_ms": 120000,
+          "approval": {
+            "gate_type": "AFTER_TASK"
+          },
+          "permissions": {
+            "mode": "PACKAGE_ALLOWLIST"
+          },
+          "resources": {
+            "runtime": "deepseek-harness-iterations",
+            "verification_mode": "COMMAND",
+            "candidate_storage": "sqlite",
+            "workspace_mode": "kernel-owned-worktrees",
+            "proposal_mode": "file-replacements-only",
+            "cost_reporting": "unavailable",
+            "contract_enforcement": "kernel-file-proposals"
+          },
+          "runtime_overridable": []
+        },
+        "defaults": {}
+      }
+    },
+    "merged_packages": [
+      "coding-agent-deepseek-harness",
+      "coding-agent-contract-harness",
+      "task-loop-opencode"
+    ],
+    "contract_and_task_loop_composable": true,
+    "local_project_required": true,
+    "iteration_protocol_ref": "task-loop-runtime:iteration/0.2.0",
+    "iteration_plugin_digest": "sha256:7670d86d64fdcd6d06acbb268f64000ee2b2967a642f1c14273c7ea6f06d552f"
+  }
+}

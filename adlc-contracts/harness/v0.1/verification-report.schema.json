@@ -1,0 +1,93 @@
+{
+  "$defs": {
+    "HarnessVerificationCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "check_id": {
+          "minLength": 1,
+          "title": "Check Id",
+          "type": "string"
+        },
+        "evidence_artifact_refs": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Evidence Artifact Refs",
+          "type": "array"
+        },
+        "status": {
+          "$ref": "#/$defs/HarnessVerificationStatus"
+        },
+        "summary": {
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "check_id",
+        "status",
+        "summary"
+      ],
+      "title": "HarnessVerificationCheck",
+      "type": "object"
+    },
+    "HarnessVerificationStatus": {
+      "enum": [
+        "PASSED",
+        "FAILED",
+        "ERROR",
+        "SKIPPED"
+      ],
+      "title": "HarnessVerificationStatus",
+      "type": "string"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/harness/v0.1/verification-report.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "checks": {
+      "items": {
+        "$ref": "#/$defs/HarnessVerificationCheck"
+      },
+      "title": "Checks",
+      "type": "array"
+    },
+    "completed_at": {
+      "format": "date-time",
+      "title": "Completed At",
+      "type": "string"
+    },
+    "evidence_artifact_refs": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Evidence Artifact Refs",
+      "type": "array"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/HarnessVerificationStatus"
+    },
+    "verifier_ref": {
+      "minLength": 1,
+      "title": "Verifier Ref",
+      "type": "string"
+    }
+  },
+  "required": [
+    "verifier_ref",
+    "status",
+    "started_at",
+    "completed_at"
+  ],
+  "title": "HarnessVerificationReport",
+  "type": "object"
+}

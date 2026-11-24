@@ -1,0 +1,166 @@
+{
+  "$defs": {
+    "HarnessInteractionKind": {
+      "enum": [
+        "APPROVAL",
+        "FORM"
+      ],
+      "title": "HarnessInteractionKind",
+      "type": "string"
+    },
+    "HarnessInteractionRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "input_schema": {
+          "additionalProperties": true,
+          "title": "Input Schema",
+          "type": "object"
+        },
+        "interaction_id": {
+          "format": "uuid",
+          "title": "Interaction Id",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/HarnessInteractionKind"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "prompt": {
+          "minLength": 1,
+          "title": "Prompt",
+          "type": "string"
+        },
+        "requested_at": {
+          "format": "date-time",
+          "title": "Requested At",
+          "type": "string"
+        },
+        "resolved_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Resolved At"
+        },
+        "response": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Response"
+        },
+        "schema_ref": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Schema Ref"
+        },
+        "status": {
+          "$ref": "#/$defs/HarnessInteractionStatus"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "ui_schema": {
+          "additionalProperties": true,
+          "title": "Ui Schema",
+          "type": "object"
+        }
+      },
+      "required": [
+        "interaction_id",
+        "kind",
+        "status",
+        "title",
+        "prompt",
+        "requested_at"
+      ],
+      "title": "HarnessInteractionRecord",
+      "type": "object"
+    },
+    "HarnessInteractionStatus": {
+      "enum": [
+        "PENDING",
+        "SUBMITTED",
+        "CANCELLED",
+        "EXPIRED"
+      ],
+      "title": "HarnessInteractionStatus",
+      "type": "string"
+    },
+    "HarnessSessionStatus": {
+      "enum": [
+        "ACCEPTED",
+        "PROVISIONING",
+        "RUNNING",
+        "WAITING_INTERACTION",
+        "VERIFYING",
+        "READY_FOR_SUBMISSION",
+        "DELIVERING",
+        "SUCCEEDED",
+        "FAILED",
+        "CANCELLED"
+      ],
+      "title": "HarnessSessionStatus",
+      "type": "string"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/harness/v0.1/interaction-receipt.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "interaction": {
+      "$ref": "#/$defs/HarnessInteractionRecord"
+    },
+    "replayed": {
+      "default": false,
+      "title": "Replayed",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "0.1",
+      "default": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "session_id": {
+      "minLength": 1,
+      "title": "Session Id",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/HarnessSessionStatus"
+    }
+  },
+  "required": [
+    "session_id",
+    "interaction",
+    "status"
+  ],
+  "title": "HarnessInteractionReceipt",
+  "type": "object"
+}

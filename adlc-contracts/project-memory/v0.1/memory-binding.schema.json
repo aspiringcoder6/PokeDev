@@ -1,0 +1,74 @@
+{
+  "$id": "https://adlc.dev/contracts/project-memory/v0.1/memory-binding.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "base_commit": {
+      "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$",
+      "title": "Base Commit",
+      "type": "string"
+    },
+    "project_id": {
+      "format": "uuid",
+      "title": "Project Id",
+      "type": "string"
+    },
+    "source_attempt_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Attempt Id"
+    },
+    "source_ref": {
+      "maxLength": 140,
+      "title": "Source Ref",
+      "type": "string"
+    },
+    "source_session_id": {
+      "anyOf": [
+        {
+          "pattern": "^[A-Za-z0-9._-]{1,255}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Session Id"
+    },
+    "source_task_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Task Id"
+    },
+    "workflow_run_id": {
+      "format": "uuid",
+      "title": "Workflow Run Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "workflow_run_id",
+    "project_id",
+    "base_commit",
+    "source_ref"
+  ],
+  "title": "MemoryBinding",
+  "type": "object"
+}

@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.dev/contracts/task-loop-runtime/v0.2/iteration-outcome.schema.json",
+  "$defs": {
+    "LoopRuntimeBindingV2": {
+      "additionalProperties": false,
+      "properties": {
+        "protocol_ref": {
+          "const": "task-loop-runtime:iteration/0.2.0",
+          "default": "task-loop-runtime:iteration/0.2.0",
+          "title": "Protocol Ref",
+          "type": "string"
+        },
+        "runtime_ref": {
+          "maxLength": 160,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_./:-]+$",
+          "title": "Runtime Ref",
+          "type": "string"
+        },
+        "family": {
+          "enum": [
+            "OPENCODE",
+            "HARNESS",
+            "CUSTOM"
+          ],
+          "title": "Family",
+          "type": "string"
+        },
+        "provider_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_./:-]+$",
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "model_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_./:-]+$",
+          "title": "Model Id",
+          "type": "string"
+        },
+        "agent": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_./:-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Agent"
+        },
+        "modes": {
+          "items": {
+            "enum": [
+              "WORKSPACE_EDIT",
+              "FILE_PROPOSAL"
+            ],
+            "type": "string"
+          },
+          "maxItems": 2,
+          "minItems": 1,
+          "title": "Modes",
+          "type": "array"
+        },
+        "fresh_sessions": {
+          "const": true,
+          "default": true,
+          "title": "Fresh Sessions",
+          "type": "boolean"
+        },
+        "reported_usage": {
+          "const": true,
+          "default": true,
+          "title": "Reported Usage",
+          "type": "boolean"
+        },
+        "cancellation": {
+          "const": true,
+          "default": true,
+          "title": "Cancellation",
+          "type": "boolean"
+        },
+        "cost_reporting": {
+          "const": "UNAVAILABLE",
+          "default": "UNAVAILABLE",
+          "title": "Cost Reporting",
+          "type": "string"
+        }
+      },
+      "required": [
+        "runtime_ref",
+        "family",
+        "provider_id",
+        "model_id",
+        "modes"
+      ],
+      "title": "LoopRuntimeBindingV2",
+      "type": "object"
+    },
+    "LoopRuntimeUsageV2": {
+      "additionalProperties": false,
+      "properties": {
+        "input_tokens": {
+          "minimum": 0,
+          "title": "Input Tokens",
+          "type": "integer"
+        },
+        "output_tokens": {
+          "minimum": 0,
+          "title": "Output Tokens",
+          "type": "integer"
+        },
+        "total_tokens": {
+          "minimum": 0,
+          "title": "Total Tokens",
+          "type": "integer"
+        },
+        "cost": {
+          "title": "Cost",
+          "type": "null"
+        }
+      },
+      "required": [
+        "input_tokens",
+        "output_tokens",
+        "total_tokens",
+        "cost"
+      ],
+      "title": "LoopRuntimeUsageV2",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.2",
+      "default": "0.2",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "runtime": {
+      "$ref": "#/$defs/LoopRuntimeBindingV2"
+    },
+    "request_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Request Digest",
+      "type": "string"
+    },
+    "session_id": {
+      "maxLength": 512,
+      "minLength": 1,
+      "title": "Session Id",
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "WORKSPACE_EDIT",
+        "FILE_PROPOSAL"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "usage": {
+      "$ref": "#/$defs/LoopRuntimeUsageV2"
+    },
+    "context_compacted": {
+      "const": false,
+      "default": false,
+      "title": "Context Compacted",
+      "type": "boolean"
+    },
+    "tool_activity": {
+      "title": "Tool Activity",
+      "type": "boolean"
+    },
+    "files": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "maxLength": 16384,
+            "type": "string"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Files"
+    }
+  },
+  "required": [
+    "runtime",
+    "request_digest",
+    "session_id",
+    "mode",
+    "usage",
+    "tool_activity"
+  ],
+  "title": "LoopIterationOutcomeV2",
+  "type": "object"
+}

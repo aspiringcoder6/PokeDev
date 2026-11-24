@@ -1,0 +1,509 @@
+{
+  "$defs": {
+    "PerformanceBudget": {
+      "additionalProperties": false,
+      "description": "Bounded planning inputs only. No performance runner is registered.",
+      "properties": {
+        "duration_seconds": {
+          "maximum": 30,
+          "minimum": 1,
+          "title": "Duration Seconds",
+          "type": "integer"
+        },
+        "failed_requests_max": {
+          "maximum": 10,
+          "minimum": 0,
+          "title": "Failed Requests Max",
+          "type": "integer"
+        },
+        "max_requests": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Max Requests",
+          "type": "integer"
+        },
+        "p95_latency_ms_max": {
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "P95 Latency Ms Max",
+          "type": "integer"
+        },
+        "requests_per_second": {
+          "maximum": 5,
+          "minimum": 1,
+          "title": "Requests Per Second",
+          "type": "integer"
+        },
+        "virtual_users": {
+          "maximum": 5,
+          "minimum": 1,
+          "title": "Virtual Users",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "virtual_users",
+        "duration_seconds",
+        "requests_per_second",
+        "max_requests",
+        "p95_latency_ms_max",
+        "failed_requests_max"
+      ],
+      "title": "PerformanceBudget",
+      "type": "object"
+    },
+    "ProposalInit": {
+      "additionalProperties": false,
+      "properties": {
+        "idempotency_key": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9._:-]+$",
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "suite-revision",
+            "exploration",
+            "performance"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "operation": {
+          "const": "init",
+          "title": "Operation",
+          "type": "string"
+        },
+        "parent_reference": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProposalReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "rationale": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "source_plan_id": {
+          "format": "uuid",
+          "title": "Source Plan Id",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "operation",
+        "source_plan_id",
+        "kind",
+        "title",
+        "rationale",
+        "idempotency_key"
+      ],
+      "title": "ProposalInit",
+      "type": "object"
+    },
+    "ProposalPermissions": {
+      "additionalProperties": false,
+      "properties": {
+        "idempotency_key": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9._:-]+$",
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "operation": {
+          "const": "set_permissions",
+          "title": "Operation",
+          "type": "string"
+        },
+        "performance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PerformanceBudget"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "permissions": {
+          "$ref": "#/$defs/TestPermissions"
+        },
+        "reference": {
+          "$ref": "#/$defs/ProposalReference"
+        }
+      },
+      "required": [
+        "operation",
+        "reference",
+        "permissions",
+        "idempotency_key"
+      ],
+      "title": "ProposalPermissions",
+      "type": "object"
+    },
+    "ProposalReference": {
+      "additionalProperties": false,
+      "properties": {
+        "document_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Document Digest",
+          "type": "string"
+        },
+        "proposal_id": {
+          "format": "uuid",
+          "title": "Proposal Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "proposal_id",
+        "revision",
+        "document_digest"
+      ],
+      "title": "ProposalReference",
+      "type": "object"
+    },
+    "ProposalRemove": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "idempotency_key": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9._:-]+$",
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "operation": {
+          "const": "remove_case",
+          "title": "Operation",
+          "type": "string"
+        },
+        "reference": {
+          "$ref": "#/$defs/ProposalReference"
+        }
+      },
+      "required": [
+        "operation",
+        "reference",
+        "case_id",
+        "idempotency_key"
+      ],
+      "title": "ProposalRemove",
+      "type": "object"
+    },
+    "ProposalStatus": {
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "const": "get_status",
+          "title": "Operation",
+          "type": "string"
+        },
+        "proposal_id": {
+          "format": "uuid",
+          "title": "Proposal Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "operation",
+        "proposal_id"
+      ],
+      "title": "ProposalStatus",
+      "type": "object"
+    },
+    "ProposalUpsert": {
+      "additionalProperties": false,
+      "properties": {
+        "case": {
+          "$ref": "#/$defs/ReplayCase"
+        },
+        "idempotency_key": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9._:-]+$",
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "operation": {
+          "const": "upsert_case",
+          "title": "Operation",
+          "type": "string"
+        },
+        "reference": {
+          "$ref": "#/$defs/ProposalReference"
+        }
+      },
+      "required": [
+        "operation",
+        "reference",
+        "case",
+        "idempotency_key"
+      ],
+      "title": "ProposalUpsert",
+      "type": "object"
+    },
+    "ProposalValidate": {
+      "additionalProperties": false,
+      "properties": {
+        "idempotency_key": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9._:-]+$",
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "operation": {
+          "const": "validate",
+          "title": "Operation",
+          "type": "string"
+        },
+        "reference": {
+          "$ref": "#/$defs/ProposalReference"
+        }
+      },
+      "required": [
+        "operation",
+        "reference",
+        "idempotency_key"
+      ],
+      "title": "ProposalValidate",
+      "type": "object"
+    },
+    "ReplayCase": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "criterion_index": {
+          "maximum": 15,
+          "minimum": 0,
+          "title": "Criterion Index",
+          "type": "integer"
+        },
+        "criterion_node_id": {
+          "format": "uuid",
+          "title": "Criterion Node Id",
+          "type": "string"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected"
+        },
+        "expected_status": {
+          "default": 200,
+          "maximum": 599,
+          "minimum": 100,
+          "title": "Expected Status",
+          "type": "integer"
+        },
+        "method": {
+          "const": "GET",
+          "default": "GET",
+          "title": "Method",
+          "type": "string"
+        },
+        "path": {
+          "const": "/fixture",
+          "default": "/fixture",
+          "title": "Path",
+          "type": "string"
+        },
+        "pointer": {
+          "maxLength": 512,
+          "pattern": "^(?:|/(?:[^~]|~[01])*)$",
+          "title": "Pointer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "pointer",
+        "expected",
+        "criterion_node_id",
+        "criterion_index"
+      ],
+      "title": "ReplayCase",
+      "type": "object"
+    },
+    "TestPermissions": {
+      "additionalProperties": false,
+      "description": "The only reviewed target/data envelope today; not a broker permission grant.",
+      "properties": {
+        "allowed_methods": {
+          "items": {
+            "const": "GET",
+            "type": "string"
+          },
+          "maxItems": 1,
+          "minItems": 1,
+          "title": "Allowed Methods",
+          "type": "array"
+        },
+        "allowed_paths": {
+          "items": {
+            "const": "/fixture",
+            "type": "string"
+          },
+          "maxItems": 1,
+          "minItems": 1,
+          "title": "Allowed Paths",
+          "type": "array"
+        },
+        "cancellation": {
+          "const": "confirmed-worker-cancel",
+          "title": "Cancellation",
+          "type": "string"
+        },
+        "cleanup": {
+          "const": "release-owned-target",
+          "title": "Cleanup",
+          "type": "string"
+        },
+        "credential_ref": {
+          "const": "credential-profile:ephemeral-fixture/0.1.0",
+          "title": "Credential Ref",
+          "type": "string"
+        },
+        "data_scope": {
+          "const": "synthetic-run-owned-only",
+          "title": "Data Scope",
+          "type": "string"
+        },
+        "environment": {
+          "const": "non-production",
+          "title": "Environment",
+          "type": "string"
+        },
+        "max_duration_seconds": {
+          "maximum": 60,
+          "minimum": 1,
+          "title": "Max Duration Seconds",
+          "type": "integer"
+        },
+        "network_scope": {
+          "const": "allocated-loopback-target-only",
+          "title": "Network Scope",
+          "type": "string"
+        },
+        "target_profile_ref": {
+          "const": "target-profile:disposable-http-json/0.1.0",
+          "title": "Target Profile Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_profile_ref",
+        "credential_ref",
+        "environment",
+        "data_scope",
+        "allowed_methods",
+        "allowed_paths",
+        "network_scope",
+        "cleanup",
+        "cancellation",
+        "max_duration_seconds"
+      ],
+      "title": "TestPermissions",
+      "type": "object"
+    }
+  },
+  "$id": "https://adlc.dev/contracts/test-extensions/v0.1/proposal-bridge-command.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "command": {
+      "discriminator": {
+        "mapping": {
+          "get_status": "#/$defs/ProposalStatus",
+          "init": "#/$defs/ProposalInit",
+          "remove_case": "#/$defs/ProposalRemove",
+          "set_permissions": "#/$defs/ProposalPermissions",
+          "upsert_case": "#/$defs/ProposalUpsert",
+          "validate": "#/$defs/ProposalValidate"
+        },
+        "propertyName": "operation"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ProposalInit"
+        },
+        {
+          "$ref": "#/$defs/ProposalUpsert"
+        },
+        {
+          "$ref": "#/$defs/ProposalRemove"
+        },
+        {
+          "$ref": "#/$defs/ProposalPermissions"
+        },
+        {
+          "$ref": "#/$defs/ProposalStatus"
+        },
+        {
+          "$ref": "#/$defs/ProposalValidate"
+        }
+      ],
+      "title": "Command"
+    },
+    "session_id": {
+      "pattern": "^[A-Za-z0-9._-]{1,255}$",
+      "title": "Session Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "session_id",
+    "command"
+  ],
+  "title": "ProposalBridgeCommand",
+  "type": "object"
+}

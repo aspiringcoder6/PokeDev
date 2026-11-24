@@ -1,0 +1,87 @@
+{
+  "schema_version": "0.2",
+  "workflow_run": {
+    "initial_state": "CREATED",
+    "states": [
+      "CREATED",
+      "QUEUED",
+      "RUNNING",
+      "PAUSED",
+      "WAITING_APPROVAL",
+      "SUCCEEDED",
+      "FAILED",
+      "CANCELLED",
+      "COMPENSATING",
+      "COMPENSATED"
+    ],
+    "terminal_states": ["CANCELLED", "COMPENSATED"],
+    "transitions": {
+      "CREATED": ["QUEUED", "FAILED", "CANCELLED"],
+      "QUEUED": ["RUNNING", "PAUSED", "FAILED", "CANCELLED"],
+      "RUNNING": ["PAUSED", "WAITING_APPROVAL", "SUCCEEDED", "FAILED", "CANCELLED"],
+      "PAUSED": ["QUEUED", "FAILED", "CANCELLED"],
+      "WAITING_APPROVAL": ["QUEUED", "FAILED", "CANCELLED"],
+      "SUCCEEDED": ["COMPENSATING"],
+      "FAILED": ["COMPENSATING"],
+      "CANCELLED": [],
+      "COMPENSATING": ["COMPENSATED", "FAILED"],
+      "COMPENSATED": []
+    },
+    "guards": {
+      "SUCCEEDED->COMPENSATING": "authorized_compensation_command",
+      "FAILED->COMPENSATING": "authorized_compensation_command"
+    }
+  },
+  "task_run": {
+    "initial_state": "PENDING",
+    "states": [
+      "PENDING",
+      "READY",
+      "RUNNING",
+      "WAITING_APPROVAL",
+      "SUCCEEDED",
+      "FAILED",
+      "CANCELLED",
+      "SKIPPED",
+      "COMPENSATING",
+      "COMPENSATED"
+    ],
+    "terminal_states": ["CANCELLED", "SKIPPED", "COMPENSATED"],
+    "reopenable_states": ["FAILED"],
+    "transitions": {
+      "PENDING": ["READY", "FAILED", "CANCELLED", "SKIPPED"],
+      "READY": ["RUNNING", "FAILED", "CANCELLED", "SKIPPED"],
+      "RUNNING": ["READY", "WAITING_APPROVAL", "SUCCEEDED", "FAILED", "CANCELLED"],
+      "WAITING_APPROVAL": ["READY", "RUNNING", "SUCCEEDED", "FAILED", "CANCELLED"],
+      "SUCCEEDED": ["COMPENSATING"],
+      "FAILED": ["READY"],
+      "CANCELLED": [],
+      "SKIPPED": [],
+      "COMPENSATING": ["COMPENSATED", "FAILED"],
+      "COMPENSATED": []
+    },
+    "guards": {
+      "RUNNING->READY": "retry_policy_allows_new_attempt",
+      "WAITING_APPROVAL->READY": "before_task_approval_approved",
+      "WAITING_APPROVAL->RUNNING": "action_approval_approved_and_checkpoint_resumable",
+      "WAITING_APPROVAL->SUCCEEDED": "after_task_approval_approved",
+      "FAILED->READY": "authorized_manual_retry",
+      "SUCCEEDED->COMPENSATING": "authorized_compensation_command",
+      "COMPENSATING->COMPENSATED": "all_compensations_succeeded",
+      "COMPENSATING->FAILED": "compensation_failed"
+    }
+  },
+  "command_execution": {
+    "initial_state": "QUEUED",
+    "states": ["QUEUED", "RUNNING", "SUCCESS", "FAILED", "TIMEOUT", "CANCELLED"],
+    "terminal_states": ["SUCCESS", "FAILED", "TIMEOUT", "CANCELLED"],
+    "transitions": {
+      "QUEUED": ["RUNNING", "FAILED", "TIMEOUT", "CANCELLED"],
+      "RUNNING": ["SUCCESS", "FAILED", "TIMEOUT", "CANCELLED"],
+      "SUCCESS": [],
+      "FAILED": [],
+      "TIMEOUT": [],
+      "CANCELLED": []
+    }
+  }
+}

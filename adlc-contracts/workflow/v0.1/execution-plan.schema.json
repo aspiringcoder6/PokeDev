@@ -1,0 +1,852 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.dev/contracts/workflow/v0.1/execution-plan.schema.json",
+  "$defs": {
+    "ApprovalPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "gate_type": {
+          "anyOf": [
+            {
+              "enum": [
+                "BEFORE_TASK",
+                "ACTION",
+                "AFTER_TASK"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gate Type"
+        }
+      },
+      "title": "ApprovalPolicy",
+      "type": "object"
+    },
+    "CapabilityReferences": {
+      "additionalProperties": false,
+      "properties": {
+        "tool_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Tool Refs",
+          "type": "array"
+        },
+        "skill_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Skill Refs",
+          "type": "array"
+        },
+        "plugin_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Plugin Refs",
+          "type": "array"
+        },
+        "mcp_server_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Mcp Server Refs",
+          "type": "array"
+        }
+      },
+      "title": "CapabilityReferences",
+      "type": "object"
+    },
+    "ExecutionProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "provider_ref": {
+          "minLength": 1,
+          "title": "Provider Ref",
+          "type": "string"
+        },
+        "model_ref": {
+          "minLength": 1,
+          "title": "Model Ref",
+          "type": "string"
+        },
+        "system_prompt_ref": {
+          "minLength": 1,
+          "title": "System Prompt Ref",
+          "type": "string"
+        },
+        "rule_set_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Rule Set Refs",
+          "type": "array"
+        },
+        "hook_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Hook Refs",
+          "type": "array"
+        },
+        "capabilities": {
+          "$ref": "#/$defs/CapabilityReferences"
+        },
+        "memory_policy_ref": {
+          "minLength": 1,
+          "title": "Memory Policy Ref",
+          "type": "string"
+        },
+        "sandbox_policy_ref": {
+          "minLength": 1,
+          "title": "Sandbox Policy Ref",
+          "type": "string"
+        },
+        "secret_refs": {
+          "additionalProperties": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Secret Refs",
+          "type": "object"
+        }
+      },
+      "required": [
+        "provider_ref",
+        "model_ref",
+        "system_prompt_ref",
+        "memory_policy_ref",
+        "sandbox_policy_ref"
+      ],
+      "title": "ExecutionProfile",
+      "type": "object"
+    },
+    "InterfaceSlot": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Name",
+          "type": "string"
+        },
+        "schema_ref": {
+          "minLength": 1,
+          "title": "Schema Ref",
+          "type": "string"
+        },
+        "required": {
+          "title": "Required",
+          "type": "boolean"
+        },
+        "multiple": {
+          "title": "Multiple",
+          "type": "boolean"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "schema_ref",
+        "required",
+        "multiple"
+      ],
+      "title": "InterfaceSlot",
+      "type": "object"
+    },
+    "NodeDefaultPolicies": {
+      "additionalProperties": false,
+      "properties": {
+        "retry": {
+          "$ref": "#/$defs/RetryPolicy"
+        },
+        "timeout_ms": {
+          "minimum": 1,
+          "title": "Timeout Ms",
+          "type": "integer"
+        },
+        "approval": {
+          "$ref": "#/$defs/ApprovalPolicy"
+        },
+        "permissions": {
+          "$ref": "#/$defs/PermissionPolicy"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "title": "Resources",
+          "type": "object"
+        },
+        "runtime_overridable": {
+          "items": {
+            "minLength": 1,
+            "pattern": "^/(configuration|policies|execution_profile)(/.*)?$",
+            "type": "string"
+          },
+          "title": "Runtime Overridable",
+          "type": "array"
+        }
+      },
+      "required": [
+        "retry",
+        "timeout_ms"
+      ],
+      "title": "NodeDefaultPolicies",
+      "type": "object"
+    },
+    "NodeImplementation": {
+      "additionalProperties": false,
+      "properties": {
+        "adapter_type": {
+          "$ref": "#/$defs/PackageAdapterType"
+        },
+        "adapter_ref": {
+          "minLength": 1,
+          "title": "Adapter Ref",
+          "type": "string"
+        },
+        "entrypoint": {
+          "minLength": 1,
+          "title": "Entrypoint",
+          "type": "string"
+        }
+      },
+      "required": [
+        "adapter_type",
+        "adapter_ref",
+        "entrypoint"
+      ],
+      "title": "NodeImplementation",
+      "type": "object"
+    },
+    "NodePackageInterface": {
+      "additionalProperties": false,
+      "properties": {
+        "inputs": {
+          "items": {
+            "$ref": "#/$defs/InterfaceSlot"
+          },
+          "title": "Inputs",
+          "type": "array"
+        },
+        "outputs": {
+          "items": {
+            "$ref": "#/$defs/InterfaceSlot"
+          },
+          "title": "Outputs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "inputs",
+        "outputs"
+      ],
+      "title": "NodePackageInterface",
+      "type": "object"
+    },
+    "NodePackageKind": {
+      "enum": [
+        "AGENT",
+        "TESTING",
+        "REVIEW",
+        "APPROVAL",
+        "ROUTER",
+        "JOIN"
+      ],
+      "title": "NodePackageKind",
+      "type": "string"
+    },
+    "PackageAdapterType": {
+      "enum": [
+        "AGENT_PROVIDER",
+        "TESTING_PROVIDER",
+        "REVIEW_PROVIDER",
+        "CONTROL"
+      ],
+      "title": "PackageAdapterType",
+      "type": "string"
+    },
+    "PackageReference": {
+      "additionalProperties": false,
+      "properties": {
+        "package_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?$",
+          "title": "Package Id",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 128,
+          "minLength": 5,
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+          "title": "Version",
+          "type": "string"
+        },
+        "content_digest": {
+          "anyOf": [
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Content Digest"
+        }
+      },
+      "required": [
+        "package_id",
+        "version"
+      ],
+      "title": "PackageReference",
+      "type": "object"
+    },
+    "PermissionPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "const": "PACKAGE_ALLOWLIST",
+          "default": "PACKAGE_ALLOWLIST",
+          "title": "Mode",
+          "type": "string"
+        }
+      },
+      "title": "PermissionPolicy",
+      "type": "object"
+    },
+    "PlanStatus": {
+      "enum": [
+        "DRAFT",
+        "GENERATED",
+        "VALIDATED",
+        "APPROVED",
+        "EXECUTING",
+        "INVALID",
+        "REJECTED",
+        "SUPERSEDED"
+      ],
+      "title": "PlanStatus",
+      "type": "string"
+    },
+    "PlanTask": {
+      "additionalProperties": false,
+      "properties": {
+        "plan_task_id": {
+          "format": "uuid",
+          "title": "Plan Task Id",
+          "type": "string"
+        },
+        "source_workflow_stage_id": {
+          "format": "uuid",
+          "title": "Source Workflow Stage Id",
+          "type": "string"
+        },
+        "resolved_node_spec_id": {
+          "format": "uuid",
+          "title": "Resolved Node Spec Id",
+          "type": "string"
+        },
+        "resolved_node_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Resolved Node Digest",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "objective": {
+          "minLength": 1,
+          "title": "Objective",
+          "type": "string"
+        },
+        "task_type": {
+          "minLength": 1,
+          "title": "Task Type",
+          "type": "string"
+        },
+        "dependency_task_ids": {
+          "items": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "title": "Dependency Task Ids",
+          "type": "array"
+        },
+        "dependency_conditions": {
+          "items": {
+            "enum": [
+              "ON_SUCCESS",
+              "ON_FAILURE",
+              "ALWAYS",
+              "ON_DONE"
+            ],
+            "type": "string"
+          },
+          "title": "Dependency Conditions",
+          "type": "array"
+        },
+        "input_bindings": {
+          "items": {
+            "$ref": "#/$defs/ResolvedInputBinding"
+          },
+          "title": "Input Bindings",
+          "type": "array"
+        },
+        "inputs": {
+          "additionalProperties": true,
+          "title": "Inputs",
+          "type": "object"
+        },
+        "expected_artifacts": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Expected Artifacts",
+          "type": "array"
+        },
+        "assigned_capability": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Assigned Capability"
+        },
+        "required_environment": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Required Environment"
+        },
+        "effective_policies": {
+          "$ref": "#/$defs/NodeDefaultPolicies"
+        },
+        "planning_rationale": {
+          "default": "",
+          "title": "Planning Rationale",
+          "type": "string"
+        },
+        "priority": {
+          "default": 50,
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Priority",
+          "type": "integer"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        }
+      },
+      "required": [
+        "plan_task_id",
+        "source_workflow_stage_id",
+        "resolved_node_spec_id",
+        "resolved_node_digest",
+        "name",
+        "objective",
+        "task_type",
+        "effective_policies"
+      ],
+      "title": "PlanTask",
+      "type": "object"
+    },
+    "PlanValidationIssue": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Z][A-Z0-9_]*$",
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Path"
+        },
+        "details": {
+          "additionalProperties": true,
+          "title": "Details",
+          "type": "object"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "PlanValidationIssue",
+      "type": "object"
+    },
+    "PlanValidationStatus": {
+      "enum": [
+        "NOT_VALIDATED",
+        "VALID",
+        "INVALID"
+      ],
+      "title": "PlanValidationStatus",
+      "type": "string"
+    },
+    "ResolvedInputBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "source_plan_task_id": {
+          "format": "uuid",
+          "title": "Source Plan Task Id",
+          "type": "string"
+        },
+        "source_output": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Source Output",
+          "type": "string"
+        },
+        "target_input": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Target Input",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_plan_task_id",
+        "source_output",
+        "target_input"
+      ],
+      "title": "ResolvedInputBinding",
+      "type": "object"
+    },
+    "ResolvedNodeSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "0.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "resolved_node_spec_id": {
+          "format": "uuid",
+          "title": "Resolved Node Spec Id",
+          "type": "string"
+        },
+        "workflow_definition_id": {
+          "format": "uuid",
+          "title": "Workflow Definition Id",
+          "type": "string"
+        },
+        "workflow_definition_version": {
+          "minimum": 1,
+          "title": "Workflow Definition Version",
+          "type": "integer"
+        },
+        "source_stage_id": {
+          "format": "uuid",
+          "title": "Source Stage Id",
+          "type": "string"
+        },
+        "package_ref": {
+          "$ref": "#/$defs/PackageReference"
+        },
+        "kind": {
+          "$ref": "#/$defs/NodePackageKind"
+        },
+        "implementation": {
+          "$ref": "#/$defs/NodeImplementation"
+        },
+        "interface": {
+          "$ref": "#/$defs/NodePackageInterface"
+        },
+        "configuration": {
+          "additionalProperties": true,
+          "title": "Configuration",
+          "type": "object"
+        },
+        "execution_profile": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExecutionProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "policies": {
+          "$ref": "#/$defs/NodeDefaultPolicies"
+        },
+        "secret_refs": {
+          "additionalProperties": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Secret Refs",
+          "type": "object"
+        },
+        "resolved_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Resolved Digest",
+          "type": "string"
+        },
+        "resolver_version": {
+          "maxLength": 128,
+          "minLength": 5,
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+          "title": "Resolver Version",
+          "type": "string"
+        },
+        "resolved_at": {
+          "format": "date-time",
+          "title": "Resolved At",
+          "type": "string"
+        },
+        "validation_evidence": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Validation Evidence",
+          "type": "array"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        }
+      },
+      "required": [
+        "schema_version",
+        "resolved_node_spec_id",
+        "workflow_definition_id",
+        "workflow_definition_version",
+        "source_stage_id",
+        "package_ref",
+        "kind",
+        "implementation",
+        "interface",
+        "configuration",
+        "execution_profile",
+        "policies",
+        "secret_refs",
+        "resolved_digest",
+        "resolver_version",
+        "resolved_at",
+        "validation_evidence",
+        "metadata"
+      ],
+      "title": "ResolvedNodeSpec",
+      "type": "object"
+    },
+    "RetryPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "max_attempts": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Max Attempts",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "max_attempts"
+      ],
+      "title": "RetryPolicy",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "0.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "execution_plan_id": {
+      "format": "uuid",
+      "title": "Execution Plan Id",
+      "type": "string"
+    },
+    "workflow_definition_id": {
+      "format": "uuid",
+      "title": "Workflow Definition Id",
+      "type": "string"
+    },
+    "workflow_definition_version": {
+      "minimum": 1,
+      "title": "Workflow Definition Version",
+      "type": "integer"
+    },
+    "plan_version": {
+      "minimum": 1,
+      "title": "Plan Version",
+      "type": "integer"
+    },
+    "status": {
+      "$ref": "#/$defs/PlanStatus"
+    },
+    "validation_status": {
+      "$ref": "#/$defs/PlanValidationStatus"
+    },
+    "validation_errors": {
+      "items": {
+        "$ref": "#/$defs/PlanValidationIssue"
+      },
+      "title": "Validation Errors",
+      "type": "array"
+    },
+    "warnings": {
+      "items": {
+        "$ref": "#/$defs/PlanValidationIssue"
+      },
+      "title": "Warnings",
+      "type": "array"
+    },
+    "assumptions": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Assumptions",
+      "type": "array"
+    },
+    "approval_required": {
+      "title": "Approval Required",
+      "type": "boolean"
+    },
+    "tasks": {
+      "items": {
+        "$ref": "#/$defs/PlanTask"
+      },
+      "title": "Tasks",
+      "type": "array"
+    },
+    "resolved_node_specs": {
+      "items": {
+        "$ref": "#/$defs/ResolvedNodeSpec"
+      },
+      "title": "Resolved Node Specs",
+      "type": "array"
+    },
+    "generated_by": {
+      "minLength": 1,
+      "title": "Generated By",
+      "type": "string"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "approved_by": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Approved By"
+    },
+    "approved_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Approved At"
+    },
+    "supersedes_plan_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Supersedes Plan Id"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "execution_plan_id",
+    "workflow_definition_id",
+    "workflow_definition_version",
+    "plan_version",
+    "status",
+    "validation_status",
+    "validation_errors",
+    "warnings",
+    "assumptions",
+    "approval_required",
+    "tasks",
+    "resolved_node_specs",
+    "generated_by",
+    "generated_at",
+    "metadata"
+  ],
+  "title": "ExecutionPlan",
+  "type": "object"
+}

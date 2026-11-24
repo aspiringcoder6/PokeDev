@@ -1,0 +1,38 @@
+{
+  "$id": "https://adlc.dev/contracts/documents/v0.1/skilltree_remove_node.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "contract_id": {
+      "format": "uuid",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "expected_revision": {
+      "maximum": 512,
+      "minimum": 1,
+      "title": "Expected Revision",
+      "type": "integer"
+    },
+    "idempotency_key": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._:-]+$",
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "node_id": {
+      "format": "uuid",
+      "title": "Node Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "contract_id",
+    "expected_revision",
+    "idempotency_key",
+    "node_id"
+  ],
+  "title": "RemoveArguments",
+  "type": "object"
+}

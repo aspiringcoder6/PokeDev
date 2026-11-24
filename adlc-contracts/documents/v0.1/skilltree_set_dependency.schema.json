@@ -1,0 +1,62 @@
+{
+  "$id": "https://adlc.dev/contracts/documents/v0.1/skilltree_set_dependency.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "contract_id": {
+      "format": "uuid",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "expected_revision": {
+      "maximum": 512,
+      "minimum": 1,
+      "title": "Expected Revision",
+      "type": "integer"
+    },
+    "idempotency_key": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._:-]+$",
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "operation": {
+      "default": "ADD",
+      "enum": [
+        "ADD",
+        "REMOVE"
+      ],
+      "title": "Operation",
+      "type": "string"
+    },
+    "relation": {
+      "default": "REQUIRES",
+      "enum": [
+        "REQUIRES",
+        "CONTAINS"
+      ],
+      "title": "Relation",
+      "type": "string"
+    },
+    "source_id": {
+      "format": "uuid",
+      "title": "Source Id",
+      "type": "string"
+    },
+    "target_id": {
+      "format": "uuid",
+      "title": "Target Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "contract_id",
+    "expected_revision",
+    "idempotency_key",
+    "source_id",
+    "target_id"
+  ],
+  "title": "DependencyArguments",
+  "type": "object"
+}

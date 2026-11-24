@@ -1,0 +1,269 @@
+{
+  "id": "384475bf-596e-5882-956f-8e3e86175583",
+  "name": "Poke Dev 03 - Đề xuất kế hoạch (MOCK planner)",
+  "description": "Blueprint cấp cao để mở Propose Tasks, xem phân rã và duyệt execution plan. Local mặc định dùng planner MOCK.",
+  "is_component": false,
+  "locked": false,
+  "endpoint_name": "poke-dev-03-de-xuat-ke-hoach",
+  "tags": [
+    "Poke Dev",
+    "Live demo"
+  ],
+  "data": {
+    "adlc": {
+      "document_type": "WORKFLOW_DEFINITION",
+      "schema_version": "0.1",
+      "workflow_definition_id": "384475bf-596e-5882-956f-8e3e86175583",
+      "version": 1,
+      "status": "DRAFT",
+      "default_policies": {},
+      "metadata": {
+        "sample_set": "poke-dev-live-20261009",
+        "demo_note": "Propose Tasks là luồng đề xuất, khác Skilltree Contract Author. Mẫu dùng executor MOCK để chạy proposal sau khi người dùng duyệt; chưa cấu hình planner LLM thì không gọi đây là AI phân rã thực tế."
+      }
+    },
+    "nodes": [
+      {
+        "id": "pd03-design",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 70,
+          "y": 170
+        },
+        "data": {
+          "id": "pd03-design",
+          "type": "adlcStage",
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "16c0b2d1-02ba-5af8-a137-e821ee8dd98d",
+            "stage_type": "DESIGN",
+            "name": "Thiết kế tính năng hồ sơ",
+            "objective": "Thiết kế tính năng xem và cập nhật hồ sơ người dùng; phạm vi nhỏ, không triển khai thanh toán.",
+            "inputs": {
+              "requirement": "Thiết kế tính năng xem và cập nhật hồ sơ người dùng; phạm vi nhỏ, không triển khai thanh toán."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {
+              "delay_ms": 1000
+            },
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {
+              "sample_set": "poke-dev-live-20261009"
+            }
+          },
+          "node": {
+            "display_name": "Thiết kế tính năng hồ sơ",
+            "description": "Thiết kế tính năng xem và cập nhật hồ sơ người dùng; phạm vi nhỏ, không triển khai thanh toán.",
+            "template": {},
+            "outputs": [],
+            "type": "adlcStage",
+            "documentation": ""
+          }
+        }
+      },
+      {
+        "id": "pd03-build",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 430,
+          "y": 170
+        },
+        "data": {
+          "id": "pd03-build",
+          "type": "adlcStage",
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "8b73c167-2566-5f73-9f71-c82ef27b90df",
+            "stage_type": "IMPLEMENTATION",
+            "name": "Triển khai tính năng hồ sơ",
+            "objective": "Phân rã phần backend, giao diện và dữ liệu cho tính năng hồ sơ.",
+            "inputs": {
+              "requirement": "Phân rã phần backend, giao diện và dữ liệu cho tính năng hồ sơ."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {
+              "delay_ms": 1000
+            },
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {
+              "sample_set": "poke-dev-live-20261009"
+            }
+          },
+          "node": {
+            "display_name": "Triển khai tính năng hồ sơ",
+            "description": "Phân rã phần backend, giao diện và dữ liệu cho tính năng hồ sơ.",
+            "template": {},
+            "outputs": [],
+            "type": "adlcStage",
+            "documentation": ""
+          }
+        }
+      },
+      {
+        "id": "pd03-review",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 790,
+          "y": 170
+        },
+        "data": {
+          "id": "pd03-review",
+          "type": "adlcStage",
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "d7d339ea-afb4-57e7-9619-1c021797d603",
+            "stage_type": "REVIEW",
+            "name": "Review kết quả",
+            "objective": "Review phạm vi và kết quả tính năng hồ sơ.",
+            "inputs": {
+              "requirement": "Review phạm vi và kết quả tính năng hồ sơ."
+            },
+            "expected_outputs": [
+              "source_patch"
+            ],
+            "package_ref": {
+              "package_id": "coding-agent",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {
+              "delay_ms": 1000
+            },
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {
+              "sample_set": "poke-dev-live-20261009"
+            }
+          },
+          "node": {
+            "display_name": "Review kết quả",
+            "description": "Review phạm vi và kết quả tính năng hồ sơ.",
+            "template": {},
+            "outputs": [],
+            "type": "adlcStage",
+            "documentation": ""
+          }
+        }
+      },
+      {
+        "id": "pd03-approve",
+        "type": "adlcStageNode",
+        "position": {
+          "x": 1150,
+          "y": 170
+        },
+        "data": {
+          "id": "pd03-approve",
+          "type": "adlcStage",
+          "adlc": {
+            "document_type": "WORKFLOW_STAGE",
+            "schema_version": "0.1",
+            "stage_id": "2c4ade7e-f0f0-53ff-8115-fd6fbac0b71b",
+            "stage_type": "APPROVAL",
+            "name": "Phê duyệt kết quả",
+            "objective": "Người dùng kiểm tra và duyệt kết quả cuối.",
+            "inputs": {
+              "approval_context": "Người dùng kiểm tra và duyệt kết quả cuối."
+            },
+            "expected_outputs": [
+              "approval_decision"
+            ],
+            "package_ref": {
+              "package_id": "approval",
+              "version": "0.1.0"
+            },
+            "configuration_overrides": {},
+            "execution_profile_overrides": {},
+            "policy_overrides": {},
+            "secret_refs": {},
+            "metadata": {
+              "sample_set": "poke-dev-live-20261009"
+            }
+          },
+          "node": {
+            "display_name": "Phê duyệt kết quả",
+            "description": "Người dùng kiểm tra và duyệt kết quả cuối.",
+            "template": {},
+            "outputs": [],
+            "type": "adlcStage",
+            "documentation": ""
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "pd03-design-pd03-build",
+        "source": "pd03-design",
+        "target": "pd03-build",
+        "type": "adlcEdge",
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_EDGE",
+            "schema_version": "0.1",
+            "edge_id": "57bffeaa-96af-59e8-92ce-4349dd08fbba",
+            "condition": "ON_SUCCESS",
+            "bindings": [],
+            "metadata": {}
+          }
+        }
+      },
+      {
+        "id": "pd03-build-pd03-review",
+        "source": "pd03-build",
+        "target": "pd03-review",
+        "type": "adlcEdge",
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_EDGE",
+            "schema_version": "0.1",
+            "edge_id": "f6a9bf6f-fd46-53a1-906e-b6edd6b1d385",
+            "condition": "ON_SUCCESS",
+            "bindings": [],
+            "metadata": {}
+          }
+        }
+      },
+      {
+        "id": "pd03-review-pd03-approve",
+        "source": "pd03-review",
+        "target": "pd03-approve",
+        "type": "adlcEdge",
+        "data": {
+          "adlc": {
+            "document_type": "WORKFLOW_EDGE",
+            "schema_version": "0.1",
+            "edge_id": "77619883-8ed8-552d-8f99-732a15fc3875",
+            "condition": "ON_SUCCESS",
+            "bindings": [],
+            "metadata": {}
+          }
+        }
+      }
+    ],
+    "viewport": {
+      "x": 25,
+      "y": 35,
+      "zoom": 0.85
+    }
+  }
+}

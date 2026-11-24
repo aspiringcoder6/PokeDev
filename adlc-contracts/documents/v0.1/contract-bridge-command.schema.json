@@ -1,0 +1,38 @@
+{
+  "$id": "https://adlc.dev/contracts/documents/v0.1/contract-bridge-command.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "arguments": {
+      "additionalProperties": true,
+      "title": "Arguments",
+      "type": "object"
+    },
+    "session_id": {
+      "maxLength": 255,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9._-]+$",
+      "title": "Session Id",
+      "type": "string"
+    },
+    "tool": {
+      "enum": [
+        "skilltree_init",
+        "skilltree_upsert_node",
+        "skilltree_remove_node",
+        "skilltree_set_dependency",
+        "skilltree_get_status",
+        "skilltree_validate"
+      ],
+      "title": "Tool",
+      "type": "string"
+    }
+  },
+  "required": [
+    "tool",
+    "arguments",
+    "session_id"
+  ],
+  "title": "ContractBridgeCommand",
+  "type": "object"
+}
