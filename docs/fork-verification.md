@@ -25,6 +25,6 @@ Build còn cảnh báo kích thước chunk và cách import locale của source
 
 ## GitHub và chuyển đổi runtime
 
-Nhánh chuẩn bị là `codex/pokedev-fork-prep`. `origin` trỏ tới `https://github.com/aspiringcoder6/PokeDev.git`, `upstream` trỏ về repository ADLC. Bước chuẩn bị chỉ cấu hình remote cục bộ, chưa tạo hoặc push repository trên GitHub.
+Repository riêng [aspiringcoder6/PokeDev](https://github.com/aspiringcoder6/PokeDev) dùng chế độ Private. `main` là nhánh chính; nhánh chuẩn bị `codex/pokedev-fork-prep` được giữ riêng. `origin` trỏ tới repository PokeDev, `upstream` trỏ về ADLC để tham chiếu nguồn. Dữ liệu đăng nhập, database, dependency đã cài và frontend build không nằm trong bản source đưa lên GitHub.
 
 Luồng Live project còn import engine Workloop; thao tác repository/issue/PR nghiệp vụ còn dùng Gitea. Các kiểm tra trên xác nhận bản nguồn và phần lõi được chọn, chưa xác nhận hai luồng đó đã chuyển sang vAIPlatform/GitHub. Phạm vi và tiêu chí chuyển đổi nằm trong [kế hoạch fork](fork-preparation.md).

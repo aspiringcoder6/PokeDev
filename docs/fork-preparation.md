@@ -4,7 +4,7 @@
 
 Bản này tách nguồn đang làm việc của ADLC thành repository cục bộ mới tại thư mục PokeDev. Tên, logo, tiêu đề trang, manifest và chuỗi hiển thị frontend được chuyển về PokeDev; logic nghiệp vụ, cơ chế duyệt và namespace API được giữ để tiếp tục phát triển.
 
-Đích GitHub mặc định của bản chuẩn bị là `aspiringcoder6/PokeDev`, theo tài khoản GitHub đã kết nối. Cấu hình remote không xác nhận repo đã được tạo trên máy chủ. Nguồn upstream và commit gốc được lưu trong `fork-baseline.json`; manifest ghi hash nguồn và hash bản đã chuyển tên cho từng file.
+Repository riêng là [aspiringcoder6/PokeDev](https://github.com/aspiringcoder6/PokeDev), ở chế độ Private. `main` là nhánh chính và `codex/pokedev-fork-prep` là nhánh chuẩn bị. Repository dùng lịch sử mới, tách khỏi repository ADLC. Nguồn upstream và commit gốc được lưu trong `fork-baseline.json`; manifest ghi hash nguồn và hash bản đã chuyển tên cho từng file.
 
 ## Ranh giới cần chuyển khỏi Workloop
 

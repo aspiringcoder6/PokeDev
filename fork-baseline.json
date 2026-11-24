@@ -28,5 +28,7 @@
     "frontend_tests_passed": 15,
     "frontend_production_build": "passed"
   },
-  "github_state": "remote_configured_not_published"
+  "github_state": "private_repository",
+  "github_repository_url": "https://github.com/aspiringcoder6/PokeDev",
+  "github_default_branch": "main"
 }

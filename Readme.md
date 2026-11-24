@@ -11,12 +11,12 @@ Bản nền lấy mã nguồn đang làm việc, gồm các thay đổi chưa co
 | Backend Python, frontend React và hợp đồng ADLC | Đã tách nguồn |
 | Nhận diện PokeDev | Đã áp dụng tên và logo cũ trên frontend |
 | Git cục bộ | Nhánh `codex/pokedev-fork-prep`, lịch sử mới |
-| GitHub dự kiến | `aspiringcoder6/PokeDev`; `origin` được cấu hình cho repo này |
+| GitHub | [aspiringcoder6/PokeDev](https://github.com/aspiringcoder6/PokeDev), repository riêng ở chế độ Private |
 | Cấu hình local | `.env.example`, port riêng 7862, mặc định mock |
 | Điều phối project hoàn toàn bằng vAIPlatform | Cần chuyển các luồng còn phụ thuộc Workloop |
 | GitHub repository/issue/PR cho project nghiệp vụ | Cần adapter thay đường Gitea hiện tại |
 
-`origin` chỉ là cấu hình đích GitHub. Việc tạo repo trên GitHub và push là bước xuất bản riêng. Bản nguồn và trạng thái chuyển đổi ghi trong [fork-baseline.json](fork-baseline.json) và [kế hoạch tách Workloop](docs/fork-preparation.md).
+`origin` trỏ tới repository PokeDev riêng trên GitHub. `main` là nhánh chính; `codex/pokedev-fork-prep` giữ nhánh chuẩn bị. `upstream` trỏ về ADLC để tham chiếu nguồn. Repository PokeDev dùng lịch sử Git mới. Bản nguồn và trạng thái chuyển đổi ghi trong [fork-baseline.json](fork-baseline.json) và [kế hoạch tách Workloop](docs/fork-preparation.md).
 
 Kết quả kiểm tra bản nền được ghi trong [biên bản kiểm tra](docs/fork-verification.md).
 
