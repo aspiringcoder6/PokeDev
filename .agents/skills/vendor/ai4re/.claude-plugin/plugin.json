@@ -1,0 +1,21 @@
+{
+  "name": "ai4re",
+  "description": "Requirements engineering skills based on the IREB AI4RE Prompt Guide: elicitation, documentation, validation and management — 9 specialized skills plus a supervisor that routes and orchestrates them.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Christoph Biermair"
+  },
+  "homepage": "https://github.com/chrsbrmr/ai4re-skill",
+  "repository": "https://github.com/chrsbrmr/ai4re-skill",
+  "license": "MIT",
+  "keywords": [
+    "requirements-engineering",
+    "ireb",
+    "ai4re",
+    "cpre",
+    "business-analysis",
+    "user-stories",
+    "elicitation",
+    "traceability"
+  ]
+}
