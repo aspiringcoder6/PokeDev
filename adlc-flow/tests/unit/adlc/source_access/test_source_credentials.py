@@ -140,6 +140,7 @@ def test_concurrent_requests_share_one_refresh():
         lark_response("raw-response-secret", -1),
         lark_response("raw-response-secret", ttl=True),
         lark_response("raw-response-secret", "not-a-duration"),
+        pytest.param(lark_response("raw-response-secret", 10**309), id="oversized-ttl"),
         httpx.Response(200, json={"code": False, "tenant_access_token": "raw-response-secret", "expire": 7200}),
         httpx.Response(200, json={"code": 10003, "msg": "raw-response-secret"}),
         httpx.Response(401, text="raw-response-secret"),

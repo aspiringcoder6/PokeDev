@@ -41,6 +41,15 @@ class _CachedAppTokens:
             self._expires_at = 0.0
             try:
                 token, expires_at = await self._fetch()
+                if (
+                    isinstance(token, str)
+                    and re.fullmatch(r"[!-~]+", token)
+                    and math.isfinite(expires_at)
+                    and expires_at > self._clock()
+                ):
+                    self._token = token
+                    self._expires_at = expires_at
+                    return token
             except (
                 httpx.HTTPError,
                 jwt.PyJWTError,
@@ -52,16 +61,6 @@ class _CachedAppTokens:
                 ValueError,
             ):
                 pass
-            else:
-                if (
-                    isinstance(token, str)
-                    and re.fullmatch(r"[!-~]+", token)
-                    and math.isfinite(expires_at)
-                    and expires_at > self._clock()
-                ):
-                    self._token = token
-                    self._expires_at = expires_at
-                    return token
             # Raise outside the handler so provider bodies and request headers are not chained.
             raise SourceError(_AUTH_FAILED)
 
