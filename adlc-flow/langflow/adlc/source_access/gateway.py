@@ -6,6 +6,7 @@ from .models import (
     Reader,
     ReferenceResolver,
     RevisionReader,
+    ScopedReader,
     SourceError,
     SourceGrant,
     SourceRef,
@@ -53,6 +54,9 @@ class SourceGateway:
             reader = self.readers.get((ref.connection_id, ref.kind))
             if reader is None:
                 raise SourceError(_CONNECTION_UNAVAILABLE)
+            registered = reader
+            if isinstance(reader, ScopedReader):
+                reader = reader.start_read()
             actual = ref
             if isinstance(reader, ReferenceResolver):
                 actual = await reader.resolve_ref(ref.model_copy(deep=True))
@@ -60,9 +64,11 @@ class SourceGateway:
                     raise SourceError(_RESPONSE_INVALID)
                 actual = actual.model_copy(deep=True)
                 authorize(grant, actual)
-                reader = self.readers.get((actual.connection_id, actual.kind))
-                if reader is None:
+                target = self.readers.get((actual.connection_id, actual.kind))
+                if target is None:
                     raise SourceError(_CONNECTION_UNAVAILABLE)
+                if target is not registered:
+                    reader = target.start_read() if isinstance(target, ScopedReader) else target
             evidence = await reader.read(actual)
             size += len(evidence.body.encode("utf-8"))
             if size > grant.max_bytes:
@@ -71,7 +77,13 @@ class SourceGateway:
                 if evidence.source != actual:
                     raise SourceError(_RESPONSE_INVALID)
                 evidence = make_evidence(
-                    actual, evidence.body, evidence.version, complete=evidence.complete, requested_source=ref
+                    actual,
+                    evidence.body,
+                    evidence.version,
+                    complete=evidence.complete,
+                    requested_source=ref,
+                    pending_refs=evidence.pending_refs,
+                    incomplete_reasons=evidence.incomplete_reasons,
                 ).model_copy(update={"fetched_at": evidence.fetched_at})
             result.append(evidence)
 

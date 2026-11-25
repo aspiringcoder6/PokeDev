@@ -1,3 +1,5 @@
+import re
+
 from .http import INVALID, LarkRead, LarkReader, canonical, decode_json, identifier, lark_evidence, obj, provider_id
 from .models import Evidence, SourceError, SourceRef
 
@@ -109,7 +111,32 @@ async def _attachments(read: LarkRead, cell: object, record: str, table: str, fi
     return result
 
 
-async def _record(read: LarkRead, item: dict, schema: dict, table: str, findings: list[str]) -> dict:
+_DOCUMENT_LINK = re.compile(
+    r"https://(?:[A-Za-z0-9-]+\.)+(?:larksuite\.com|feishu\.cn)/(docx|wiki)/([A-Za-z0-9_-]{1,256})/?(?:[?#][^\s]*)?"
+)
+
+
+def _linked_documents(cell: object, connection: str) -> list[SourceRef]:
+    result = []
+    for item in cell if isinstance(cell, list) else [cell]:
+        url = item.get("link") if isinstance(item, dict) else item
+        match = _DOCUMENT_LINK.fullmatch(url) if isinstance(url, str) else None
+        if match:
+            kind, resource = match.groups()
+            result.append(
+                SourceRef(
+                    kind="lark_document",
+                    connection_id=connection,
+                    resource_id=resource,
+                    locator={"wiki": "1"} if kind == "wiki" else {},
+                )
+            )
+    return result
+
+
+async def _record(
+    read: LarkRead, item: dict, schema: dict, ref: SourceRef, findings: list[str], pending: list[SourceRef]
+) -> dict:
     record = provider_id(item.get("record_id"))
     result = {
         k: item[k]
@@ -126,22 +153,36 @@ async def _record(read: LarkRead, item: dict, schema: dict, table: str, findings
             findings.append("unknown_record_field")
             continue
         if cell is not None and field["type"] == _ATTACHMENT:
-            cells[name] = await _attachments(read, cell, record, table, field["field_id"], findings)
+            cells[name] = await _attachments(read, cell, record, ref.locator["table_id"], field["field_id"], findings)
         else:
             cells[name] = cell
             if cell and field["type"] == _HYPERLINK:
-                findings.append("linked_content_not_collected")
+                pending.extend(_linked_documents(cell, ref.connection_id))
     return result
 
 
 class LarkBaseReader(LarkReader):
+    def start_read(self) -> "_LarkBaseRead":
+        return _LarkBaseRead(self._start())
+
+    async def read(self, ref: SourceRef) -> Evidence:
+        return await self.start_read().read(ref)
+
+    async def resolve_ref(self, ref: SourceRef) -> SourceRef:
+        return await self.start_read().resolve_ref(ref)
+
+
+class _LarkBaseRead:
+    def __init__(self, transport: LarkRead):
+        self._transport = transport
+
     async def resolve_ref(self, ref: SourceRef) -> SourceRef:
         if ref.kind != "lark_document" or "wiki" not in ref.locator:
             return ref
         if ref.revision is not None or ref.locator not in ({"wiki": "1"}, {"wiki": "1", "blocks": "1"}):
             raise SourceError(INVALID)
         token = identifier(ref.resource_id)
-        data = await self._start().data("wiki/v2/spaces/get_node", {"token": token})
+        data = await self._transport.data("wiki/v2/spaces/get_node", {"token": token})
         node = obj(data.get("node"))
         if node.get("node_token") != token:
             raise SourceError(_SCOPE_DENIED)
@@ -158,7 +199,7 @@ class LarkBaseReader(LarkReader):
         resource = identifier(ref.resource_id)
         if ref.revision is not None:
             raise SourceError(INVALID)
-        read = self._start()
+        read = self._transport
         if ref.kind == "lark_document":
             return await self._document(read, ref, resource)
         if ref.kind != "lark_base_record" or set(ref.locator) not in (
@@ -179,6 +220,8 @@ class LarkBaseReader(LarkReader):
         if query:
             if any(c["field_name"] not in schema for c in query["conditions"]):
                 raise SourceError(INVALID)
+            if not read.pages_left:
+                return lark_evidence(ref, body, ["record_page_limit"])
             items, cursor = await read.pages(path + "/records/search", body={"filter": query, "automatic_fields": True})
         else:
             data = await read.data(f"{path}/records/{record}", {"automatic_fields": "true"})
@@ -187,11 +230,12 @@ class LarkBaseReader(LarkReader):
                 raise SourceError(_SCOPE_DENIED)
             items = [item]
         findings = []
-        body["records"] = [await _record(read, item, schema, table, findings) for item in items]
+        pending = []
+        body["records"] = [await _record(read, item, schema, ref, findings, pending) for item in items]
         if cursor:
             body["continuation"] = {"records": cursor}
             findings.append("record_page_limit")
-        return lark_evidence(ref, body, findings)
+        return lark_evidence(ref, body, findings, pending_refs=pending, pending_reason="linked_content_not_collected")
 
     @staticmethod
     async def _document(read: LarkRead, ref: SourceRef, document: str) -> Evidence:

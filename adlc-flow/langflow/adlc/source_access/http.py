@@ -5,7 +5,7 @@ import json
 import math
 import re
 import time
-from collections.abc import Awaitable, Callable, Mapping
+from collections.abc import Awaitable, Callable, Mapping, Sequence
 from http import HTTPStatus
 from typing import Protocol
 
@@ -27,7 +27,23 @@ _PAGINATION_INVALID = "SOURCE_PAGINATION_INVALID"
 _MAX_CURSOR = 4096
 _PAGE_SIZE = 50
 _BINARY_CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]")
-_ACCESS_CODES = {1254302, 1770032, 230002, 230006, 230013, 230027, 230073, 99991672, 99991676}
+_MAX_RETRY_DELAY = 3600.0
+_THROTTLE_CODES = {99991400, 1254290}
+_ACCESS_CODES = {
+    131006,
+    234004,
+    234009,
+    1254303,
+    1254302,
+    1770032,
+    230002,
+    230006,
+    230013,
+    230027,
+    230073,
+    99991672,
+    99991676,
+}
 _TENANT_TOKEN_EXPIRED = 99991663
 
 
@@ -104,13 +120,23 @@ def canonical(value: object) -> str:
     return json.dumps(value, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
 
 
-def lark_evidence(ref: SourceRef, body: dict, findings: list[str]) -> Evidence:
-    if findings:
-        body["findings"] = sorted(set(findings))
+def lark_evidence(
+    ref: SourceRef,
+    body: dict,
+    findings: list[str],
+    *,
+    pending_refs: Sequence[SourceRef] = (),
+    pending_reason: str | None = None,
+) -> Evidence:
+    labels = set(findings)
+    if pending_refs and pending_reason:
+        labels.add(pending_reason)
+    if labels:
+        body["findings"] = sorted(labels)
     serialized = canonical(body)
     # The serialized evidence includes all available provider timestamps and revisions.
     version = hashlib.sha256(serialized.encode()).hexdigest()
-    return make_evidence(ref, serialized, version, complete=not findings)
+    return make_evidence(ref, serialized, version, pending_refs=pending_refs, incomplete_reasons=findings)
 
 
 class LarkReader:
@@ -150,7 +176,7 @@ class LarkRead:
         self.tokens = tokens
         self.remaining = max_bytes
         self.file_bytes = file_bytes
-        self.max_pages = max_pages
+        self.pages_left = max_pages
         self.attachments_left = max_pages
         self.token: str | None = None
         self.refreshed = False
@@ -195,6 +221,11 @@ class LarkRead:
                             raise SourceError(_RESPONSE_INVALID)
                         if code == 0 and status == HTTPStatus.OK and not binary:
                             return payload
+                        if code in _THROTTLE_CODES:
+                            delay = _retry_after(response.headers)
+                            raise SourceError(
+                                _RATE_LIMITED, retry_after=min(delay, _MAX_RETRY_DELAY) if delay is not None else None
+                            )
                         if code in _ACCESS_CODES:
                             raise SourceError(_ACCESS_DENIED)
                         if code != _TENANT_TOKEN_EXPIRED:
@@ -226,12 +257,13 @@ class LarkRead:
         stop_when: Callable[[dict], bool] | None = None,
     ) -> tuple[list[dict], str | None]:
         async def fetch(cursor: str | None) -> dict:
+            self.pages_left -= 1
             query = {**(params or {}), "page_size": _PAGE_SIZE}
             if cursor:
                 query["page_token"] = cursor
             return obj(await self._request(path, query, body, binary=False))
 
-        items, _, cursor = await lark_pages(fetch, max_pages=self.max_pages, stop_when=stop_when)
+        items, _, cursor = await lark_pages(fetch, max_pages=self.pages_left, stop_when=stop_when)
         return items, cursor
 
     async def attachment(
@@ -272,6 +304,16 @@ async def lark_pages(
         page = data.get("items")
         if not isinstance(page, list) or len(page) > _PAGE_SIZE or type(data.get("has_more", False)) is not bool:
             raise SourceError(_RESPONSE_INVALID)
+        next_cursor = data.get("page_token")
+        if next_cursor is not None and (not isinstance(next_cursor, str) or len(next_cursor) > _MAX_CURSOR):
+            raise SourceError(_PAGINATION_INVALID)
+        if "has_more" not in data and next_cursor:
+            raise SourceError(_PAGINATION_INVALID)
+        if data.get("has_more"):
+            if not next_cursor or next_cursor in seen:
+                raise SourceError(_PAGINATION_INVALID)
+            cursor = next_cursor
+            seen.add(cursor)
         entries = [obj(item) for item in page]
         if stop_when is not None:
             matches = [item for item in entries if stop_when(item)]
@@ -281,8 +323,4 @@ async def lark_pages(
             items.extend(entries)
         if not data.get("has_more", False):
             return items, True, None
-        cursor = data.get("page_token")
-        if not isinstance(cursor, str) or not cursor or len(cursor) > _MAX_CURSOR or cursor in seen:
-            raise SourceError(_PAGINATION_INVALID)
-        seen.add(cursor)
     return items, False, cursor

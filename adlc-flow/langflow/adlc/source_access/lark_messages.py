@@ -139,7 +139,11 @@ class LarkMessageReader(LarkReader):
                 raise SourceError(_RESPONSE_INVALID)
             root = roots[0]
             root_id = provider_id(root.get("message_id"))
-            replies, cursor = await read.pages(_HISTORY, {"container_id_type": "thread", "container_id": thread})
+            replies = []
+            if read.pages_left:
+                replies, cursor = await read.pages(_HISTORY, {"container_id_type": "thread", "container_id": thread})
+            else:
+                findings.append("page_limit")
             for reply in replies:
                 _check_chat(reply, chat)
                 if (
@@ -153,6 +157,7 @@ class LarkMessageReader(LarkReader):
         for item in items:
             _check_chat(item, chat)
         messages = []
+        pending = []
         for item in items:
             stamp = _millis(item.get("create_time"))
             if ("start_time" in bounds and stamp < int(bounds["start_time"]) * 1000) or (
@@ -160,10 +165,12 @@ class LarkMessageReader(LarkReader):
             ):
                 continue
             if thread is None and item.get("thread_id"):
-                findings.append("thread_replies_not_collected")
+                pending.append(
+                    ref.model_copy(update={"locator": {**bounds, "thread_id": provider_id(item["thread_id"])}})
+                )
             messages.append(await _message(read, item, findings))
         body = {"messages": messages}
         if cursor:
             body["continuation"] = {"messages": cursor}
             findings.append("page_limit")
-        return lark_evidence(ref, body, findings)
+        return lark_evidence(ref, body, findings, pending_refs=pending, pending_reason="thread_replies_not_collected")

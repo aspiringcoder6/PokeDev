@@ -4,7 +4,14 @@ import json
 import httpx
 import pytest
 
-from langflow.adlc.source_access import SourceError, SourceGateway, SourceGrant, SourceRef
+from langflow.adlc.source_access import (
+    SourceError,
+    SourceGateway,
+    SourceGrant,
+    SourceRef,
+    completed_evidence_ids,
+    make_evidence,
+)
 from langflow.adlc.source_access.http import lark_pages
 from langflow.adlc.source_access.lark_base import LarkBaseReader
 from langflow.adlc.source_access.lark_messages import LarkMessageReader
@@ -418,7 +425,7 @@ def test_page_cap_on_thread_replies_keeps_partial_messages_and_cursor():
             return messages(msg("root"))
         return messages(msg("reply", root="root"), cursor="pending")
 
-    evidence = run(respond, source(thread_id="thread1"), max_pages=1)
+    evidence = run(respond, source(thread_id="thread1"), max_pages=2)
     assert not evidence.complete
     assert json.loads(evidence.body)["continuation"]["messages"] == "pending"
     assert "reply" in evidence.body
@@ -472,3 +479,224 @@ def test_mislabeled_binary_attachment_is_not_extracted_as_text(payload):
 def test_malformed_message_type_is_sanitized():
     with pytest.raises(SourceError, match="SOURCE_RESPONSE_INVALID"):
         run(lambda _: messages(msg("m", thread_id="", msg_type={})), source(start_time="100", end_time="101"))
+
+
+@pytest.mark.parametrize("link_type", ["wiki", "docx"])
+def test_base_link_coverage_requires_matching_document_and_preserves_raw_snapshot(link_type):
+    def respond(request):
+        if request.url.path.endswith("/fields"):
+            return messages({"field_name": "Decision", "field_id": "link", "type": 15})
+        if request.url.path.endswith("/records/rec"):
+            return ok(
+                record={
+                    "record_id": "rec",
+                    "fields": {
+                        "Decision": {
+                            "link": f"https://team.larksuite.com/{link_type}/"
+                            + ("node" if link_type == "wiki" else "doc")
+                        }
+                    },
+                }
+            )
+        if request.url.path.endswith("/get_node"):
+            return ok(node={"node_token": "node", "obj_type": "docx", "obj_token": "doc"})
+        assert request.url.path.endswith("/documents/doc/raw_content")
+        return ok(content="decision")
+
+    parent = run(respond, base(record_id="rec"), reader_type=LarkBaseReader)
+    alias = source("lark_document", "node", wiki="1")
+    assert parent.pending_refs == ((alias if link_type == "wiki" else source("lark_document", "doc")),)
+    assert parent.incomplete_reasons == ()
+    assert completed_evidence_ids([parent]) == frozenset()
+    child = run(respond, alias, reader_type=LarkBaseReader, resources=["node", "doc"])
+    assert completed_evidence_ids([parent, child]) == {parent.id, child.id}
+    assert not parent.complete
+
+
+def test_external_hyperlink_stays_reference_metadata_without_dependency():
+    def respond(request):
+        if request.url.path.endswith("/fields"):
+            return messages({"field_name": "Link", "field_id": "f", "type": 15})
+        assert request.url.path.endswith("/records/rec")
+        return ok(record={"record_id": "rec", "fields": {"Link": {"link": "https://example.org/docx/private"}}})
+
+    item = run(respond, base(record_id="rec"), reader_type=LarkBaseReader)
+    assert item.complete
+    assert not item.pending_refs
+    assert "https://example.org/docx/private" in item.body
+
+
+def test_window_coverage_requires_its_bound_thread_and_rejects_partial_child():
+    window = source(start_time="100", end_time="101")
+    thread = source(thread_id="thread1", start_time="100", end_time="101")
+
+    def respond(request):
+        if request.url.params["container_id_type"] == "chat":
+            return messages(msg("root"))
+        return messages(msg("reply", root="root"))
+
+    parent = run(respond, window)
+    assert parent.pending_refs == (thread,)
+    child = run(respond, thread)
+    assert completed_evidence_ids([parent, child]) == {parent.id, child.id}
+    partial = run(respond, thread, max_pages=1)
+    assert partial.incomplete_reasons
+    assert not completed_evidence_ids([parent, partial])
+
+
+def test_coverage_hard_reasons_and_cycles_stay_blocked_and_metadata_affects_identity():
+    a, b, c = [source("lark_document", n) for n in "abc"]
+    parent = make_evidence(a, "same", "v", pending_refs=(b,))
+    child = make_evidence(b, "same", "v", pending_refs=(c,))
+    leaf = make_evidence(c, "same", "v")
+    cyclic = make_evidence(c, "same", "v", pending_refs=(a,))
+    hard = make_evidence(a, "same", "v", pending_refs=(b,), incomplete_reasons=("unsupported_attachment_format",))
+    assert not parent.complete
+    assert parent.id != hard.id
+    assert leaf.id != cyclic.id
+    assert completed_evidence_ids([parent, child, leaf]) == {parent.id, child.id, leaf.id}
+    assert not completed_evidence_ids([parent, child, cyclic])
+    assert hard.id not in completed_evidence_ids([hard, child, leaf])
+    assert "pending_refs" not in leaf.model_dump()
+    assert "incomplete_reasons" not in leaf.model_dump()
+    assert type(hard).model_validate_json(hard.model_dump_json()) == hard
+
+
+def test_compound_page_cap_is_shared_between_schema_and_search():
+    seen = []
+
+    def respond(request):
+        seen.append(request.url.path)
+        if request.url.path.endswith("/fields"):
+            return messages(TITLE)
+        return messages({"record_id": "r", "fields": {"Title": "x"}})
+
+    item = run(respond, base(filter=json.dumps(FILTER)), reader_type=LarkBaseReader, max_pages=1)
+    assert seen == [TABLE + "/fields"]
+    assert not item.complete
+    assert item.incomplete_reasons
+    assert json.loads(item.body)["records"] == []
+
+
+def test_wiki_combined_byte_budget_spans_descriptor_and_actual_document():
+    node = ok(node={"node_token": "alias", "obj_token": "actual", "obj_type": "docx"})
+    doc = ok(content="the decision")
+
+    def respond(request):
+        return node if request.url.path.endswith("/get_node") else doc
+
+    with pytest.raises(SourceError, match="SOURCE_CONTENT_LIMIT"):
+        run(
+            respond,
+            source("lark_document", "alias", wiki="1"),
+            reader_type=LarkBaseReader,
+            resources=["alias", "actual"],
+            max_response_bytes=len(node.content) + len(doc.content) - 1,
+        )
+
+
+def test_wiki_combined_single_refresh_spans_descriptor_and_actual_document():
+    seen = []
+
+    def respond(request):
+        seen.append((request.url.path, request.headers["authorization"]))
+        if len(seen) == 2:
+            return ok(node={"node_token": "alias", "obj_token": "actual", "obj_type": "docx"})
+        return httpx.Response(401)
+
+    with pytest.raises(SourceError, match="SOURCE_APP_AUTH_FAILED"):
+        run(
+            respond,
+            source("lark_document", "alias", wiki="1"),
+            reader_type=LarkBaseReader,
+            resources=["alias", "actual"],
+        )
+    assert seen == [
+        ("/open-apis/wiki/v2/spaces/get_node", "Bearer tenant"),
+        ("/open-apis/wiki/v2/spaces/get_node", "Bearer renewed"),
+        ("/open-apis/docx/v1/documents/actual/raw_content", "Bearer renewed"),
+    ]
+
+
+@pytest.mark.parametrize(("status", "code"), [(400, 131006), (400, 234004), (400, 234009), (200, 1254303)])
+def test_provider_scope_responses_map_to_sanitized_denial(status, code):
+    with pytest.raises(SourceError, match=r"^SOURCE_ACCESS_DENIED$"):
+        run(
+            lambda _: httpx.Response(status, json={"code": code, "msg": "private"}),
+            source(start_time="1", end_time="2"),
+        )
+
+
+@pytest.mark.parametrize(("status", "code"), [(400, 99991400), (200, 1254290)])
+def test_logical_throttle_retains_finite_retry_delay(status, code):
+    with pytest.raises(SourceError, match=r"^SOURCE_RATE_LIMITED$") as error:
+        run(
+            lambda _: httpx.Response(status, json={"code": code, "msg": "private"}, headers={"retry-after": "7"}),
+            source(start_time="1", end_time="2"),
+        )
+    assert error.value.retry_after == 7
+
+
+@pytest.mark.parametrize("extra", [{"page_token": "remaining"}, {"has_more": 0}, {"has_more": False, "page_token": 7}])
+def test_malformed_pagination_flags_cannot_certify_complete(extra):
+    with pytest.raises(SourceError, match=r"SOURCE_(PAGINATION|RESPONSE)_INVALID"):
+        run(lambda _: ok(items=[], **extra), source(start_time="1", end_time="2"))
+
+
+def test_collecting_required_doc_cannot_close_a_base_with_unsupported_attachment():
+    def respond(request):
+        if request.url.path.endswith("/fields"):
+            return messages(FILE, {"field_id": "f", "field_name": "Link", "type": 15})
+        return ok(
+            record={
+                "record_id": "rec",
+                "fields": {
+                    "Files": [{"file_token": "media", "type": "application/pdf"}],
+                    "Link": {"link": "https://a.feishu.cn/docx/doc"},
+                },
+            }
+        )
+
+    parent = run(respond, base(record_id="rec"), reader_type=LarkBaseReader)
+    child = run(lambda _: ok(content="decision"), source("lark_document", "doc"), reader_type=LarkBaseReader)
+    assert parent.pending_refs == (child.source,)
+    assert parent.incomplete_reasons == ("unsupported_attachment_format",)
+    assert completed_evidence_ids([parent, child]) == {child.id}
+
+
+def test_concurrent_wiki_reads_keep_separate_byte_allowances():
+    async def scenario():
+        descriptor = ok(node={"node_token": "alias", "obj_token": "doc", "obj_type": "docx"})
+        doc = ok(content="decision")
+        both_started = asyncio.Event()
+        descriptors = 0
+
+        async def respond(request):
+            nonlocal descriptors
+            if request.url.path.endswith("/get_node"):
+                descriptors += 1
+                if descriptors == 2:
+                    both_started.set()
+                await asyncio.wait_for(both_started.wait(), 2)
+                return httpx.Response(200, content=descriptor.content)
+            return httpx.Response(200, content=doc.content)
+
+        async with httpx.AsyncClient(
+            base_url="https://open.larksuite.com", trust_env=False, transport=httpx.MockTransport(respond)
+        ) as client:
+            reader = LarkBaseReader(client, Tokens(), max_response_bytes=len(descriptor.content) + len(doc.content))
+            gateway = SourceGateway({("lark", "lark_document"): reader})
+            alias = source("lark_document", "alias", wiki="1")
+            results = await asyncio.gather(*(gateway.read(grant("doc", "alias"), [alias]) for _ in range(2)))
+            assert all(batch[0].complete and batch[0].requested_source == alias for batch in results)
+
+    asyncio.run(scenario())
+
+
+def test_logical_throttle_limits_excessive_retry_after_header():
+    with pytest.raises(SourceError, match="SOURCE_RATE_LIMITED") as error:
+        run(
+            lambda _: httpx.Response(400, json={"code": 99991400}, headers={"retry-after": "1e299"}),
+            source(start_time="1", end_time="2"),
+        )
+    assert error.value.retry_after == 3600

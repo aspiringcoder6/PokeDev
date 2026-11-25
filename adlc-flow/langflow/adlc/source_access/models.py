@@ -1,7 +1,7 @@
 import hashlib
 import json
 import re
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from datetime import datetime, timezone
 from types import MappingProxyType
 from typing import Annotated, Literal, Protocol, TypeGuard, runtime_checkable
@@ -44,6 +44,8 @@ class Evidence(Closed):
     id: str
     source: SourceRef
     requested_source: SourceRef | None = None
+    pending_refs: tuple[SourceRef, ...] = ()
+    incomplete_reasons: tuple[str, ...] = ()
     version: str
     fetched_at: datetime
     body: str
@@ -55,6 +57,10 @@ class Evidence(Closed):
         result = handler(self)
         if self.requested_source is None:
             result.pop("requested_source", None)
+        if not self.pending_refs:
+            result.pop("pending_refs", None)
+        if not self.incomplete_reasons:
+            result.pop("incomplete_reasons", None)
         return result
 
 
@@ -62,15 +68,57 @@ def is_git_sha(value: object) -> TypeGuard[str]:
     return isinstance(value, str) and re.fullmatch(r"[0-9a-fA-F]{40}", value) is not None
 
 
+def _ref_key(ref: SourceRef) -> str:
+    return json.dumps(ref.model_dump(mode="json"), sort_keys=True, separators=(",", ":"))
+
+
+def completed_evidence_ids(evidence: Iterable[Evidence]) -> frozenset[str]:
+    """Resolve exact source dependencies without modifying the frozen evidence."""
+    pending = list(evidence)
+    completed: set[str] = set()
+    covered: set[str] = set()
+    while pending:
+        remaining = []
+        for item in pending:
+            if item.incomplete_reasons:
+                continue
+            if item.pending_refs:
+                if any(_ref_key(ref) not in covered for ref in item.pending_refs):
+                    remaining.append(item)
+                    continue
+            elif not item.complete:
+                continue
+            completed.add(item.id)
+            covered.add(_ref_key(item.source))
+            if item.requested_source is not None:
+                covered.add(_ref_key(item.requested_source))
+        if len(remaining) == len(pending):
+            break
+        pending = remaining
+    return frozenset(completed)
+
+
 def make_evidence(
-    ref: SourceRef, body: str, version: str, *, complete: bool = True, requested_source: SourceRef | None = None
+    ref: SourceRef,
+    body: str,
+    version: str,
+    *,
+    complete: bool = True,
+    requested_source: SourceRef | None = None,
+    pending_refs: Iterable[SourceRef] = (),
+    incomplete_reasons: Iterable[str] = (),
 ) -> Evidence:
     source = ref.model_copy(deep=True)
-    canonical_ref = json.dumps(source.model_dump(mode="json"), sort_keys=True, separators=(",", ":"))
+    canonical_ref = _ref_key(source)
     requested = requested_source.model_copy(deep=True) if requested_source is not None else None
     if requested is not None:
-        requested_json = json.dumps(requested.model_dump(mode="json"), sort_keys=True, separators=(",", ":"))
-        canonical_ref += f"\n{requested_json}"
+        canonical_ref += "\n" + _ref_key(requested)
+    unique_refs = {_ref_key(ref): ref for ref in pending_refs}
+    pending = tuple(unique_refs[key].model_copy(deep=True) for key in sorted(unique_refs))
+    reasons = tuple(sorted(set(incomplete_reasons)))
+    if pending or reasons:
+        coverage = {"pending_refs": sorted(unique_refs), "incomplete_reasons": reasons}
+        canonical_ref += "\n" + json.dumps(coverage, sort_keys=True, separators=(",", ":"))
     content_hash = hashlib.sha256(body.encode()).hexdigest()
     identity = hashlib.sha256(f"{canonical_ref}\n{version}\n{content_hash}".encode()).hexdigest()
     return Evidence(
@@ -81,7 +129,9 @@ def make_evidence(
         fetched_at=datetime.now(timezone.utc),
         body=body,
         sha256=content_hash,
-        complete=complete,
+        complete=complete and not (pending or reasons),
+        pending_refs=pending,
+        incomplete_reasons=reasons,
     )
 
 
@@ -123,3 +173,8 @@ class RevisionReader(Reader, Protocol):
 @runtime_checkable
 class ReferenceResolver(Reader, Protocol):
     async def resolve_ref(self, ref: SourceRef) -> SourceRef: ...
+
+
+@runtime_checkable
+class ScopedReader(Protocol):
+    def start_read(self) -> Reader: ...
