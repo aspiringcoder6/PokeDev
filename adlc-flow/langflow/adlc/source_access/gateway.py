@@ -1,6 +1,17 @@
 from collections.abc import Mapping, Sequence
 
-from .models import Evidence, Kind, Reader, RevisionReader, SourceError, SourceGrant, SourceRef, is_git_sha
+from .models import (
+    Evidence,
+    Kind,
+    Reader,
+    ReferenceResolver,
+    RevisionReader,
+    SourceError,
+    SourceGrant,
+    SourceRef,
+    is_git_sha,
+    make_evidence,
+)
 from .policy import authorize
 
 _ARGUMENTS_INVALID = "SOURCE_ARGUMENTS_INVALID"
@@ -42,10 +53,26 @@ class SourceGateway:
             reader = self.readers.get((ref.connection_id, ref.kind))
             if reader is None:
                 raise SourceError(_CONNECTION_UNAVAILABLE)
-            evidence = await reader.read(ref)
+            actual = ref
+            if isinstance(reader, ReferenceResolver):
+                actual = await reader.resolve_ref(ref.model_copy(deep=True))
+                if not isinstance(actual, SourceRef):
+                    raise SourceError(_RESPONSE_INVALID)
+                actual = actual.model_copy(deep=True)
+                authorize(grant, actual)
+                reader = self.readers.get((actual.connection_id, actual.kind))
+                if reader is None:
+                    raise SourceError(_CONNECTION_UNAVAILABLE)
+            evidence = await reader.read(actual)
             size += len(evidence.body.encode("utf-8"))
             if size > grant.max_bytes:
                 raise SourceError(_CONTEXT_LIMIT)
+            if actual != ref:
+                if evidence.source != actual:
+                    raise SourceError(_RESPONSE_INVALID)
+                evidence = make_evidence(
+                    actual, evidence.body, evidence.version, complete=evidence.complete, requested_source=ref
+                ).model_copy(update={"fetched_at": evidence.fetched_at})
             result.append(evidence)
 
         return result

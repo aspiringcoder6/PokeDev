@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from types import MappingProxyType
 from typing import Annotated, Literal, Protocol, TypeGuard, runtime_checkable
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, SerializerFunctionWrapHandler, field_validator, model_serializer
 
 # The first colon in a locator allowlist key separates the connection from the resource.
 ConnectionId = Annotated[str, Field(min_length=1, pattern=r"^[^:]+$")]
@@ -43,25 +43,40 @@ class SourceRef(Closed):
 class Evidence(Closed):
     id: str
     source: SourceRef
+    requested_source: SourceRef | None = None
     version: str
     fetched_at: datetime
     body: str
     sha256: str
     complete: bool = True
 
+    @model_serializer(mode="wrap")
+    def serialize(self, handler: SerializerFunctionWrapHandler) -> dict:
+        result = handler(self)
+        if self.requested_source is None:
+            result.pop("requested_source", None)
+        return result
+
 
 def is_git_sha(value: object) -> TypeGuard[str]:
     return isinstance(value, str) and re.fullmatch(r"[0-9a-fA-F]{40}", value) is not None
 
 
-def make_evidence(ref: SourceRef, body: str, version: str, *, complete: bool = True) -> Evidence:
+def make_evidence(
+    ref: SourceRef, body: str, version: str, *, complete: bool = True, requested_source: SourceRef | None = None
+) -> Evidence:
     source = ref.model_copy(deep=True)
     canonical_ref = json.dumps(source.model_dump(mode="json"), sort_keys=True, separators=(",", ":"))
+    requested = requested_source.model_copy(deep=True) if requested_source is not None else None
+    if requested is not None:
+        requested_json = json.dumps(requested.model_dump(mode="json"), sort_keys=True, separators=(",", ":"))
+        canonical_ref += f"\n{requested_json}"
     content_hash = hashlib.sha256(body.encode()).hexdigest()
     identity = hashlib.sha256(f"{canonical_ref}\n{version}\n{content_hash}".encode()).hexdigest()
     return Evidence(
         id=identity,
         source=source,
+        requested_source=requested,
         version=version,
         fetched_at=datetime.now(timezone.utc),
         body=body,
@@ -103,3 +118,8 @@ class Reader(Protocol):
 @runtime_checkable
 class RevisionReader(Reader, Protocol):
     async def resolve_revision(self, repository: str, ref: str) -> str: ...
+
+
+@runtime_checkable
+class ReferenceResolver(Reader, Protocol):
+    async def resolve_ref(self, ref: SourceRef) -> SourceRef: ...

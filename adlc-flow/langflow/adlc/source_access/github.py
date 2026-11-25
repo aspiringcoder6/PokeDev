@@ -1,17 +1,16 @@
 import base64
 import binascii
 import json
-import math
 import re
-import time
 from collections.abc import Mapping
 from http import HTTPStatus
-from typing import Protocol
 from urllib.parse import quote, unquote
 
 import httpx
 
 from .credentials import GITHUB_API_ORIGIN
+from .http import TIMEOUT, bounded_body, check_status
+from .http import AppTokens as InstallationTokens
 from .models import Evidence, SourceError, SourceRef, is_git_sha, make_evidence
 
 _ARGUMENTS_INVALID = "SOURCE_ARGUMENTS_INVALID"
@@ -19,21 +18,13 @@ _RESPONSE_INVALID = "SOURCE_RESPONSE_INVALID"
 _AUTH_FAILED = "SOURCE_APP_AUTH_FAILED"
 _CONTENT_LIMIT = "SOURCE_CONTENT_LIMIT"
 _UNSUPPORTED_CONTENT = "SOURCE_UNSUPPORTED_CONTENT"
-_ACCESS_DENIED = "SOURCE_ACCESS_DENIED"
-_NOT_FOUND = "SOURCE_NOT_FOUND"
-_RATE_LIMITED = "SOURCE_RATE_LIMITED"
 _MAX_PATH_LENGTH = 4096
 _MAX_REF_LENGTH = 1024
 _MAX_KEYWORD_LENGTH = 200
 _PER_PAGE = 100
 _PR_FILES_LIMIT = 3000
-_TIMEOUT = httpx.Timeout(10.0).as_dict()
 _CONTROL = re.compile(r"[\x00-\x1f\x7f\ud800-\udfff]")
 _POSITIVE_INT = re.compile(r"[1-9][0-9]{0,18}")
-
-
-class InstallationTokens(Protocol):
-    async def get(self, force: bool = False) -> str: ...  # noqa: FBT001, FBT002
 
 
 def _repo_path(repository: str) -> str:
@@ -139,36 +130,6 @@ def _json_evidence(
     return make_evidence(ref, _canonical_json(body), version, complete=not continuation)
 
 
-def _retry_after(headers: httpx.Headers) -> float | None:
-    try:
-        delay = float(headers.get("retry-after", "nan"))
-        if math.isfinite(delay) and delay >= 0:
-            return delay
-        if headers.get("x-ratelimit-remaining") == "0":
-            reset = float(headers.get("x-ratelimit-reset", "nan"))
-            if math.isfinite(reset):
-                return max(0.0, reset - time.time())
-    except ValueError:
-        pass
-    return None
-
-
-def _check_status(status: int, headers: httpx.Headers) -> None:
-    if status == HTTPStatus.OK:
-        return
-    if status == HTTPStatus.UNAUTHORIZED:
-        raise SourceError(_AUTH_FAILED)
-    if status == HTTPStatus.TOO_MANY_REQUESTS or (
-        status == HTTPStatus.FORBIDDEN and ("retry-after" in headers or headers.get("x-ratelimit-remaining") == "0")
-    ):
-        raise SourceError(_RATE_LIMITED, retry_after=_retry_after(headers))
-    if status == HTTPStatus.FORBIDDEN:
-        raise SourceError(_ACCESS_DENIED)
-    if status == HTTPStatus.NOT_FOUND:
-        raise SourceError(_NOT_FOUND)
-    raise SourceError(_RESPONSE_INVALID)
-
-
 class _GitHubRead:
     """Request state for one logical read, including its single credential refresh."""
 
@@ -198,7 +159,7 @@ class _GitHubRead:
                 "User-Agent": "PokeDev",
                 "X-GitHub-Api-Version": "2022-11-28",
             },
-            extensions={"timeout": _TIMEOUT},
+            extensions={"timeout": TIMEOUT},
         )
         return await self._client.send(request, auth=None, follow_redirects=False, stream=True)
 
@@ -213,14 +174,8 @@ class _GitHubRead:
                 self._token = await self._tokens.get(force=True)
                 response = await self._send(path, params)
             try:
-                _check_status(response.status_code, response.headers)
-                if response.headers.get("content-encoding", "identity").lower() != "identity":
-                    raise SourceError(_RESPONSE_INVALID)
-                content = bytearray()
-                async for chunk in response.aiter_bytes():
-                    if len(content) + len(chunk) > self._max_bytes:
-                        raise SourceError(_CONTENT_LIMIT)
-                    content.extend(chunk)
+                check_status(response.status_code, response.headers)
+                content = await bounded_body(response, self._max_bytes)
                 return json.loads(content), response.headers
             finally:
                 await response.aclose()
