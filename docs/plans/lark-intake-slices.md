@@ -1,6 +1,6 @@
 # Kế hoạch tích hợp LarkSuite vào giai đoạn nhận yêu cầu
 
-Ngày lập và cập nhật: 25/11/2026. Trạng thái: **LI-01 đã triển khai; LI-00 đã kiểm tra offline, chờ tenant thật; LI-02 trở đi chưa hoàn tất**. Xem [kết quả và cách chạy](../lark-intake-implementation.md).
+Ngày lập và cập nhật: 25/11/2026. Trạng thái: **LI-01 đã triển khai; LI-00 đã kiểm tra offline và DM hai chiều thật, còn chờ mention/callback/tài liệu/phục hồi; LI-02 trở đi chưa hoàn tất**. Xem [kết quả và cách chạy](../lark-intake-implementation.md).
 
 Source access và requirement readiness từ `Phuc/specification` đã được tích hợp làm nền cho các slice sau, với feature flag readiness tắt mặc định. Chưa có binding từ intake tới readiness hoặc kênh Lark. Xem [phạm vi tích hợp và kiểm tra](../operations/branch-integration-20261125.md).
 
@@ -114,7 +114,7 @@ Mỗi slice là một thay đổi có thể demo và rollback bằng feature fla
 
 ### LI-00 — Kiểm chứng Lark trước khi chốt transport
 
-Trạng thái: có [probe nhận sự kiện và biên bản offline](../../services/lark-connector/README.md), khóa SDK và 6 kiểm tra đã đạt. Chưa kết nối tenant thật; transport card, quyền và các bài thử live còn chờ xác nhận.
+Trạng thái: có [probe nhận sự kiện và biên bản offline](../../services/lark-connector/README.md), khóa SDK và 6 kiểm tra đã đạt. Bot PokeDev 0.1.0 đã phát hành cho một thành viên pilot với đúng ba quyền tenant. Đã xác minh WebSocket Connected, một DM vào journal và một biên nhận thử trong đúng cuộc trò chuyện. Mention, callback, tài liệu và phục hồi còn chờ; xem [biên bản pilot](../operations/lark-pilot-20261125.md).
 
 Tạo app thử hoặc dùng app được phép thử; ghi lại tenant, app type, domain, phiên bản SDK và capability matrix. Ưu tiên thử outbound WebSocket để phù hợp môi trường local/VPN. Không tự mở tunnel hoặc đổi routing VPN.
 

@@ -1,6 +1,6 @@
 # Hồ sơ yêu cầu và kiểm chứng Lark
 
-Cập nhật ngày 25/11/2026. LI-01 đã có backend và giao diện desktop để tạo, sửa và xem lịch sử yêu cầu. LI-00 đã qua kiểm tra offline; còn thử nghiệm trên tenant Lark thật. Các slice LI-02 trở đi vẫn theo [kế hoạch](plans/lark-intake-slices.md).
+Cập nhật ngày 25/11/2026. LI-01 đã có backend và giao diện desktop để tạo, sửa và xem lịch sử yêu cầu. LI-00 đã qua kiểm tra offline và DM hai chiều trên tenant thật; các bài thử mention, callback, tài liệu và phục hồi còn chờ. Xem [biên bản pilot](operations/lark-pilot-20261125.md). Các slice LI-02 trở đi vẫn theo [kế hoạch](plans/lark-intake-slices.md).
 
 Đã rà và tích hợp phần source access/readiness từ `Phuc/specification` sau 280 kiểm tra kết hợp. Các module này là nền cho LI-04/LI-06, còn tắt mặc định và chưa nối với intake hoặc Lark HumanBridge. Xem [biên bản tích hợp](operations/branch-integration-20261125.md).
 
@@ -41,7 +41,7 @@ Migration `li01a2b3c4d5` tạo ba bảng `adlc_intake_request`, `adlc_intake_rev
 | PostgreSQL 17 | Đạt: schema riêng, nhận migration, tạo, replay, sửa, lịch sử và danh sách; rollback cả schema thử |
 | Frontend production | Build thành công; có cảnh báo kích thước bundle từ bộ frontend hiện có |
 | Desktop trên backend local | Đạt: tạo demo, sửa thành phiên bản 2, tải lại và mở nội dung phiên bản 1 |
-| Probe Lark | 6 kiểm tra offline; xem [biên bản SDK và ma trận live](../services/lark-connector/README.md) |
+| Probe Lark | 6 kiểm tra offline; WebSocket thật, DM vào journal và biên nhận thử đã đối chiếu trên Lark Web |
 
 Lệnh kiểm tra backend và frontend từ gốc repository:
 
@@ -61,4 +61,4 @@ Bản đã thử trực tiếp dùng SQLite riêng của PokeDev. App image Dock
 
 ## Bước tiếp theo
 
-Đăng nhập Lark Developer Console và thử LI-00 với app riêng của PokeDev. Sau khi xác nhận event và transport, LI-02 sẽ liên kết danh tính Lark đã xác minh, chuyển DM thành hồ sơ và gửi biên nhận qua outbox. LI-04 sẽ nối native Harness để agent đặt câu hỏi và tiếp tục từ câu trả lời đã lưu.
+Tiếp tục các bài thử LI-00 còn lại. LI-02 sẽ liên kết danh tính Lark đã xác minh, chuyển DM thành hồ sơ và gửi biên nhận tự động qua outbox. LI-04 sẽ nối native Harness để agent đặt câu hỏi và tiếp tục từ câu trả lời đã lưu.

@@ -1,6 +1,6 @@
 # Kiểm chứng kết nối Lark cho PokeDev
 
-Trạng thái ngày 25/11/2026: đã chuẩn bị bộ thử LI-00 và kiểm tra offline. Chưa kết nối tenant thật. `probe.py` chỉ nhận sự kiện vào journal riêng trên máy, chưa tạo hồ sơ PokeDev, gửi tin hay gọi agent.
+Trạng thái ngày 25/11/2026: đã kiểm tra offline, phát hành bot PokeDev 0.1.0 cho một thành viên pilot và kiểm chứng DM hai chiều trên Lark thật. Tin nhắn của người dùng đã vào journal; một biên nhận thử đã được gửi vào đúng DM và đối chiếu trên Lark Web. `probe.py` vẫn chỉ nhận sự kiện, chưa tự phản hồi, tạo hồ sơ PokeDev hay gọi agent. Xem [biên bản pilot](../../docs/operations/lark-pilot-20261125.md).
 
 ## Cài và chạy trên máy
 
@@ -65,16 +65,18 @@ uv pip install --python services/lark-connector/.venv/Scripts/python.exe 'pytest
 services/lark-connector/.venv/Scripts/python.exe -m pytest services/lark-connector/test_probe.py -q
 ```
 
-## Ma trận cần chạy trên tenant thật
+## Ma trận kiểm tra trên tenant thật
 
 `NOT_RUN` nghĩa là chưa thực hiện; không suy từ kết quả offline thành hỗ trợ live. Khi chạy, ghi app type, phiên bản SDK, phạm vi quyền đã cấp, loại payload/transport và độ trễ. Fixture đưa vào Git phải là dữ liệu tổng hợp đã bỏ định danh riêng tư và credential.
 
 | Capability | Trạng thái | Bằng chứng cần có |
 |---|---|---|
-| Nhận DM | NOT_RUN | Event thật, journal commit, ACK đúng hạn |
+| Kết nối WebSocket | Đạt trên tenant thật | Developer Console xác nhận Connected; mode đã lưu |
+| Bật Bot và đăng ký sự kiện | Đạt | Version 0.1.0 Released, đúng ba tenant scope, `im.message.receive_v1` |
+| Nhận DM | Đạt | Một event text/p2p đúng app và nội dung thử đã commit; ghi journal 15 ms, chưa đo ACK đầu cuối |
 | Nhận @mention trong nhóm | NOT_RUN | App có mặt trong nhóm, đúng người gửi và chat |
 | Reply không @mention | NOT_RUN | Event thật với phạm vi quyền cụ thể; phân biệt root/parent/thread |
-| Gửi tin và reply | NOT_RUN | Người nhận thử được chỉ định, message ID và receipt |
+| Reply trong DM | Đạt với biên nhận thử | Provider trả thành công, chat ID khớp nguồn, receipt lưu local và tin hiển thị trong Lark Web |
 | Card callback | NOT_RUN | Loại card, frame EVENT/CARD hoặc HTTPS, action ID, actor, deadline |
 | Form submit | NOT_RUN | Schema câu trả lời và callback thật |
 | Đọc Doc/Wiki được phép | NOT_RUN | Bot/user authorization, phiên bản nội dung, locator |
