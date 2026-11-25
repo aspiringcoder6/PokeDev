@@ -16,6 +16,8 @@ Plan B chưa chạy độc lập: router ứng dụng import readiness, còn rea
 
 280 kiểm tra backend đã đạt trên môi trường PokeDev Python 3.14: 215 source access, 37 readiness, 14 intake và 14 Harness. Có hai cảnh báo cấu hình pytest `timeout`/`timeout_method` do môi trường kiểm tra không cài plugin timeout; các bài kiểm tra vẫn chạy hết. Ruff kiểm tra lỗi Python và import đã đạt.
 
+Ứng dụng đầy đủ đã khởi động lại sau tích hợp: `/health_check` trả 200, hồ sơ intake demo vẫn ở phiên bản 2, và endpoint readiness từ chối truy cập thiếu service credential bằng 401. Giao diện intake đã qua 4 kiểm tra frontend và thao tác desktop tạo/sửa/tải lại/xem phiên bản cũ; probe Lark có 6 kiểm tra offline đã đạt.
+
 Xung đột router đến từ thay đổi cùng file và khác line ending. Bản ghép giữ cả `/api/v1/adlc/intake` và `/api/v1/adlc/requirement-readiness`, cùng các router có sẵn. Các prompt readiness được bỏ dòng trống dư ở cuối file. Nội dung vendored được giữ nguyên để không đổi hash trong manifest.
 
 Chạy lại từ gốc repository:
