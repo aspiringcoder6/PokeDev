@@ -32,12 +32,29 @@ class Closed(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
 
+class FrozenDict(dict):
+    """JSON-compatible immutable map, including safe snapshot deepcopy."""
+
+    def _immutable(self, *args, **kwargs):
+        raise TypeError("immutable mapping")
+
+    __setitem__ = __delitem__ = clear = pop = popitem = setdefault = update = __ior__ = _immutable
+
+    def __deepcopy__(self, memo):
+        return FrozenDict(self)
+
+
 class SourceRef(Closed):
     kind: Kind
     connection_id: ConnectionId
     resource_id: str = Field(min_length=1)
-    locator: dict[str, str] = Field(default_factory=dict)
+    locator: dict[str, str] = Field(default_factory=dict, validate_default=True)
     revision: str | None = None
+
+    @field_validator("locator")
+    @classmethod
+    def freeze_locator(cls, value):
+        return FrozenDict(value)
 
 
 class Evidence(Closed):

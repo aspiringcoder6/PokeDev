@@ -23,8 +23,13 @@ _RESPONSE_INVALID = "SOURCE_RESPONSE_INVALID"
 
 
 class SourceGateway:
-    def __init__(self, readers: Mapping[tuple[str, Kind], Reader]):
+    def __init__(self, readers: Mapping[tuple[str, Kind], Reader], *, clients=()):
         self.readers = readers
+        self._clients = tuple(clients)
+
+    async def aclose(self):
+        for client in self._clients:
+            await client.aclose()
 
     async def resolve_revision(self, grant: SourceGrant, ref: SourceRef) -> SourceRef:
         ref = ref.model_copy(deep=True)

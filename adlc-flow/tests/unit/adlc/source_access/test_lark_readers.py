@@ -700,3 +700,19 @@ def test_logical_throttle_limits_excessive_retry_after_header():
             source(start_time="1", end_time="2"),
         )
     assert error.value.retry_after == 3600
+
+
+def test_window_keeps_pending_older_thread_and_inclusive_final_millisecond():
+    window = source(start_time="100", end_time="101")
+    item = run(
+        lambda _: messages(
+            msg("older", stamp="90000"),
+            msg("last", thread_id="", stamp="101999"),
+            msg("outside", thread_id="", stamp="102000"),
+        ),
+        window,
+    )
+    data = json.loads(item.body)
+    assert [m["message_id"] for m in data["messages"]] == ["last"]
+    assert item.pending_refs == (source(thread_id="thread1", start_time="100", end_time="101"),)
+    assert not item.complete

@@ -116,7 +116,9 @@ class LarkMessageReader(LarkReader):
         chat_query = {"container_id_type": "chat", "container_id": chat}
         findings = []
         if thread is None:
-            items, cursor = await read.pages(_HISTORY, {**chat_query, **bounds})
+            # Older roots may have replies inside the requested window. Enumerate roots
+            # without a lower time bound; bounded pagination stays explicitly incomplete.
+            items, cursor = await read.pages(_HISTORY, chat_query)
         else:
             identifier(thread)
 
@@ -160,14 +162,14 @@ class LarkMessageReader(LarkReader):
         pending = []
         for item in items:
             stamp = _millis(item.get("create_time"))
-            if ("start_time" in bounds and stamp < int(bounds["start_time"]) * 1000) or (
-                "end_time" in bounds and stamp > int(bounds["end_time"]) * 1000
-            ):
-                continue
-            if thread is None and item.get("thread_id"):
+            if thread is None and item.get("thread_id") and stamp < (int(bounds["end_time"]) + 1) * 1000:
                 pending.append(
                     ref.model_copy(update={"locator": {**bounds, "thread_id": provider_id(item["thread_id"])}})
                 )
+            if ("start_time" in bounds and stamp < int(bounds["start_time"]) * 1000) or (
+                "end_time" in bounds and stamp >= (int(bounds["end_time"]) + 1) * 1000
+            ):
+                continue
             messages.append(await _message(read, item, findings))
         body = {"messages": messages}
         if cursor:

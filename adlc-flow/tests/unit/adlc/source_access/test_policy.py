@@ -151,7 +151,8 @@ def test_pending_locator_cannot_change_after_batch_authorization():
 
     class MutatingReader(RecordingReader):
         async def read(self, ref):
-            pending.locator["table_id"] = "private-table"
+            with pytest.raises(TypeError):
+                pending.locator["table_id"] = "private-table"
             return await super().read(ref)
 
     grant = SourceGrant(
@@ -318,3 +319,12 @@ def test_server_grant_rejects_a_connection_id_that_collides_with_a_locator_key()
             resources={"lark": {"shared:base"}, "lark:shared": {"base"}},
             locator_allowlists={"lark:shared:base": {"table_id": ("table-1",)}},
         )
+
+
+# A snapshot must retain its provenance when passed between workflow stages.
+def test_source_locator_cannot_be_mutated_after_validation():
+    from langflow.adlc.source_access.models import SourceRef
+
+    ref = SourceRef(kind="github_file", connection_id="gh", resource_id="org/repo", locator={"path": "a"})
+    with pytest.raises(TypeError):
+        ref.locator["path"] = "b"
