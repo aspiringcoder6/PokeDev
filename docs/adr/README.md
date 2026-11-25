@@ -35,6 +35,7 @@ Trạng thái ADR:
 | [0020](./0020-proposal-only-test-extensions-and-supplementary-raster-evidence.md) | Accepted (local UI/authoring; live extensions blocked) | Đóng băng proposal do tool tạo để chủ sở hữu review chính xác; tạo replay draft mới mà không "chữa" bằng chứng cũ; ảnh chỉ là bổ sung, thực thi rủi ro vẫn chặn. |
 | [0021](./0021-runtime-neutral-task-loop-iteration-and-checkpoint-boundary.md) | Accepted (OpenCode; Harness adapter pending) | Chuẩn hóa binding runtime/candidate/checkpoint theo từng iteration; giữ xác minh/phê duyệt trong ADLC, phân biệt protocol có thể thay thế với thực thi thống nhất của Harness. |
 | [0022](./0022-native-harness-proposal-only-task-loop-adapter.md) | Accepted (offline conformance; live sign-off pending) | Thêm iteration proposal Harness thuần, opt-in chính xác; chọn runtime tường minh và hạch toán chi phí chưa biết mà không dời Verify hay phê duyệt ra khỏi ADLC. |
+| [0023](./0023-verified-lark-dm-intake-and-delivery-receipts.md) | Accepted (automated/desktop checks; live linking pending) | Liên kết Lark bằng xác thực lại và mã một lần; chuyển DM thành hồ sơ qua inbox/outbox cùng database, giữ kết quả gửi chưa rõ để đối soát. |
 
 ## Định dạng ADR
 

@@ -25,7 +25,7 @@ COPY adlc-flow/lfx ./adlc-flow/lfx
 COPY adlc_components ./adlc_components
 COPY adlc-contracts ./adlc-contracts
 COPY integration-sources ./integration-sources
-RUN pip install --no-cache-dir --no-deps -e . -e ./sdk \
+RUN pip install --no-cache-dir --no-deps -e . -e ./sdk -e ./adlc-contracts/lark-intake/v0.1 \
     && useradd -m -u 1000 pokedev && mkdir -p /app/adlc-flow/data /app/data \
     && chown -R pokedev:pokedev /app/adlc-flow/data /app/data
 COPY --from=frontend /app/adlc-flow/frontend/build ./adlc-flow/frontend/build

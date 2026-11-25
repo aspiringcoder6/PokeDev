@@ -25,7 +25,8 @@ CORE = ["postgres", "redis", "app"]
 SERVICES = {*CORE, "harness", "opensandbox", "vfs", "sandbox", "memory", "memory-mcp", "testforge"}
 SECRET_KEYS = ["POKEDEV_DB_PASSWORD", "POKEDEV_MEMORY_PASSWORD", "LANGFLOW_SECRET_KEY",
                "LANGFLOW_SUPERUSER_PASSWORD", "ADLC_HARNESS_API_TOKEN", "ADLC_HARNESS_CALLBACK_SECRET",
-               "ADLC_SANDBOX_BROKER_TOKEN", "OPENSANDBOX_API_KEY", "TESTFORGE_BROKER_TOKEN"]
+               "ADLC_SANDBOX_BROKER_TOKEN", "OPENSANDBOX_API_KEY", "TESTFORGE_BROKER_TOKEN",
+               "POKEDEV_LARK_CONNECTOR_SECRET"]
 
 
 def read_env(path: Path | None = None) -> dict[str, str]:
@@ -123,7 +124,7 @@ def setup() -> None:
             execute([sys.executable, "-m", "venv", str(VENV)], env=env)
     pip = ["uv", "pip", "install", "--python", str(PYTHON)] if shutil.which("uv") else [str(PYTHON), "-m", "pip", "install"]
     execute([*pip, "-r", "deploy/local/requirements.lock.txt"], env=env)
-    execute([*pip, "--no-deps", "-e", ".", "-e", "sdk"], env=env)
+    execute([*pip, "--no-deps", "-e", ".", "-e", "sdk", "-e", "adlc-contracts/lark-intake/v0.1"], env=env)
     frontend = ROOT / "adlc-flow/frontend"
     execute(["npm", "ci", "--no-audit", "--no-fund"], cwd=frontend, env=env)
     build_frontend(env)
@@ -136,6 +137,25 @@ def build_frontend(env=None) -> None:
         execute(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "deploy/build_frontend.ps1"], env=env)
     else:
         execute(["npx", "vite", "build"], cwd=ROOT / "adlc-flow/frontend", env=env)
+
+
+def lark_setup() -> None:
+    init()
+    if not shutil.which("uv"):
+        raise RuntimeError("Install uv to set up the isolated Lark connector Python 3.12 environment.")
+    target = ROOT / "services/lark-connector/.venv"
+    executable = target / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+    env = {**os.environ, "UV_CACHE_DIR": str(STATE / "cache/uv")}
+    if not executable.exists():
+        execute(["uv", "venv", str(target), "--python", "3.12"], env=env)
+    execute(["uv", "pip", "sync", "--python", str(executable), "services/lark-connector/requirements.lock.txt"], env=env)
+
+
+def lark_run() -> None:
+    target = ROOT / "services/lark-connector/.venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+    if not target.exists():
+        raise RuntimeError("Run 'python deploy/local/stack.py lark-setup' first.")
+    execute([str(target), "services/lark-connector/connector.py"], env={**os.environ, **read_env()})
 
 
 def run_native() -> None:
@@ -182,7 +202,7 @@ def status(core_only: bool = False) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=["init", "build", "up", "down", "status", "logs", "setup", "run",
-                                            "frontend", "connect-harness", "open-harness"])
+                                            "frontend", "connect-harness", "open-harness", "lark-setup", "lark"])
     parser.add_argument("services", nargs="*")
     parser.add_argument("--core-only", action="store_true", help="Only app/PostgreSQL/Redis")
     parser.add_argument("--no-build", action="store_true")
@@ -192,6 +212,10 @@ def main() -> None:
         raise RuntimeError("Unknown service: " + ", ".join(sorted(unknown)))
     if args.command == "init":
         init()
+    elif args.command == "lark-setup":
+        lark_setup()
+    elif args.command == "lark":
+        lark_run()
     elif args.command == "setup":
         setup()
     elif args.command == "run":

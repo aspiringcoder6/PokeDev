@@ -1,6 +1,6 @@
 # Kế hoạch tích hợp LarkSuite vào giai đoạn nhận yêu cầu
 
-Ngày lập và cập nhật: 25/11/2026. Trạng thái: **LI-01 đã triển khai; LI-00 đã kiểm tra offline và DM hai chiều thật, còn chờ mention/callback/tài liệu/phục hồi; LI-02 trở đi chưa hoàn tất**. Xem [kết quả và cách chạy](../lark-intake-implementation.md).
+Ngày lập: 25/11/2026; cập nhật: 26/11/2026. Trạng thái: **LI-01 đã triển khai; LI-02 đã có backend/connector/UI và kiểm tra tự động, còn chờ xác nhận liên kết để thử DM thật; LI-00 đã kiểm tra offline và DM hai chiều thật, còn chờ mention/callback/tài liệu/phục hồi**. LI-03 trở đi chưa nối vào luồng live. Xem [kết quả và cách chạy](../lark-intake-implementation.md).
 
 Source access và requirement readiness từ `Phuc/specification` đã được tích hợp làm nền cho các slice sau, với feature flag readiness tắt mặc định. Chưa có binding từ intake tới readiness hoặc kênh Lark. Xem [phạm vi tích hợp và kiểm tra](../operations/branch-integration-20261125.md).
 
@@ -19,7 +19,7 @@ Mục tiêu là để người dùng giao việc bằng hội thoại, tài li�
 | Quyền và quyết định của con người | [`collaboration.py`](../../adlc-flow/langflow/adlc/collaboration.py), [`collaboration_models.py`](../../adlc-flow/langflow/adlc/collaboration_models.py) có command ID, revision, digest và policy revision | Dùng cùng nguyên tắc kiểm tra quyền ở server, ghi audit cùng transaction |
 | Notification và outbox | [`slack_notifications.py`](../../adlc-flow/langflow/adlc/slack_notifications.py) | Tham khảo retry/receipt; phần lõi mới phải độc lập với Slack và Workloop |
 
-Chưa thấy adapter Lark trong các đường intake đã rà. Đợt này cũng chưa coi Spec agent native hoặc adapter GitHub nghiệp vụ là phần đã hoàn tất.
+Tại thời điểm lập kế hoạch chưa có adapter Lark trong các đường intake đã rà. LI-02 hiện bổ sung adapter DM tùy chọn; chưa coi Spec agent native hoặc adapter GitHub nghiệp vụ là phần đã hoàn tất.
 
 ## 2. Luồng người dùng cần đạt
 
@@ -140,6 +140,8 @@ Nghiệm thu:
 - Tạo hồ sơ chưa tạo WorkflowRun, TaskRun, approval thực thi hoặc lệnh shell.
 
 ### LI-02 — DM Lark có danh tính và biên nhận
+
+Trạng thái ngày 26/11/2026: đã triển khai và qua 295 kiểm tra backend, 22 kiểm tra connector/probe, 7 kiểm tra UI, PostgreSQL và build production. Biểu mẫu desktop đã mở trên bản local. Liên kết danh tính thật và DM tạo hồ sơ đang chờ người dùng xác nhận. Xem [kế hoạch thực hiện](li02-implementation.md), [runbook](../operations/lark-li02.md) và [ADR 0023](../adr/0023-verified-lark-dm-intake-and-delivery-receipts.md). Chưa có số đo để công bố mục tiêu biên nhận 2 giây đã đạt.
 
 Thêm connector Lark nhẹ, cấu hình credential riêng, liên kết external identity với user PokeDev qua quy trình đã xác minh. Nhận DM vào durable journal/inbox, chuyển vào LI-01 và gửi biên nhận/link hồ sơ qua outbox. Chưa liên kết thì chỉ hướng dẫn liên kết, không liệt kê project hoặc đưa ngữ cảnh riêng tư ra chat.
 

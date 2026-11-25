@@ -4,6 +4,10 @@ import { intakeApi, type IntakeRequest } from "./api";
 import IntakePage from "./intake-page";
 
 const mockNavigate = jest.fn();
+jest.mock("./lark-link-panel", () => ({
+  __esModule: true,
+  default: () => null,
+}));
 jest.mock("@/customization/hooks/use-custom-navigate", () => ({
   __esModule: true,
   useCustomNavigate: () => mockNavigate,

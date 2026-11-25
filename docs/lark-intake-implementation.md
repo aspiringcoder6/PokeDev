@@ -1,6 +1,6 @@
 # Hồ sơ yêu cầu và kiểm chứng Lark
 
-Cập nhật ngày 25/11/2026. LI-01 đã có backend và giao diện desktop để tạo, sửa và xem lịch sử yêu cầu. LI-00 đã qua kiểm tra offline và DM hai chiều trên tenant thật; các bài thử mention, callback, tài liệu và phục hồi còn chờ. Xem [biên bản pilot](operations/lark-pilot-20261125.md). Các slice LI-02 trở đi vẫn theo [kế hoạch](plans/lark-intake-slices.md).
+Cập nhật ngày 26/11/2026. LI-01 đã có backend và giao diện desktop để tạo, sửa và xem lịch sử yêu cầu. LI-02 đã có liên kết danh tính, DM intake và biên nhận tự động; kiểm tra tự động/PostgreSQL/build đã đạt, thử liên kết và DM thật chờ xác nhận của người dùng. Xem [runbook LI-02](operations/lark-li02.md) và [ADR 0023](adr/0023-verified-lark-dm-intake-and-delivery-receipts.md). LI-00 đã qua kiểm tra offline và DM hai chiều trên tenant thật; các bài thử mention, callback, tài liệu và phục hồi còn chờ. Xem [biên bản pilot](operations/lark-pilot-20261125.md) và [kế hoạch các slice tiếp theo](plans/lark-intake-slices.md).
 
 Đã rà và tích hợp phần source access/readiness từ `Phuc/specification` sau 280 kiểm tra kết hợp. Các module này là nền cho LI-04/LI-06, còn tắt mặc định và chưa nối với intake hoặc Lark HumanBridge. Xem [biên bản tích hợp](operations/branch-integration-20261125.md).
 
@@ -12,7 +12,7 @@ Mỗi hồ sơ có tiêu đề, mô tả, phạm vi cần làm, ngoài phạm vi
 
 Mỗi lần lưu tạo một phiên bản mới. Khi hai người dùng cùng tài khoản hoặc hai tab sửa từ cùng phiên bản, server chỉ nhận một lần sửa; tab còn lại giữ bản nháp và cho tải bản mới sau xác nhận. Nếu chưa biết lần lưu đã thành công hay chưa, giao diện giữ nguyên lệnh để thử lại và đối soát.
 
-Tạo hồ sơ chỉ lưu yêu cầu. Nó chưa gọi model, tạo WorkflowRun, phê duyệt công việc hoặc bắt đầu thực thi. Thông tin nhập vào chưa được coi là brief đã chốt. Chức năng agent hỏi lại, tài liệu có trích dẫn và tương tác Lark sẽ được nối qua các slice tiếp theo.
+Tạo hồ sơ chỉ lưu yêu cầu. Nó chưa gọi model, tạo WorkflowRun, phê duyệt công việc hoặc bắt đầu thực thi. Thông tin nhập vào chưa được coi là brief đã chốt. LI-02 thêm đường nhận DM; chức năng agent hỏi lại, tài liệu có trích dẫn và card sẽ được nối qua các slice tiếp theo.
 
 ## API và lưu trữ
 
@@ -57,8 +57,8 @@ python deploy/local/stack.py frontend
 
 `deploy/local/check_intake_postgres.py` là bài thử tùy chọn chạy trong app container với `POKEDEV_TEST_POSTGRES=1`. Script tạo schema riêng có tên ngẫu nhiên, dùng transaction và rollback toàn bộ; không dùng dữ liệu public làm fixture. Khi app image cũ hơn source, cần build lại app hoặc bind mount source mới chỉ cho container thử.
 
-Bản đã thử trực tiếp dùng SQLite riêng của PokeDev. App image Docker chưa được build lại trong đợt LI-01 này. Muốn dùng code mới trong Docker, chạy `python deploy/local/stack.py build app` rồi khởi động app theo README; dừng backend trực tiếp trước để tránh trùng cổng.
+Bản đã thử trực tiếp dùng SQLite riêng của PokeDev. App image Docker chưa được build lại trong đợt LI-02 này. Muốn dùng code mới trong Docker, chạy `python deploy/local/stack.py build app` rồi khởi động app theo README; dừng backend trực tiếp trước để tránh trùng cổng. Bộ kiểm tra PostgreSQL LI-02 dùng source mới trong container thử và rollback schema thử, không thay thế bước build image triển khai.
 
 ## Bước tiếp theo
 
-Tiếp tục các bài thử LI-00 còn lại. LI-02 sẽ liên kết danh tính Lark đã xác minh, chuyển DM thành hồ sơ và gửi biên nhận tự động qua outbox. LI-04 sẽ nối native Harness để agent đặt câu hỏi và tiếp tục từ câu trả lời đã lưu.
+Xác nhận liên kết danh tính để nghiệm thu LI-02 trên DM thật và tiếp tục các bài thử LI-00 còn lại. LI-03 bổ sung định tuyến nhóm/thread. LI-04 sẽ nối native Harness để agent đặt câu hỏi và tiếp tục từ câu trả lời đã lưu. Tài liệu `inputTakingNotes.md` được dùng để giữ ranh giới normalization/human transport và readiness; đối chiếu cụ thể nằm trong runbook LI-02.

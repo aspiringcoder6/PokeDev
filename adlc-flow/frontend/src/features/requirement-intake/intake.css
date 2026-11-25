@@ -226,3 +226,40 @@
   padding-top: 12px;
   font-size: 12px;
 }
+.intake-lark {
+  margin-bottom: 24px;
+}
+.intake-lark .intake-panel-title {
+  align-items: center;
+  margin-bottom: 0;
+}
+.intake-lark h2 {
+  margin: 0;
+}
+.intake-link-form {
+  display: grid;
+  gap: 16px;
+  max-width: 560px;
+  margin-top: 20px;
+}
+.intake-link-form label {
+  display: grid;
+  gap: 8px;
+}
+.intake-link-form input,
+.intake-link-form select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+.intake-link-code {
+  padding: 16px;
+  margin: 16px 0;
+  border-radius: 8px;
+  background: hsl(var(--muted));
+  white-space: pre-wrap;
+  user-select: all;
+}

@@ -163,7 +163,7 @@ Dùng các lệnh `setup` ở trên thay cho `uv sync` trong `adlc-flow`: metada
 
 Mở [Tiếp nhận yêu cầu](http://127.0.0.1:7862/intake) để tạo hồ sơ, sửa nội dung và xem lịch sử phiên bản. Đặt `POKEDEV_INTAKE_ENABLED=true` trong `.env` rồi khởi động lại backend. Phần này hoạt động độc lập với model; hồ sơ thuộc riêng người tạo và chưa tự chạy agent.
 
-Bot PokeDev đã được thử DM hai chiều trên Lark thật: nhận tin vào journal và gửi một biên nhận thử. Bộ thử nằm trong [services/lark-connector](services/lark-connector/README.md); chưa chuyển DM thành hồ sơ hoặc hỏi–đáp tự động. Theo dõi [kết quả triển khai](docs/lark-intake-implementation.md), [biên bản pilot](docs/operations/lark-pilot-20261125.md) và [các slice tiếp theo](docs/plans/lark-intake-slices.md).
+Bot PokeDev đã được thử DM hai chiều trên Lark thật. LI-02 bổ sung liên kết tài khoản có xác thực lại, chuyển DM text thành hồ sơ và biên nhận tự động. Chạy `python deploy/local/stack.py lark-setup`, cấu hình theo [hướng dẫn LI-02](docs/operations/lark-li02.md), rồi mở terminal riêng chạy `python deploy/local/stack.py lark`. Vòng hỏi–đáp agent thuộc slice sau. Bộ probe LI-00 vẫn nằm trong [services/lark-connector](services/lark-connector/README.md).
 
 Source access GitHub/Lark và workflow requirement readiness đã được tích hợp từ `Phuc/specification`. Readiness mặc định tắt (`ADLC_REQUIREMENT_READINESS_ENABLED=false`), cần source bindings, tài khoản dịch vụ, presets/model Harness và HumanBridge trước khi dùng thật. Xem [biên bản tích hợp](docs/operations/branch-integration-20261125.md) và [hướng dẫn cấu hình](docs/operations/requirement-readiness.md).
 

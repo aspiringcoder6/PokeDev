@@ -8,6 +8,7 @@ import {
   type IntakeRequest,
 } from "./api";
 import "./intake.css";
+import LarkLinkPanel from "./lark-link-panel";
 
 const empty = (): IntakeContent => ({
   title: "",
@@ -238,6 +239,7 @@ export default function IntakePage() {
           Yêu cầu mới
         </button>
       </header>
+      <LarkLinkPanel projects={projects} />
       <div className="intake-layout">
         <aside
           className="intake-panel intake-list"

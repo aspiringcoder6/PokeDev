@@ -1,5 +1,9 @@
 # ADLC contracts
 
+## Lark intake v0.1 (PokeDev LI-02)
+
+The additive [`lark-intake/v0.1/`](lark-intake/v0.1/README.md) Python package defines the normalized DM, ingestion receipt, delivery lease and delivery result shared by the optional Lark connector and PokeDev backend. It does not change the execution contracts below.
+
 ## Unified Coding Agent contract verification v0.1
 
 The additive [`coding-agent/v0.1/`](coding-agent/v0.1/README.md) report binds an approved contract and its predicate checks to the same candidate and specification as the task-loop behavioral report. The unified `coding-agent@0.2.0` package supports these features together in one run.

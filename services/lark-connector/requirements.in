@@ -1,2 +1,4 @@
 lark-channel-sdk==1.4.0
 lark-oapi==1.9.0
+pydantic==2.13.4
+-e adlc-contracts/lark-intake/v0.1
