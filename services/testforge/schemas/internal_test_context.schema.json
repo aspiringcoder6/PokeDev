@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.testing.agent/schemas/internal_test_context.schema.json",
+  "title": "InternalTestContext",
+  "description": "Normalized internal representation of the 5-field Standard Test Input. Produced by Input Normalizer (Step 3.5) so downstream modules (Designer, Generator, Healer, Verification Engine) consume machine-readable data instead of raw free text.",
+  "type": "object",
+  "required": [
+    "identity",
+    "rules",
+    "steps",
+    "verification"
+  ],
+  "properties": {
+    "identity": {
+      "type": "object",
+      "required": ["function_id", "feature"],
+      "properties": {
+        "function_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Traceable identifier copied from Standard Test Input"
+        },
+        "feature": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Feature name copied from Standard Test Input"
+        }
+      },
+      "additionalProperties": false
+    },
+    "preconditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Prerequisite conditions carried over from Standard Test Input"
+    },
+    "rules": {
+      "type": "object",
+      "required": ["business", "validation"],
+      "properties": {
+        "business": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/machineRule"
+          },
+          "description": "Business rules parsed into machine-readable form"
+        },
+        "validation": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/machineRule"
+          },
+          "description": "Validation rules parsed into machine-readable form"
+        }
+      },
+      "additionalProperties": false
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["order", "action", "target"],
+        "properties": {
+          "order": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "action": {
+            "type": "string",
+            "enum": ["OPEN", "CLICK", "FILL", "SELECT", "UPLOAD", "SUBMIT", "WAIT", "ASSERT"]
+          },
+          "target": {
+            "type": "string",
+            "description": "Element or page target after removing action verb"
+          },
+          "value": {
+            "type": ["string", "null"],
+            "description": "Optional literal value for FILL/SELECT actions"
+          },
+          "raw_text": {
+            "type": "string",
+            "description": "Original step text from Standard Test Input for traceability"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "verification": {
+      "type": "object",
+      "required": ["ui", "api", "db"],
+      "properties": {
+        "ui": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["type", "value"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["TEXT_VISIBLE", "TEXT_ABSENT"]
+              },
+              "value": {
+                "type": "string",
+                "description": "Expected text derived from expected_result"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "api": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "properties": {
+                "endpoint": { "type": "string" },
+                "expected_status": { "type": "integer" }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "db": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "properties": {
+                "query": { "type": "string" },
+                "expected_count": { "type": "integer" }
+              },
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "traceability": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "const": "standard_test_input"
+        },
+        "unparsed_rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Rules that could not be machine-classified (kind UNKNOWN), kept for review"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "machineRule": {
+      "type": "object",
+      "required": ["rule_id", "kind", "constraint", "source_text"],
+      "properties": {
+        "rule_id": {
+          "type": "string",
+          "description": "Machine-generated id, prefix BR (business) or VR (validation)"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["REQUIRED", "FORMAT", "UNIQUE", "PERMISSION", "LENGTH", "UNKNOWN"],
+          "description": "Machine-readable rule classification"
+        },
+        "field": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string" }
+          ],
+          "description": "Data field the rule applies to (email, name, ...)"
+        },
+        "constraint": {
+          "type": "string",
+          "description": "Normalized constraint expression (e.g. not_empty, unique, pattern:email, role=eq:admin, max:255)"
+        },
+        "source_text": {
+          "type": "string",
+          "description": "Original rule text from ADLC Memory for auditability"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

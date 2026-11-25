@@ -8,7 +8,7 @@ Phase: EXPAND. Frozen table definitions and deterministic legacy import.
 import hashlib
 import json
 from datetime import datetime, timezone
-from uuid import NAMESPACE_URL, UUID, uuid5
+from uuid import NAMESPACE_URL, UUID, uuid4, uuid5
 
 import sqlalchemy as sa
 from alembic import op
@@ -173,6 +173,32 @@ def _graph_digest(graph):
     )
 
 
+def _expected_checks(connection, table):
+    constraints = [item for item in table.constraints if isinstance(item, sa.CheckConstraint)]
+    if connection.dialect.name != "postgresql" or not constraints:
+        return {(item.name, "".join(str(item.sqltext).split())) for item in constraints}
+
+    # PostgreSQL rewrites IN as = ANY (ARRAY[...]) and adds casts. Ask the
+    # same server to normalize the frozen checks, without touching real data.
+    temporary = sa.Table(
+        f"adlc_cycle_checks_{uuid4().hex[:16]}",
+        sa.MetaData(),
+        *(sa.Column(column.name, column.type) for column in table.c),
+        *(sa.CheckConstraint(str(item.sqltext), name=sa.schema.conv(item.name)) for item in constraints),
+        prefixes=["TEMPORARY"],
+        postgresql_on_commit="DROP",
+    )
+    temporary.create(connection)
+    try:
+        schema = connection.scalar(sa.text("SELECT pg_my_temp_schema()::regnamespace::text"))
+        return {
+            (item["name"], "".join(item["sqltext"].split()))
+            for item in sa.inspect(connection).get_check_constraints(temporary.name, schema=schema)
+        }
+    finally:
+        temporary.drop(connection)
+
+
 def _compatible(connection, table):
     inspector = sa.inspect(connection)
     actual = inspector.get_columns(table.name)
@@ -188,11 +214,7 @@ def _compatible(connection, table):
         ):
             return False
     checks = {(item["name"], "".join(item["sqltext"].split())) for item in inspector.get_check_constraints(table.name)}
-    expected_checks = {
-        (item.name, "".join(str(item.sqltext).split()))
-        for item in table.constraints
-        if isinstance(item, sa.CheckConstraint)
-    }
+    expected_checks = _expected_checks(connection, table)
     uniques = {tuple(item["column_names"]) for item in inspector.get_unique_constraints(table.name)}
     expected_uniques = {
         tuple(column.name for column in item.columns)
@@ -212,7 +234,11 @@ def _compatible(connection, table):
         for item in table.constraints
         if isinstance(item, sa.ForeignKeyConstraint)
     }
-    indexes = {tuple(item["column_names"]) for item in inspector.get_indexes(table.name)}
+    indexes = {
+        tuple(item["column_names"])
+        for item in inspector.get_indexes(table.name)
+        if not item.get("duplicates_constraint")
+    }
     return (
         checks == expected_checks
         and uniques == expected_uniques

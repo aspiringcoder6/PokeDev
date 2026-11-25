@@ -1,0 +1,153 @@
+{
+  "sha": "74722a91b1710393961d7f3733ad6f7b9527b4ca",
+  "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/trees/74722a91b1710393961d7f3733ad6f7b9527b4ca",
+  "tree": [
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "type": "blob",
+      "size": 30,
+      "sha": "aafcb345668bd80cbb256b066898d4df8988da0e",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/blobs/aafcb345668bd80cbb256b066898d4df8988da0e"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "size": 2370,
+      "sha": "f9f75f97b053a20cfc7702378f199eea55ed3731",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/blobs/f9f75f97b053a20cfc7702378f199eea55ed3731"
+    },
+    {
+      "path": "client",
+      "mode": "040000",
+      "type": "tree",
+      "size": 0,
+      "sha": "87ad3989f91b6a3b877ba4c1142d5f0af45a636f",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/trees/87ad3989f91b6a3b877ba4c1142d5f0af45a636f"
+    },
+    {
+      "path": "client/client.js",
+      "mode": "100644",
+      "type": "blob",
+      "size": 7708,
+      "sha": "8aee90ca8d18bf62b77d5b0828a1d67ed0d66e06",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/blobs/8aee90ca8d18bf62b77d5b0828a1d67ed0d66e06"
+    },
+    {
+      "path": "cordis.patch.yml",
+      "mode": "100644",
+      "type": "blob",
+      "size": 110,
+      "sha": "4326db555fc6e5ceacacbe326d397141ed711d77",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/blobs/4326db555fc6e5ceacacbe326d397141ed711d77"
+    },
+    {
+      "path": "lib",
+      "mode": "040000",
+      "type": "tree",
+      "size": 0,
+      "sha": "19084d73aef494841e6e6441d924e741df794f79",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/trees/19084d73aef494841e6e6441d924e741df794f79"
+    },
+    {
+      "path": "lib/engine.js",
+      "mode": "100644",
+      "type": "blob",
+      "size": 10542,
+      "sha": "8e3d3a1fd02ec529d052c5000a8b03101a91e350",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/blobs/8e3d3a1fd02ec529d052c5000a8b03101a91e350"
+    },
+    {
+      "path": "lib/events.js",
+      "mode": "100644",
+      "type": "blob",
+      "size": 2770,
+      "sha": "dd465de0f815eca11dbe69524a9a5e682ecce4e1",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/blobs/dd465de0f815eca11dbe69524a9a5e682ecce4e1"
+    },
+    {
+      "path": "lib/goal-bridge.js",
+      "mode": "100644",
+      "type": "blob",
+      "size": 9302,
+      "sha": "f33fb65677562f2de4ab8639a71046798464b0fd",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/blobs/f33fb65677562f2de4ab8639a71046798464b0fd"
+    },
+    {
+      "path": "lib/index.js",
+      "mode": "100644",
+      "type": "blob",
+      "size": 3184,
+      "sha": "21174d220eca06ae08d0022656258e1194a08da8",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/blobs/21174d220eca06ae08d0022656258e1194a08da8"
+    },
+    {
+      "path": "lib/routes.js",
+      "mode": "100644",
+      "type": "blob",
+      "size": 17955,
+      "sha": "dfaff0172faee0d98069be0270268baed62f8f73",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/blobs/dfaff0172faee0d98069be0270268baed62f8f73"
+    },
+    {
+      "path": "lib/tools.js",
+      "mode": "100644",
+      "type": "blob",
+      "size": 14501,
+      "sha": "ee64c4e2bdb020572fd5ce7d216e61df509a4b52",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/blobs/ee64c4e2bdb020572fd5ce7d216e61df509a4b52"
+    },
+    {
+      "path": "package.json",
+      "mode": "100644",
+      "type": "blob",
+      "size": 1023,
+      "sha": "4b42cc5adaa90dfdeeb1bc6d7aed06cbdf4ddde7",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/blobs/4b42cc5adaa90dfdeeb1bc6d7aed06cbdf4ddde7"
+    },
+    {
+      "path": "skills",
+      "mode": "040000",
+      "type": "tree",
+      "size": 0,
+      "sha": "a9c49e4675e35b30e826c57801062027848b931a",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/trees/a9c49e4675e35b30e826c57801062027848b931a"
+    },
+    {
+      "path": "skills/vai-taskloop",
+      "mode": "040000",
+      "type": "tree",
+      "size": 0,
+      "sha": "2a58394f5c29a9c56b4e38d65b5beed411fc6ebe",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/trees/2a58394f5c29a9c56b4e38d65b5beed411fc6ebe"
+    },
+    {
+      "path": "skills/vai-taskloop/SKILL.md",
+      "mode": "100644",
+      "type": "blob",
+      "size": 5946,
+      "sha": "41c52a929a8f815e9577874810fed33997028d1d",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/blobs/41c52a929a8f815e9577874810fed33997028d1d"
+    },
+    {
+      "path": "viewer",
+      "mode": "040000",
+      "type": "tree",
+      "size": 0,
+      "sha": "87dab13bedf52511b75dfcee65861d3c8ffa88a4",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/trees/87dab13bedf52511b75dfcee65861d3c8ffa88a4"
+    },
+    {
+      "path": "viewer/index.html",
+      "mode": "100644",
+      "type": "blob",
+      "size": 32114,
+      "sha": "92113f95d288e974290343552cdf709ae5b8da0b",
+      "url": "http://10.0.10.195:3000/api/v1/repos/admin/vai-taskloop/git/blobs/92113f95d288e974290343552cdf709ae5b8da0b"
+    }
+  ],
+  "truncated": false,
+  "page": 1,
+  "total_count": 18
+}

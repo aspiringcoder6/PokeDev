@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.testing.agent/schemas/performance_requirement.schema.json",
+  "title": "PerformanceRequirement",
+  "description": "Hợp đồng workload + thresholds cho Agent 2 (docs/architecture/05_agent2_performance.md §2)",
+  "type": "object",
+  "required": [
+    "perf_req_id",
+    "scenario_name",
+    "business_action",
+    "test_target",
+    "workload_profiles",
+    "thresholds"
+  ],
+  "properties": {
+    "perf_req_id": {
+      "type": "string",
+      "pattern": "^PERF-[A-Z0-9-]+$",
+      "description": "Định danh requirement theo convention kiến trúc (vd PERF-LOGIN-001)"
+    },
+    "scenario_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Tên kịch bản nghiệp vụ (vd User Login - Peak Load Test)"
+    },
+    "business_action": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Hành động nghiệp vụ được đo (vd Login)"
+    },
+    "test_target": {
+      "type": "object",
+      "required": ["type", "endpoint", "environment"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["API"],
+          "description": "MVP chỉ đo tầng API"
+        },
+        "endpoint": {
+          "type": "string",
+          "pattern": "^[A-Z]+ /",
+          "description": "METHOD + path (vd POST /api/v1/auth/login)"
+        },
+        "environment": {
+          "type": "string",
+          "enum": ["staging", "local-docker"]
+        },
+        "base_url": {
+          "type": "string",
+          "description": "Đặt qua __ENV.BASE_URL khi chạy; trường này chỉ ghi nhận mục tiêu"
+        }
+      }
+    },
+    "workload_profiles": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "normal": {"$ref": "#/$defs/profile"},
+        "peak": {"$ref": "#/$defs/profile"},
+        "stress": {"$ref": "#/$defs/profile"},
+        "smoke": {"$ref": "#/$defs/profile"}
+      }
+    },
+    "thresholds": {
+      "type": "object",
+      "required": ["p95_ms_max", "error_rate_max"],
+      "additionalProperties": false,
+      "properties": {
+        "p50_ms_max": {"$ref": "#/$defs/threshold_value"},
+        "p95_ms_max": {"$ref": "#/$defs/threshold_value"},
+        "p99_ms_max": {"$ref": "#/$defs/threshold_value"},
+        "error_rate_max": {"$ref": "#/$defs/threshold_value"},
+        "throughput_rps_min": {"$ref": "#/$defs/threshold_value_inverse"}
+      },
+      "description": "Mỗi threshold: số đơn (cũ, backward compat) hoặc {target, acceptable_max} (3-tier mới). Target=PASS; giữa target-acceptable=PASS_WITH_WARNING; quá acceptable=FAIL."
+    },
+    "tier": {
+      "type": "string",
+      "enum": ["core", "crud", "heavy"],
+      "description": "Nhóm tầng để resolve_requirement fallback (§1.4 Plan 24)"
+    },
+    "test_data_policy": {
+      "type": "string",
+      "description": "Chính sách dữ liệu: user pool pre-created, chọn random per VU"
+    },
+    "prerequisites": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "requirement_refs": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^REQ-[A-Z0-9-]+$"},
+      "description": "Truy vết về requirement nghiệp vụ nguồn"
+    }
+  },
+  "$defs": {
+    "profile": {
+      "type": "object",
+      "required": ["vus", "duration"],
+      "additionalProperties": false,
+      "properties": {
+        "vus": {"type": "integer", "minimum": 1, "maximum": 1000},
+        "duration": {"type": "string", "pattern": "^[0-9]+(s|m|h)$"},
+        "ramp_up": {"type": "string", "pattern": "^[0-9]+(s|m)$"},
+        "ramp_down": {"type": "string", "pattern": "^[0-9]+(s|m)$"}
+      }
+    },
+    "threshold_value": {
+      "oneOf": [
+        {"type": "number", "exclusiveMinimum": 0, "description": "Single-value (backward compat): PASS if actual <= threshold"},
+        {"type": "object", "required": ["target", "acceptable_max"], "additionalProperties": false,
+         "properties": {
+           "target": {"type": "number", "exclusiveMinimum": 0, "description": "PASS if actual <= target"},
+           "acceptable_max": {"type": "number", "exclusiveMinimum": 0, "description": "PASS_WITH_WARNING if target < actual <= acceptable_max; FAIL if beyond"}
+         },
+         "description": "3-Tier: PASS / PASS_WITH_WARNING / FAIL"}
+      ]
+    },
+    "threshold_value_inverse": {
+      "oneOf": [
+        {"type": "number", "minimum": 0, "description": "Single-value (throughput): PASS if actual >= threshold"},
+        {"type": "object", "required": ["target", "acceptable_min"], "additionalProperties": false,
+         "properties": {
+           "target": {"type": "number", "minimum": 0, "description": "PASS if actual >= target"},
+           "acceptable_min": {"type": "number", "minimum": 0, "description": "PASS_WITH_WARNING if acceptable_min <= actual < target; FAIL if below"}
+         }}
+      ]
+    }
+  }
+}

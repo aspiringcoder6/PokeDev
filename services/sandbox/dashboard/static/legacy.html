@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenSandbox Integration Dashboard & Interactive Control Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css?v=2">
+</head>
+<body>
+
+  <!-- Top Navigation / Header -->
+  <header class="header">
+    <div class="header-brand">
+      <div class="brand-logo">⚡</div>
+      <div class="header-title">
+        <h1>
+          OpenSandbox Dashboard
+          <span class="badge badge-sdk">SDK v0.1 Native</span>
+          <span class="badge badge-broker">Broker Protocol</span>
+        </h1>
+        <p>Real-time topology monitor & multi-action execution suite for OpenSandbox Remote Environments</p>
+      </div>
+    </div>
+    <div class="controls">
+      <div class="auto-refresh-toggle">
+        <input type="checkbox" id="auto-refresh-check" checked onchange="toggleAutoRefresh(this.checked)">
+        <label for="auto-refresh-check">Auto-refresh (3s)</label>
+      </div>
+      <span id="last-update" class="last-update-text">Last updated: Just now</span>
+      <button class="btn btn-secondary" onclick="fetchTopology()">🔄 Refresh</button>
+    </div>
+  </header>
+
+  <!-- Statistics Overview Grid -->
+  <section class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon icon-blue">📊</div>
+      <div class="stat-info">
+        <div class="stat-label">Active Sessions</div>
+        <div class="stat-value" id="stat-sessions">0</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon icon-purple">🔌</div>
+      <div class="stat-info">
+        <div class="stat-label">Connected Runners</div>
+        <div class="stat-value" id="stat-runners">0</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon icon-green">🐳</div>
+      <div class="stat-info">
+        <div class="stat-label">OpenSandbox Containers</div>
+        <div class="stat-value" id="stat-sandboxes">0</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon icon-amber">⚡</div>
+      <div class="stat-info">
+        <div class="stat-label">Allocated Resources</div>
+        <div class="stat-value" id="stat-resources" style="font-size: 1.3rem; padding-top: 0.2rem;">0 CPU / 0 GB</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Native Provisioning Panel -->
+  <section class="launch-panel">
+    <div class="panel-header">
+      <h2>🚀 Native Session & Sandbox Provisioner</h2>
+      <span class="panel-subtitle">Managed via OpenSandbox Python SDK & Broker REST API</span>
+    </div>
+
+    <div class="launch-form-row">
+      <div class="launch-group" style="flex: 2; min-width: 260px;">
+        <label for="launch-project-path">📁 Host Project Workspace:</label>
+        <input type="text" id="launch-project-path" class="input-field" value="/home/ntkien/sandbox-kit" placeholder="/absolute/path/to/project">
+      </div>
+
+      <div class="launch-group">
+        <label for="launch-image">🐳 Container Image:</label>
+        <select id="launch-image" class="select-field">
+          <option value="ubuntu:latest" selected>ubuntu:latest</option>
+          <option value="node:20-slim">node:20-slim</option>
+          <option value="python:3.11-slim">python:3.11-slim</option>
+          <option value="golang:1.21-alpine">golang:1.21-alpine</option>
+        </select>
+      </div>
+
+      <div class="launch-group">
+        <label for="launch-cpu">⚡ CPU Limit:</label>
+        <select id="launch-cpu" class="select-field">
+          <option value="1">1 vCPU</option>
+          <option value="2" selected>2 vCPU (Default)</option>
+          <option value="4">4 vCPU</option>
+          <option value="8">8 vCPU</option>
+        </select>
+      </div>
+
+      <div class="launch-group">
+        <label for="launch-memory">💾 Memory Limit:</label>
+        <select id="launch-memory" class="select-field">
+          <option value="2Gi">2 GiB</option>
+          <option value="4Gi" selected>4 GiB (Default)</option>
+          <option value="8Gi">8 GiB</option>
+          <option value="16Gi">16 GiB</option>
+        </select>
+      </div>
+
+      <div class="launch-group">
+        <label for="launch-ttl">⏱️ Expiration TTL:</label>
+        <select id="launch-ttl" class="select-field">
+          <option value="600">10 Mins (600s)</option>
+          <option value="3600" selected>1 Hour (3600s)</option>
+          <option value="7200">2 Hours (7200s)</option>
+          <option value="21600">6 Hours (21600s)</option>
+          <option value="86400">24 Hours (86400s)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="launch-form-row actions-row">
+      <button class="btn btn-purple" id="btn-launch-standby" onclick="launchEnvironment(true)">
+        <span id="launch-standby-text">⚡ + Create Standby Sandbox Only</span>
+      </button>
+      <button class="btn btn-primary" id="btn-launch-full" onclick="launchEnvironment(false)">
+        <span id="launch-full-text">🚀 + Provision Session & Sandbox (Native)</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- Active Topology Mapping Table -->
+  <section class="section-card">
+    <div class="section-header">
+      <h2>🌐 Active Session Topology (Session &rarr; Runner &rarr; Sandbox)</h2>
+      <span class="section-count" id="topology-count">0 Active</span>
+    </div>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Session ID</th>
+            <th>Runner ID</th>
+            <th>OpenSandbox ID</th>
+            <th>Image</th>
+            <th>Resources</th>
+            <th>TTL</th>
+            <th>Status</th>
+            <th>Mount Path</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="topology-rows">
+          <tr>
+            <td colspan="9" class="empty-state">Loading active topology...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Interactive Terminal & Action Tester Section -->
+  <section class="section-card" id="terminal-section">
+    <div class="section-header">
+      <div class="terminal-title-group">
+        <h2>💻 Interactive Action Tester & Web Terminal</h2>
+        <span class="terminal-subtitle">Executes actions inside OpenSandbox container at <code>/workspace</code></span>
+      </div>
+      <div class="action-mode-tabs">
+        <button class="tab-btn active" id="tab-shell" onclick="switchActionMode('shell')">💻 Shell Command</button>
+        <button class="tab-btn" id="tab-ls" onclick="switchActionMode('ls')">📁 List Directory</button>
+        <button class="tab-btn" id="tab-read" onclick="switchActionMode('read')">📄 Read File</button>
+        <button class="tab-btn" id="tab-info" onclick="switchActionMode('info')">ℹ️ File Info</button>
+      </div>
+    </div>
+
+    <div class="terminal-container">
+      <!-- Toolbar -->
+      <div class="terminal-toolbar">
+        <div class="terminal-select-group">
+          <label for="terminal-session-select">Target Session:</label>
+          <select id="terminal-session-select" class="select-field" onchange="onSessionSelectChange()">
+            <option value="">-- No Active Session Selected --</option>
+          </select>
+        </div>
+
+        <div class="preset-btns" id="preset-container">
+          <span class="preset-label">Presets:</span>
+          <button class="btn-xs" onclick="insertPreset('pwd')">pwd</button>
+          <button class="btn-xs" onclick="insertPreset('ls -la /workspace')">ls -la /workspace</button>
+          <button class="btn-xs" onclick="insertPreset('whoami; hostname')">whoami; hostname</button>
+          <button class="btn-xs" onclick="insertPreset('git status')">git status</button>
+          <button class="btn-xs" onclick="insertPreset('python3 -m unittest discover -s tests')">run tests</button>
+          <button class="btn-xs btn-danger-xs" onclick="clearTerminal()">Clear Console</button>
+        </div>
+      </div>
+
+      <!-- Action Mode Custom Panels -->
+      <!-- Shell Mode -->
+      <div id="mode-panel-shell" class="mode-panel active">
+        <!-- Output Console -->
+        <div class="terminal-console" id="terminal-console">
+          <div class="console-welcome">
+            Welcome to <strong>OpenSandbox Interactive Control Panel</strong>.<br>
+            Select an active session above and execute shell commands or file operations inside the container environment.
+          </div>
+        </div>
+
+        <!-- Shell Command Input Bar -->
+        <div class="terminal-input-bar">
+          <span class="terminal-prompt-label" id="terminal-prompt">root@opensandbox:/workspace$</span>
+          <input type="text" id="terminal-input" class="terminal-input-field" placeholder="Type shell command (e.g. pwd, ls -la /workspace)..." onkeydown="handleTerminalKeydown(event)">
+          <button class="btn btn-success" id="btn-execute" onclick="executeCommandFromInput()">Execute</button>
+        </div>
+      </div>
+
+      <!-- List Directory Mode -->
+      <div id="mode-panel-ls" class="mode-panel">
+        <div class="action-input-row">
+          <label>Directory Path:</label>
+          <input type="text" id="ls-path-input" class="input-field" value="/workspace" placeholder="/workspace or relative path">
+          <button class="btn btn-primary" onclick="executeListDir()">📁 List Directory</button>
+        </div>
+        <div class="action-result-box" id="ls-result-box">
+          <div class="placeholder-text">Click "List Directory" to inspect directory contents.</div>
+        </div>
+      </div>
+
+      <!-- Read File Mode -->
+      <div id="mode-panel-read" class="mode-panel">
+        <div class="action-input-row">
+          <label>File Path:</label>
+          <input type="text" id="read-path-input" class="input-field" value="/workspace/package.json" placeholder="/workspace/filename">
+          <button class="btn btn-primary" onclick="executeReadFile()">📄 Read Content</button>
+        </div>
+        <div class="action-result-box" id="read-result-box">
+          <div class="placeholder-text">Click "Read Content" to preview file content.</div>
+        </div>
+      </div>
+
+      <!-- File Info Mode -->
+      <div id="mode-panel-info" class="mode-panel">
+        <div class="action-input-row">
+          <label>Target Path:</label>
+          <input type="text" id="info-path-input" class="input-field" value="/workspace" placeholder="/workspace/path">
+          <button class="btn btn-primary" onclick="executeFileInfo()">ℹ️ Get Metadata</button>
+        </div>
+        <div class="action-result-box" id="info-result-box">
+          <div class="placeholder-text">Click "Get Metadata" to fetch permissions, size, and modification date.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

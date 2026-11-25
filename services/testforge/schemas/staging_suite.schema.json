@@ -1,0 +1,304 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Reviewed executable staging suite v1",
+  "type": "object",
+  "required": [
+    "version",
+    "cases"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "name": {
+      "type": "string"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "test_case_id",
+          "actor",
+          "requirement_refs",
+          "steps"
+        ],
+        "properties": {
+          "test_case_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "actor": {
+            "type": "string",
+            "minLength": 1
+          },
+          "requirement_refs": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "steps": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "action",
+                "target"
+              ],
+              "properties": {
+                "action": {
+                  "enum": [
+                    "OPEN",
+                    "CLICK",
+                    "FILL",
+                    "SELECT",
+                    "UPLOAD",
+                    "SUBMIT",
+                    "ASSERT"
+                  ]
+                },
+                "target": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "value": {
+                  "type": [
+                    "string",
+                    "number",
+                    "null"
+                  ]
+                }
+              }
+            }
+          },
+          "fixtures": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "path",
+                "cleanup_path"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+                },
+                "path": {
+                  "type": "string"
+                },
+                "cleanup_path": {
+                  "type": "string"
+                },
+                "body": {
+                  "type": "object"
+                },
+                "expected_status": {
+                  "type": "integer"
+                },
+                "id_field": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "ui_oracles": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "source_ref",
+                "type"
+              ],
+              "properties": {
+                "source_ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "type": {
+                  "enum": [
+                    "TEXT",
+                    "VALUE",
+                    "COUNT",
+                    "URL",
+                    "VISIBLE",
+                    "ABSENT"
+                  ]
+                },
+                "target": {
+                  "type": "string"
+                },
+                "timeout_ms": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 60000
+                }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "TEXT",
+                          "VALUE",
+                          "COUNT",
+                          "URL"
+                        ]
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "expected"
+                    ]
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "const": "COUNT"
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "expected": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "TEXT",
+                          "VALUE",
+                          "URL"
+                        ]
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "expected": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                {
+                  "if": {
+                    "properties": {
+                      "type": {
+                        "enum": [
+                          "TEXT",
+                          "VALUE",
+                          "COUNT",
+                          "VISIBLE",
+                          "ABSENT"
+                        ]
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "target"
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          "api_checks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "source_ref"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "source_ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "method": {
+                  "enum": [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "PATCH",
+                    "DELETE"
+                  ]
+                },
+                "body": {
+                  "type": "object"
+                },
+                "auth": {
+                  "enum": [
+                    "none",
+                    "refresh"
+                  ]
+                },
+                "expected_status": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 599
+                },
+                "expected_payload": {
+                  "type": "object"
+                },
+                "timeout_ms": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 60000
+                }
+              }
+            }
+          },
+          "db": {
+            "type": "object",
+            "required": [
+              "query",
+              "source_ref"
+            ],
+            "properties": {
+              "query": {
+                "type": "string",
+                "minLength": 1
+              },
+              "source_ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "params": {
+                "type": "object"
+              },
+              "expected_count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "expected_fields": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "name": "vai-taskloop",
+  "version": "1.3.2",
+  "scripts": { "test": "node --test test/*.test.js" },
+  "description": "vAiPlatform Subagent Contract Task Loop with Interactive Form & Live Prompt Sync",
+  "author": "vAiPlatform Team",
+  "license": "MIT",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./client/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "client",
+    "viewer",
+    "skills",
+    "data",
+    "cordis.patch.yml",
+    "package.json",
+    "README.md"
+  ],
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "slots",
+        "sessions",
+        "sidebarRightTabs",
+        "sidebarRight"
+      ]
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.0",
+    "@deepseek-ai/dsh-tools": "^0.1.0"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "vai-plugin",
+    "taskloop",
+    "subagent",
+    "contract",
+    "agent"
+  ]
+}

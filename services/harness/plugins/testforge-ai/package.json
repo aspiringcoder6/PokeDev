@@ -1,0 +1,13 @@
+{
+  "name": "testforge-ai",
+  "version": "1.0.0",
+  "description": "TestForge AI tools for DSH agents: functional browser test (explore/replay/staging), performance test (k6), testcase recall from Agent Memory - via the TestForge broker (FastAPI) on the Windows host",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
+  "keywords": ["dsh-plugin", "testing", "automation", "playwright", "k6"],
+  "license": "MIT"
+}

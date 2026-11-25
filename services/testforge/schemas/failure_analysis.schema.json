@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.testing.agent/schemas/failure_analysis.schema.json",
+  "title": "FailureAnalysis",
+  "description": "Output schema of Failure Analyzer classifying the failure into 8 taxonomies",
+  "type": "object",
+  "required": [
+    "failure_id",
+    "test_case_id",
+    "function_id",
+    "failure_type",
+    "confidence",
+    "healable",
+    "root_cause",
+    "reason",
+    "recommended_action"
+  ],
+  "properties": {
+    "failure_id": {
+      "type": "string",
+      "description": "Unique identifier for this failure event"
+    },
+    "test_case_id": {
+      "type": "string",
+      "description": "Affected test case ID"
+    },
+    "function_id": {
+      "type": "string",
+      "description": "Affected function ID"
+    },
+    "failure_type": {
+      "type": "string",
+      "enum": [
+        "LOCATOR",
+        "TIMING",
+        "SCRIPT",
+        "TEST_DATA",
+        "ASSERTION",
+        "ENVIRONMENT",
+        "APPLICATION_DEFECT",
+        "UNKNOWN"
+      ]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Confidence score of the classification"
+    },
+    "healable": {
+      "type": "boolean",
+      "description": "True if failure is test-related and can proceed to self-healing"
+    },
+    "root_cause": {
+      "type": "string",
+      "description": "Summary explanation of the root cause"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Short evidence-based justification sentence for the classification (M3.1 v1.1)"
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "error_message": { "type": "string" },
+        "failed_step": { "type": "integer" },
+        "screenshot_path": { "type": "string" },
+        "trace_path": { "type": "string" },
+        "dom_snapshot": { "type": "string" },
+        "network_log": { "type": "string" },
+        "visible_messages": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "References to evidence files/attachments backing the classification (M3.1 v1.1)"
+    },
+    "recommended_action": {
+      "type": "string",
+      "description": "Recommendation (e.g., TIER_1_OR_2_LOCATOR_HEAL, TIER_1_RETRY, STOP_SELF_HEALING, DATA_ISSUE_REPORT, REVIEW_ASSERTION, ESCALATE_HUMAN_REVIEW)"
+    }
+  },
+  "additionalProperties": false
+}

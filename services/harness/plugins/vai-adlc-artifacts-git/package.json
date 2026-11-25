@@ -1,0 +1,11 @@
+{
+  "name": "vai-adlc-artifacts-git",
+  "version": "0.2.0",
+  "description": "Isolated local Git snapshots and bounded, checksummed source-patch capture for ADLC.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": { ".": "./lib/index.js", "./collector": "./lib/collector.js", "./package.json": "./package.json" },
+  "scripts": { "test": "node --test tests/*.test.mjs" },
+  "keywords": ["dsh-plugin", "adlc", "artifacts"],
+  "license": "MIT"
+}

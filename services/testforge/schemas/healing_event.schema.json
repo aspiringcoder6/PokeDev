@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.testing.agent/schemas/healing_event.schema.json",
+  "title": "HealingEvent",
+  "description": "Audit log record for one self-healing cycle (Bước 16-17). Basis for False Repair Rate and Healing Success Rate KPIs (RQ2).",
+  "type": "object",
+  "required": [
+    "event_id",
+    "run_id",
+    "test_case_id",
+    "failure_type",
+    "backend",
+    "tier2_mode",
+    "outcome",
+    "retest_count",
+    "false_repair",
+    "created_at"
+  ],
+  "properties": {
+    "event_id": { "type": "string" },
+    "run_id": { "type": "string" },
+    "test_case_id": { "type": "string" },
+    "function_id": { "type": "string" },
+    "failure_type": {
+      "type": "string",
+      "enum": ["LOCATOR", "TIMING", "SCRIPT", "TEST_DATA", "ASSERTION", "ENVIRONMENT", "APPLICATION_DEFECT", "UNKNOWN"]
+    },
+    "backend": { "type": "string", "enum": ["local", "sandbox"] },
+    "tier2_mode": { "type": "string", "enum": ["heuristic", "llm", "none"] },
+    "llm_model": { "type": ["string", "null"] },
+    "proposal": {
+      "type": ["object", "null"],
+      "properties": {
+        "tier": { "type": "integer" },
+        "strategy": { "type": "string" },
+        "new_locator": { "type": ["string", "null"] },
+        "confidence": { "type": "number" },
+        "reasoning": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "tried_locators": { "type": "array", "items": { "type": "string" } },
+    "outcome": {
+      "type": "string",
+      "enum": ["HEALED_PASS", "STOP_DEFECT", "NOT_HEALABLE", "FAILED_HEAL", "REJECTED"]
+    },
+    "retest_count": { "type": "integer", "minimum": 0 },
+    "wall_seconds": { "type": "number" },
+    "false_repair": {
+      "type": "boolean",
+      "description": "True if the accepted heal altered the oracle/assertion semantics or targeted a semantically different element (anti-cheat audit)"
+    },
+    "false_repair_reason": { "type": "string" },
+    "healing_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["stage", "detail"],
+        "properties": {
+          "ts": { "type": "string" },
+          "stage": { "type": "string" },
+          "detail": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "created_at": { "type": "string" }
+  },
+  "additionalProperties": false
+}

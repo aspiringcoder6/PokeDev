@@ -1,0 +1,13 @@
+{
+  "name": "vai-sandbox",
+  "version": "1.0.0",
+  "description": "vAi Sandbox Kit tools for DSH agents: manage remote sandbox sessions, run code, read/write/edit files, grep/find, git clone - via the Sandbox Kit broker (FastAPI) created by vai-secrets vault config",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
+  "keywords": ["dsh-plugin", "sandbox", "remote-execution"],
+  "license": "MIT"
+}

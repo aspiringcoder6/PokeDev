@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.testing.agent/schemas/performance_result.schema.json",
+  "title": "PerformanceResult",
+  "description": "Kết quả một lần load test + evaluation per-threshold (docs/architecture/05_agent2_performance.md §4). threshold_evaluation dùng MẢNG (metric/threshold/actual/result) thay vì object key động để validate được bằng JSON Schema.",
+  "type": "object",
+  "required": [
+    "perf_run_id",
+    "perf_req_id",
+    "profile",
+    "executed_at",
+    "metrics",
+    "threshold_evaluation",
+    "overall_status",
+    "violated_thresholds",
+    "action"
+  ],
+  "properties": {
+    "perf_run_id": {
+      "type": "string",
+      "pattern": "^PRUN-[0-9a-f]{8}$"
+    },
+    "perf_req_id": {
+      "type": "string",
+      "pattern": "^PERF-[A-Z0-9-]+$"
+    },
+    "profile": {
+      "type": "string",
+      "enum": ["normal", "peak", "stress", "smoke"]
+    },
+    "executed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "duration_actual_seconds": {
+      "type": "number",
+      "minimum": 0
+    },
+    "environment": {
+      "type": "string",
+      "description": "Môi trường đo (vd local-docker) — ghi rõ trong limitations khi không phải staging"
+    },
+    "metrics": {
+      "type": "object",
+      "required": ["p95_ms", "throughput_rps", "error_rate", "total_requests"],
+      "additionalProperties": false,
+      "properties": {
+        "p50_ms": {"type": "number", "minimum": 0},
+        "p95_ms": {"type": "number", "minimum": 0},
+        "p99_ms": {"type": "number", "minimum": 0},
+        "throughput_rps": {"type": "number", "minimum": 0},
+        "error_rate": {"type": "number", "minimum": 0, "maximum": 1},
+        "total_requests": {"type": "integer", "minimum": 0},
+        "failed_requests": {"type": "integer", "minimum": 0},
+        "max_concurrent_vus": {"type": "integer", "minimum": 0}
+      }
+    },
+    "threshold_evaluation": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["metric", "threshold", "actual", "result"],
+        "additionalProperties": false,
+        "properties": {
+          "metric": {
+            "type": "string",
+            "enum": [
+              "p50_ms_max",
+              "p95_ms_max",
+              "p99_ms_max",
+              "error_rate_max",
+              "throughput_rps_min"
+            ]
+          },
+          "threshold": {"type": "number"},
+          "actual": {"type": ["number", "null"]},
+          "result": {"type": "string", "enum": ["PASS", "PASS_WITH_WARNING", "FAIL", "SKIP"]}
+        }
+      }
+    },
+    "overall_status": {
+      "type": "string",
+      "enum": ["PASS", "PASS_WITH_WARNING", "FAIL"]
+    },
+    "violated_thresholds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "p50_ms_max",
+          "p95_ms_max",
+          "p99_ms_max",
+          "error_rate_max",
+          "throughput_rps_min"
+        ]
+      }
+    },
+    "action": {
+      "type": "string",
+      "enum": ["TRIGGER_OPTIMIZATION_AGENT", "REPORT_ONLY", "REPORT_WITH_WARNING"],
+      "description": "FAIL -> TRIGGER_OPTIMIZATION_AGENT; PASS -> REPORT_ONLY; PASS_WITH_WARNING -> REPORT_WITH_WARNING"
+    },
+    "hitl_overrides": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["approved_by", "justification", "thresholds_override"],
+        "properties": {
+          "approved_by": {"type": "string"},
+          "justification": {"type": "string"},
+          "thresholds_override": {"type": "array", "items": {"type": "string"}}
+        }
+      },
+      "description": "Audit log: HITL duyệt các threshold vi phạm (§1.4 Plan 24)"
+    },
+    "script_ref": {
+      "type": "string",
+      "description": "Đường dẫn k6 script đã sinh (truy vết requirement -> script)"
+    },
+    "trigger_override": {
+      "type": ["object", "null"],
+      "description": "HITL override gate functional FAIL: {approved_by, justification}",
+      "properties": {
+        "approved_by": {"type": "string"},
+        "justification": {"type": "string"}
+      }
+    }
+  }
+}

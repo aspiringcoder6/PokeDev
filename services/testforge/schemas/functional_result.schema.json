@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.testing.agent/schemas/functional_result.schema.json",
+  "title": "FunctionalResult",
+  "description": "Output schema summarizing functional testing results for ADLC Quality Gate",
+  "type": "object",
+  "required": [
+    "run_id",
+    "feature",
+    "total",
+    "passed",
+    "failed",
+    "healing",
+    "defects",
+    "status",
+    "gate_passed"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "Unique run execution ID"
+    },
+    "feature": {
+      "type": "string",
+      "description": "Feature or module name"
+    },
+    "total": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of test cases executed"
+    },
+    "passed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of passing test cases"
+    },
+    "failed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of failing test cases"
+    },
+    "healing": {
+      "type": "object",
+      "required": [
+        "attempted",
+        "successful"
+      ],
+      "properties": {
+        "attempted": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "successful": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rejected": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "success_rate": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "defects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of defect IDs discovered during testing"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "PARTIAL_FAIL",
+        "SIMULATED",
+        "ERROR",
+        "REVIEW"
+      ]
+    },
+    "gate_passed": {
+      "type": "boolean",
+      "description": "True if functional criteria meet quality gate requirements"
+    },
+    "recommended_next_stage": {
+      "type": "string",
+      "description": "Recommendation for ADLC Orchestrator (e.g. PERFORMANCE_TESTING, BLOCK)"
+    },
+    "execution_mode": {
+      "enum": [
+        "local",
+        "sandbox",
+        "simulated",
+        "unknown"
+      ]
+    },
+    "initial_pass_rate": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "healed_pass_rate": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "healing_success_rate": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "false_repair_rate": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "proposal_rejection_rate": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "healing_attempts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "exit_code": {
+      "enum": [
+        0,
+        1,
+        2
+      ]
+    }
+  },
+  "additionalProperties": false
+}

@@ -19,7 +19,7 @@ from urllib.parse import urlencode, urlsplit
 from dotenv import dotenv_values
 
 SERVICES = ("sandbox", "memory", "testforge")
-TARGET = "http://10.0.10.195:3011/tnqd/dashboard"
+TARGET = os.getenv("POKEDEV_TESTFORGE_TARGET_URL", "http://127.0.0.1:7862/work")
 ROOT = "/api/v1/pokedev-services"
 ACTIVE = {"RESERVED", "RUNNING", "UNCONFIRMED"}
 

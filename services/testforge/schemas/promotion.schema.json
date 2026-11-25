@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Exploration promotion gate report v1",
+  "type": "object",
+  "required": ["run_id", "promoted", "checks", "blocking"],
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {"type": "string", "pattern": "^EXPLORE-[0-9a-f]{32}$"},
+    "promoted": {"type": "boolean"},
+    "checks": {
+      "type": "array",
+      "minItems": 7,
+      "items": {
+        "type": "object",
+        "required": ["id", "passed", "detail"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "enum": [
+              "step_coverage",
+              "oracle_from_contract",
+              "static_validation",
+              "replay_pass",
+              "verification_engine",
+              "cleanup_resolved",
+              "provenance_complete",
+              "video_evidence",
+              "api_state_verify",
+              "standard_input_contract"
+            ]
+          },
+          "passed": {"type": ["boolean", "null"]},
+          "detail": {"type": "string"}
+        }
+      }
+    },
+    "blocking": {"type": "array", "items": {"type": "string"}}
+  }
+}

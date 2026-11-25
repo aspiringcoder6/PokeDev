@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="vi" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guides — Sử dụng Sandbox Kit | OpenSandbox Kit</title>
+<meta name="description" content="Hướng dẫn sử dụng Sandbox Kit: Broker, VFS, Runner WebSocket protocol và API quick reference.">
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<style>
+/* ===== Palette: JetBrains Dark (dashboard/static/theme.json) ===== */
+:root {
+  --bg: #26282b;               /* surface.background */
+  --bg-deep: #1e1f22;          /* toolbar.background / editor.background */
+  --bg-elevated: #26282b;      /* elevated_surface.background */
+  --text: #dfe1e5;             /* text */
+  --text-muted: #b0b1b3;       /* text.muted */
+  --text-faint: #6f737a;       /* text.placeholder */
+  --border: #393b41;           /* border */
+  --hover: #3c3e41;            /* element.hover */
+  --active: #494a4d;           /* element.active */
+  --el-bg: #393b41;            /* element.background */
+  --accent: #3474f0;           /* border.selected / text.accent */
+  --link: #548AF7;             /* link_text.hover */
+  --link-bright: #56a8f5;      /* syntax.string.special */
+  --sel-bg: #214283;           /* players[0].selection */
+  --success: #57965d;  --success-bg: #253627;
+  --warning: #f2c55c;  --warning-bg: #665014;
+  --error: #fa6675;    --error-bg: #402929;
+  --info: #3592c4;     --info-bg: #393b41;
+  --scrollbar-thumb: #ffffff26; /* scrollbar.thumb.background */
+  --code-fn: #6AA2D7;
+  --code-str: #6aab73;
+  --code-kw: #cf8e6d;
+  --code-num: #2aacb8;
+  --code-comment: #7a7e85;
+  --code-type: #A6BB77;
+  --code-prop: #c77dbb;
+  --code-tag: #d5b778;
+  --nav-h: 56px;
+  --sidebar-w: 272px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--link); text-decoration: none; }
+a:hover { color: var(--link-bright); }
+
+/* ===== Navbar ===== */
+.navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+  height: var(--nav-h);
+  background: rgba(30, 31, 34, .92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+}
+.navbar .inner {
+  width: 100%; max-width: 1440px; margin: 0 auto;
+  padding: 0 24px; display: flex; align-items: center; gap: 12px;
+}
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--text); font-size: 17px; }
+.brand:hover { color: var(--text); }
+.brand .logo { height: 30px; width: auto; display: block; }
+.brand .logo-text { font-size: 17px; }
+.nav-links { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+.nav-links a {
+  color: var(--text-muted); padding: 6px 12px; border-radius: 8px; font-size: 14px;
+  transition: color .2s, background .2s;
+}
+.nav-links a:hover { color: var(--text); background: var(--hover); }
+.nav-links a.active { color: var(--text); font-weight: 500; }
+.menu-btn { display: none; margin-left: auto; background: none; border: 1px solid var(--border); color: var(--text-muted); border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 14px; }
+
+/* ===== Sidebar ===== */
+.sidebar {
+  position: fixed; top: var(--nav-h); bottom: 0; left: 0; z-index: 30;
+  width: var(--sidebar-w);
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 24px 16px 48px;
+}
+.sidebar h2 {
+  margin: 8px 4px 10px; font-size: 13px; font-weight: 700;
+  color: var(--text); text-transform: none; letter-spacing: .2px;
+}
+.sidebar .group { margin-bottom: 22px; }
+.sidebar a {
+  display: block; padding: 5px 10px; margin: 1px 0;
+  color: var(--text-muted); font-size: 13.5px; border-radius: 8px;
+  border-left: 2px solid transparent;
+  transition: color .15s, background .15s;
+}
+.sidebar a:hover { color: var(--text); background: var(--hover); }
+.sidebar a.active {
+  color: var(--text); font-weight: 500;
+  background: linear-gradient(90deg, #3474f033 0%, transparent 100%);
+  border-left-color: var(--accent);
+}
+.sidebar .sub { margin-left: 14px; font-size: 13px; }
+
+/* ===== Layout ===== */
+.layout { display: flex; margin-top: var(--nav-h); }
+.content { flex: 1; min-width: 0; margin-left: var(--sidebar-w); display: flex; justify-content: center; }
+.doc { width: 100%; max-width: 768px; padding: 40px 32px 96px; }
+
+/* ===== "On this page" ===== */
+.outline {
+  position: fixed; top: var(--nav-h); right: 0; bottom: 0; z-index: 20;
+  width: 240px; padding: 36px 20px;
+  border-left: 1px solid var(--border);
+  background: var(--bg);
+  overflow-y: auto;
+}
+.outline .title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 12px; letter-spacing: .3px; }
+.outline a { display: block; color: var(--text-muted); font-size: 12.5px; padding: 3px 0 3px 12px; border-left: 1px solid var(--border); line-height: 1.5; }
+.outline a:hover { color: var(--text); }
+.outline a.active { color: var(--accent); border-left-color: var(--accent); }
+@media (max-width: 1280px) { .outline { display: none; } }
+
+/* ===== Typography ===== */
+.doc h1 { font-size: 32px; line-height: 1.3; margin: 0 0 20px; letter-spacing: -.3px; }
+.doc h2 {
+  font-size: 23px; margin: 52px 0 16px; padding-top: 8px;
+  letter-spacing: -.2px; scroll-margin-top: calc(var(--nav-h) + 20px);
+}
+.doc h3 { font-size: 17.5px; margin: 32px 0 12px; scroll-margin-top: calc(var(--nav-h) + 20px); }
+.doc p { color: var(--text); margin: 0 0 16px; }
+.doc .lead { color: var(--text-muted); font-size: 16.5px; }
+.doc ul, .doc ol { margin: 0 0 16px; padding-left: 26px; }
+.doc li { margin: 5px 0; }
+.doc li::marker { color: var(--text-faint); }
+.doc strong { color: var(--text); font-weight: 600; }
+.doc hr { border: none; border-top: 1px solid var(--border); margin: 36px 0; }
+code, kbd {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13.5px;
+}
+p code, li code, td code, .custom-block code {
+  background: var(--el-bg); color: var(--text);
+  padding: 2px 7px; border-radius: 5px; font-size: 12.5px;
+}
+
+/* ===== Code blocks ===== */
+.code-block {
+  margin: 0 0 18px; border: 1px solid var(--border); border-radius: 10px;
+  background: var(--bg-deep); overflow: hidden;
+}
+.code-block .cb-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 14px; background: var(--bg-deep); border-bottom: 1px solid var(--border);
+}
+.code-block .lang { font-size: 11.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .8px; }
+.code-block .copy {
+  background: none; border: 1px solid var(--border); color: var(--text-muted);
+  font-size: 11.5px; padding: 3px 10px; border-radius: 6px; cursor: pointer;
+  transition: color .15s, border-color .15s;
+}
+.code-block .copy:hover { color: var(--text); border-color: var(--active); }
+.code-block pre {
+  margin: 0; padding: 16px 18px; overflow-x: auto;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px; line-height: 1.65; color: var(--text);
+  scrollbar-width: thin; scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+.code-block pre::-webkit-scrollbar { height: 8px; }
+.code-block pre::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+/* Syntax palette — theme.json syntax */
+.k { color: var(--code-kw); } .s { color: var(--code-str); } .f { color: var(--code-fn); }
+.n { color: var(--code-num); } .c { color: var(--code-comment); font-style: italic; }
+.pr { color: var(--code-prop); } .t { color: var(--code-type); }
+.tag { color: var(--code-tag); } .op { color: #bcbec4; } .var { color: #bcbec4; }
+
+/* ===== Custom blocks (VitePress style) ===== */
+.custom-block {
+  margin: 0 0 18px; padding: 14px 18px; border-radius: 10px;
+  border: 1px solid; font-size: 14.5px;
+}
+.custom-block .cb-title { font-weight: 700; margin-bottom: 6px; }
+.custom-block p:last-child { margin-bottom: 0; }
+.custom-block.warning { background: #66501433; border-color: var(--warning); }
+.custom-block.warning .cb-title { color: var(--warning); }
+.custom-block.tip { background: var(--success-bg); border-color: var(--success); }
+.custom-block.tip .cb-title { color: #67ff59; }
+.custom-block.danger { background: var(--error-bg); border-color: var(--error); }
+.custom-block.danger .cb-title { color: var(--error); }
+.custom-block.info { background: #3592c41a; border-color: var(--info); }
+.custom-block.info .cb-title { color: var(--info); }
+
+/* ===== Tables ===== */
+table { width: 100%; border-collapse: collapse; margin: 0 0 18px; font-size: 14px; }
+th, td { border: 1px solid var(--border); padding: 8px 14px; text-align: left; vertical-align: top; }
+th { background: var(--bg-deep); color: var(--text); font-weight: 600; font-size: 13px; }
+td { color: var(--text-muted); }
+td code { color: var(--text); }
+tr:hover td { background: var(--hover); }
+
+/* ===== Badge ===== */
+.badge {
+  display: inline-block; padding: 1px 9px; border-radius: 99px;
+  font-size: 11.5px; font-weight: 600; vertical-align: 2px;
+  background: #3474f033; color: #56a8f5; border: 1px solid #3474f055;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1080px) {
+  .sidebar { transform: translateX(-100%); transition: transform .25s; }
+  .sidebar.open { transform: translateX(0); }
+  .content { margin-left: 0; }
+  .menu-btn { display: inline-block; }
+  .nav-links a:not(.keep) { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="inner">
+    <a class="brand" href="/dashboard"><img class="logo" src="/static/vai-logo.png" alt="VAI logo"><span class="logo-text">Sandbox Kit</span></a>
+    <nav class="nav-links">
+      <a href="/dashboard">Dashboard</a>
+      <a href="/guides" class="active keep">Guides</a>
+      <a href="/docs">API Specs</a>
+      <a href="/static/theme.json" class="keep">Theme</a>
+    </nav>
+    <button class="menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰ Menu</button>
+  </div>
+</header>
+
+<aside class="sidebar" id="sidebar">
+  <div class="group">
+    <h2>Guides</h2>
+    <a href="#tong-quan" class="active">Tổng quan</a>
+    <a href="#requirements">Requirements</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="#quick-start">Quick Start</a>
+    <a href="#executing-actions">Executing Actions</a>
+    <a href="#file-sync">VFS &amp; File Sync</a>
+    <a href="#websocket-protocol">WebSocket Protocol</a>
+    <a href="#sdk-quick-reference">API Quick Reference</a>
+    <a href="#best-practices">Best Practices &amp; Gotchas</a>
+  </div>
+  <div class="group">
+    <h2>Nguồn tham khảo</h2>
+    <a href="/docs" class="sub">Swagger UI (OpenAPI)</a>
+    <a href="/dashboard" class="sub">Dashboard</a>
+    <a href="https://github.com/opensandbox-group/OpenSandbox/tree/main/docs" class="sub" target="_blank" rel="noopener">OpenSandbox docs ↗</a>
+  </div>
+</aside>
+
+<div class="layout">
+<div class="content">
+<main class="doc">
+
+<h1 id="tong-quan">Sandbox Kit — Hướng dẫn sử dụng</h1>
+<p class="lead">Sandbox Kit là hạ tầng thực thi từ xa cho AI agent: một <strong>Relay Broker</strong> (FastAPI, cổng <code>8000</code>) nhận lệnh HTTP từ orchestrator/subagent, chuyển tiếp qua WebSocket tới <strong>Go Runner</strong> chạy bên trong Docker sandbox, kèm <strong>VFS Service</strong> (SQLite, cổng <code>8001</code>) làm nguồn sự thật cho file dự án.</p>
+<p>Agent không bao giờ chạy code trực tiếp trên máy chủ — mọi lệnh shell, thao tác file đều diễn ra bên trong container cách ly, kết quả trả về qua Broker. Điều này cho phép orchestrator điều phối nhiều sandbox song song (mỗi pipeline một session) mà không đụng vào môi trường host.</p>
+
+<h2 id="requirements">Requirements</h2>
+<ul>
+  <li>Server có Docker + 2 systemd service: <code>sandbox-broker</code> (cổng <code>8000</code>) và <code>sandbox-vfs</code> (cổng <code>8001</code>, chỉ nội bộ)</li>
+  <li>Container image cần chạy test phải có sẵn trên server — <strong>pre-pull trước</strong> khi tạo session (lần pull đầu sẽ block tạm Broker)</li>
+  <li>Client chỉ cần truy cập được cổng <code>8000</code>; VFS <code>8001</code> do Broker tự proxy</li>
+  <li>Sandbox image chứa Go runner tĩnh (<code>/opt/container_runner</code>) — được provisioner mount tự động</li>
+</ul>
+<div class="custom-block danger">
+  <p class="cb-title">Không có authentication</p>
+  <p>Các endpoint management / agent / VFS hiện chưa có auth. Chỉ triển khai trong mạng nội bộ, không mở cổng ra Internet công khai.</p>
+</div>
+
+<h2 id="how-it-works">How It Works</h2>
+<ol>
+  <li>Orchestrator tạo session qua <code>POST /api/v1/management/sessions</code> — provisioner <code>docker run</code> container với Go runner được mount, inject <code>BROKER_HOST</code>/<code>BROKER_PORT</code> qua <code>host.docker.internal:host-gateway</code>.</li>
+  <li>Runner trong container kết nối WebSocket về <code>/ws</code>, đăng ký role <code>executor</code> → session chuyển sang <code>READY</code> (<code>runnerConnected: true</code>).</li>
+  <li>Subagent gửi action (<code>runShellCommand</code>, <code>runReadFile</code>…) tới <code>POST /api/v1/agent/execute</code> → Broker relay qua WS kèm <code>requestId</code>, chờ <code>actionResponse</code>.</li>
+  <li>Trước mỗi lệnh shell, Broker tính <strong>VFS delta</strong> và đẩy <code>sync_files</code> vào container — VFS là nguồn sự thật, container là nơi thực thi.</li>
+  <li>Kết quả trả về dạng chuẩn: <code>status</code>, <code>stdout</code>, <code>stderr</code>, <code>exitCode</code>, <code>durationMs</code>.</li>
+</ol>
+
+<h3>Vòng đời session</h3>
+<div class="code-block"><div class="cb-head"><span class="lang">lifecycle</span><button class="copy">Copy</button></div><pre><span class="var">sandbox_create</span> ──▶ <span class="t">STARTING</span> ──▶ <span class="t">READY</span> (runner connected) ──▶ làm việc ──▶ <span class="var">sandbox_terminate</span>
+                                          │
+                            tạo với <span class="pr">standby</span>=<span class="k">true</span> ──▶ <span class="t">STANDBY</span> ──▶ <span class="var">sandbox_attach</span> ──▶ <span class="t">READY</span>
+
+TTL hết hạn (mặc định <span class="n">3600s</span>) → TTL Reaper dọn container; <span class="pr">ttl</span>=<span class="n">0</span> → không bao giờ hết hạn</pre></div>
+<div class="custom-block warning">
+  <p class="cb-title">ttl = 0 nghĩa là bất tử</p>
+  <p>Session <code>ttl=0</code> (mẫu dùng cho pipeline reuse) sẽ không bao giờ bị Reaper dọn. Nếu teardown <code>DELETE</code> thất bại, container 2vCPU/4Gi sẽ rò rỉ trên server. Luôn có cơ chế teardown rõ ràng trong pipeline.</p>
+</div>
+
+<h2 id="quick-start">Quick Start</h2>
+<h3>1. Tạo session</h3>
+<div class="code-block"><div class="cb-head"><span class="lang">bash</span><button class="copy">Copy</button></div><pre><span class="f">curl</span> -X <span class="k">POST</span> <span class="s">"http://localhost:8000/api/v1/management/sessions"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{
+    "project_path": "my-project",
+    "image": "ubuntu:latest",
+    "cpu": "2",
+    "memory": "4Gi",
+    "ttl": 3600
+  }'</span>
+
+<span class="c"># → { "sessionId": "sess-abc123", "sandboxId": "sbx-...", "status": "success" }</span></pre></div>
+<p><code>project_path</code> là định danh <strong>project workspace</strong> — đồng thời là tên workspace trên VFS. Nếu giá trị trùng đường dẫn host tồn tại trên server, volume <code>/workspace</code> được seed từ đó.</p>
+
+<h3>2. Chờ runner kết nối</h3>
+<div class="code-block"><div class="cb-head"><span class="lang">bash</span><button class="copy">Copy</button></div><pre><span class="f">curl</span> <span class="s">"http://localhost:8000/api/v1/agent/sessions/sess-abc123/status"</span>
+<span class="c"># → { "status": "READY", "runnerConnected": true, ... }</span></pre></div>
+
+<h3>3. Thực thi lệnh trong container</h3>
+<div class="code-block"><div class="cb-head"><span class="lang">bash</span><button class="copy">Copy</button></div><pre><span class="f">curl</span> -X <span class="k">POST</span> <span class="s">"http://localhost:8000/api/v1/agent/execute"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{
+    "session_id": "sess-abc123",
+    "action": { "runShellCommand": { "command": "echo hello && uname -a", "timeout": 120 } }
+  }'</span></pre></div>
+
+<h3>4. Hủy session</h3>
+<div class="code-block"><div class="cb-head"><span class="lang">bash</span><button class="copy">Copy</button></div><pre><span class="f">curl</span> -X <span class="k">DELETE</span> <span class="s">"http://localhost:8000/api/v1/management/sessions/sess-abc123"</span></pre></div>
+
+<h2 id="executing-actions">Executing Actions</h2>
+<p>Một request <code>/execute</code> chứa đúng 1 action. Tất cả response dùng cấu trúc chuẩn với <code>requestId</code> duy nhất.</p>
+
+<h3>runShellCommand</h3>
+<div class="code-block"><div class="cb-head"><span class="lang">json</span><button class="copy">Copy</button></div><pre>{
+  <span class="pr">"session_id"</span>: <span class="s">"sess-abc123"</span>,
+  <span class="pr">"action"</span>: { <span class="pr">"runShellCommand"</span>: { <span class="pr">"command"</span>: <span class="s">"npm test"</span>, <span class="pr">"timeout"</span>: <span class="n">120</span> } }
+}</pre></div>
+<p>Lệnh chạy bằng <code>/bin/sh -c</code> với cwd <code>/workspace</code> bên trong container. Broker chờ tối đa <code>300s</code> (quá hạn → <code>status: "timeout"</code>, <code>exitCode: null</code>).</p>
+<div class="custom-block warning">
+  <p class="cb-title">Invariant: status = "success" ⇔ exitCode == 0</p>
+  <p>Lệnh shell thoát ≠ 0 luôn trả <code>status: "error"</code> kèm <code>exitCode</code> + output trung thực. Consumer <strong>phải</strong> kết luận pass/fail theo <code>exitCode</code>, không theo <code>status</code>. Process nền bắt buộc redirect pipe (<code>nohup ... &gt; /tmp/aut.log 2&gt;&amp;1 &amp;</code>) — nếu process giữ pipe, lệnh sẽ block mãi.</p>
+</div>
+
+<h3>runReadFile / runWriteFile / runEditFile</h3>
+<div class="code-block"><div class="cb-head"><span class="lang">json</span><button class="copy">Copy</button></div><pre>{
+  <span class="pr">"session_id"</span>: <span class="s">"sess-abc123"</span>,
+  <span class="pr">"action"</span>: { <span class="pr">"runReadFile"</span>: { <span class="pr">"filepath"</span>: <span class="s">"src/app.js"</span> } }
+}</pre></div>
+<p>Đường dẫn là <strong>workspace-relative</strong> (<code>src/app.js</code> → <code>/workspace/src/app.js</code>). Broker chấp nhận path absolute <code>/workspace/...</code> và tự chuẩn hóa. File project đi qua VFS (SQLite, có revision history); đường dẫn dưới <code>/tmp/*</code> và <code>/scratch/*</code> là scratch — bỏ qua VFS, chỉ tồn tại trong RAM container.</p>
+
+<h2 id="file-sync">VFS &amp; File Sync</h2>
+<p>VFS là <strong>nguồn sự thật</strong> cho file dự án. Mỗi lần chạy <code>runShellCommand</code>, Broker tính delta giữa trạng thái VFS và lần sync trước, gửi khối <code>sync_files</code> (base64) vào container trước khi thực thi:</p>
+<div class="code-block"><div class="cb-head"><span class="lang">json — WS message (Broker → Runner)</span><button class="copy">Copy</button></div><pre>{
+  <span class="pr">"requestId"</span>: <span class="s">"3f4a91bc-..."</span>,
+  <span class="pr">"runShellCommand"</span>: { <span class="pr">"command"</span>: <span class="s">"npm test"</span>, <span class="pr">"timeout"</span>: <span class="n">120</span> },
+  <span class="pr">"sync_files"</span>: {
+    <span class="pr">"changed"</span>: [ { <span class="pr">"path"</span>: <span class="s">"src/app.js"</span>, <span class="pr">"contentBase64"</span>: <span class="s">"Y29uc29sZS5sb2coJ2hlbGxvJyk7"</span> } ],
+    <span class="pr">"deleted"</span>: [ <span class="s">"src/old.js"</span> ]
+  }
+}</pre></div>
+<ul>
+  <li><code>sync_files</code> chỉ xuất hiện khi session được provision với <code>project_path</code> ≠ <code>/workspace</code> và có delta</li>
+  <li>VFS endpoint: <code>GET/POST /api/v1/vfs/file/{read,write,edit}</code> với <code>workspace_id</code> = tên project workspace (Monarch connector tự resolve qua endpoint <code>/workspace</code>)</li>
+  <li>Workspace mới được VFS tự tạo khi ghi lần đầu; mọi ghi đè tự tạo revision snapshot</li>
+</ul>
+<div class="custom-block tip">
+  <p class="cb-title">Binary artifacts</p>
+  <p>File do test sinh ra trong container (screenshot, trace.zip) nên đọc bằng <code>runShellCommand "base64 -w0 &lt;file&gt;"</code> rồi decode phía client, hoặc đợi action <code>exportFiles</code> (batch tar) trong roadmap.</p>
+</div>
+
+<h2 id="websocket-protocol">WebSocket Protocol</h2>
+<p>Runner kết nối tới <code>ws://&lt;broker&gt;/ws</code> và duy trì vòng đời:</p>
+<div class="code-block"><div class="cb-head"><span class="lang">1. register (Runner → Broker)</span><button class="copy">Copy</button></div><pre>{
+  <span class="pr">"type"</span>: <span class="s">"register"</span>,
+  <span class="pr">"role"</span>: <span class="s">"executor"</span>,
+  <span class="pr">"sessionId"</span>: <span class="s">"sess-abc123"</span>,
+  <span class="pr">"runnerId"</span>: <span class="s">"runner-sbx-..."</span>,
+  <span class="pr">"status"</span>: <span class="s">"READY"</span>,
+  <span class="pr">"workspace"</span>: <span class="s">"/workspace"</span>
+}
+<span class="c">// Broker ack: { "type": "registered", "sessionId": "sess-abc123" }</span></pre></div>
+<div class="code-block"><div class="cb-head"><span class="lang">2. actionResponse (Runner → Broker)</span><button class="copy">Copy</button></div><pre>{
+  <span class="pr">"actionResponse"</span>: {
+    <span class="pr">"requestId"</span>: <span class="s">"3f4a91bc-..."</span>,
+    <span class="pr">"execution"</span>: { <span class="pr">"status"</span>: <span class="s">"success"</span>, <span class="pr">"stdout"</span>: <span class="s">"..."</span>, <span class="pr">"exitCode"</span>: <span class="n">0</span>, <span class="pr">"durationMs"</span>: <span class="n">4821</span> }
+  }
+}</pre></div>
+<ul>
+  <li>Keepalive: Broker gửi text <code>ping</code>, runner trả <code>pong</code></li>
+  <li>Runner mất kết nối → session về <code>STANDBY</code> (container vẫn sống), gắn lại bằng <code>POST .../attach-runner</code></li>
+  <li>Broker chấp nhận cả casing <code>requestId</code> (canonical) và <code>requestID</code> (legacy binary) khi nhận response</li>
+</ul>
+
+<h2 id="sdk-quick-reference">API Quick Reference</h2>
+<table>
+  <thead><tr><th>Method</th><th>Endpoint</th><th>Mô tả</th></tr></thead>
+  <tbody>
+    <tr><td><code>POST</code></td><td><code>/api/v1/management/sessions</code></td><td>Tạo session + sandbox (<code>standby: true</code> → chỉ tạo container)</td></tr>
+    <tr><td><code>GET</code></td><td><code>/api/v1/management/sessions</code></td><td>Liệt kê tất cả session</td></tr>
+    <tr><td><code>GET</code></td><td><code>/api/v1/management/sessions/{id}</code></td><td>Chi tiết session</td></tr>
+    <tr><td><code>DELETE</code></td><td><code>/api/v1/management/sessions/{id}</code></td><td>Terminate + destroy container</td></tr>
+    <tr><td><code>POST</code></td><td><code>/api/v1/management/sessions/{id}/attach-runner</code></td><td>Gắn runner vào sandbox Standby</td></tr>
+    <tr><td><code>GET</code></td><td><code>/api/v1/management/logs</code></td><td>Event log của Broker</td></tr>
+    <tr><td><code>POST</code></td><td><code>/api/v1/agent/execute</code></td><td>Thực thi action trong sandbox</td></tr>
+    <tr><td><code>GET</code></td><td><code>/api/v1/agent/sessions/{id}/status</code></td><td>Trạng thái runner của session</td></tr>
+    <tr><td><code>GET</code></td><td><code>/api/v1/vfs/file/read</code></td><td>Đọc file từ VFS (<code>workspace_id</code> + <code>path</code>)</td></tr>
+    <tr><td><code>POST</code></td><td><code>/api/v1/vfs/file/write</code></td><td>Ghi file (auto-revision)</td></tr>
+    <tr><td><code>POST</code></td><td><code>/api/v1/vfs/file/edit</code></td><td>Fuzzy-diff edit</td></tr>
+    <tr><td><code>GET</code></td><td><code>/api/v1/vfs/files</code></td><td>Liệt kê file trong workspace</td></tr>
+    <tr><td><code>WS</code></td><td><code>/ws</code></td><td>Runner protocol (register / action relay)</td></tr>
+  </tbody>
+</table>
+<p>Spec đầy đủ: <a href="/docs">Swagger UI</a> · hợp đồng chi tiết: <code>docs/api_contract.md</code> trong repo.</p>
+
+<h2 id="best-practices">Best Practices &amp; Gotchas</h2>
+<ul>
+  <li><strong>Runtime nằm trong image, không phải plugin</strong> — cần Playwright/Node/Python? dùng image tương ứng khi tạo session, điều khiển qua <code>bash</code></li>
+  <li><strong>Pre-pull image</strong> trên server trước khi tạo session với image mới (<code>docker pull ...</code>) — lần pull đầu sẽ block tạm Broker</li>
+  <li><strong>Process nền redirect pipe</strong> — <code>nohup cmd &gt; log 2&gt;&amp;1 &amp;</code>, nếu không lệnh shell sẽ block tới timeout</li>
+  <li><strong>TTL</strong> — mặc định 3600s; <code>ttl=0</code> = bất tử; pipeline dài hạn nên set TTL lớn hơn thời gian chạy dự kiến</li>
+  <li><strong>Debug</strong> — <code>GET /debug/sessions</code>, <code>GET /api/v1/management/logs</code>, Swagger UI tại <code>/docs</code>, Dashboard tại <code>/dashboard</code></li>
+</ul>
+<div class="custom-block info">
+  <p class="cb-title">Tài liệu liên quan</p>
+  <p>Hợp đồng chi tiết từng endpoint: <code>docs/api_contract.md</code> · Kiến trúc tổng thể: <code>docs/architecture.md</code> · Hướng dẫn triển khai: <code>docs/setup_and_usage.md</code> · Hướng dẫn tích hợp agent (Monarch): <code>monarch/docs/sandbox-kit-agent-guide.md</code></p>
+</div>
+
+<hr>
+<p style="color: var(--text-faint); font-size: 13px;">OpenSandbox Kit — Remote Execution Toolkit for AI Agents. Màu sắc tuân thủ <a href="/static/theme.json">theme.json</a> (JetBrains Dark).</p>
+
+</main>
+</div>
+</div>
+
+<aside class="outline">
+  <div class="title">ON THIS PAGE</div>
+  <nav id="outline-nav">
+    <a href="#tong-quan">Tổng quan</a>
+    <a href="#requirements">Requirements</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="#quick-start">Quick Start</a>
+    <a href="#executing-actions">Executing Actions</a>
+    <a href="#file-sync">VFS &amp; File Sync</a>
+    <a href="#websocket-protocol">WebSocket Protocol</a>
+    <a href="#sdk-quick-reference">API Quick Reference</a>
+    <a href="#best-practices">Best Practices &amp; Gotchas</a>
+  </nav>
+</aside>
+
+<script>
+// Copy buttons
+document.querySelectorAll('.code-block .copy').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var pre = btn.closest('.code-block').querySelector('pre');
+    var text = pre.innerText.replace(/\n$/, '');
+    navigator.clipboard.writeText(text).then(function () {
+      btn.textContent = 'Copied!';
+      setTimeout(function () { btn.textContent = 'Copy'; }, 1600);
+    });
+  });
+});
+
+// Scrollspy: highlight sidebar + outline theo section đang xem
+var targets = [].slice.call(document.querySelectorAll('main .doc h2[id], main .doc h1[id]'));
+var sideLinks = [].slice.call(document.querySelectorAll('.sidebar a[href^="#"]'));
+var outLinks = [].slice.call(document.querySelectorAll('#outline-nav a'));
+function spy() {
+  var pos = window.scrollY + 90, current = targets[0];
+  targets.forEach(function (t) { if (t.offsetTop <= pos) current = t; });
+  sideLinks.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === '#' + current.id); });
+  outLinks.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === '#' + current.id); });
+}
+window.addEventListener('scroll', spy, { passive: true });
+spy();
+
+// Đóng sidebar mobile sau khi chọn section
+sideLinks.forEach(function (a) {
+  a.addEventListener('click', function () { document.getElementById('sidebar').classList.remove('open'); });
+});
+</script>
+
+</body>
+</html>

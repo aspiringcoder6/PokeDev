@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ExplorationTrace step record v1",
+  "type": "object",
+  "required": ["step_id", "status", "selected_action", "chosen_locator", "url", "started_at", "ended_at"],
+  "additionalProperties": false,
+  "properties": {
+    "step_id": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+$"},
+    "user_intent": {"type": "string"},
+    "status": {"enum": ["GROUNDED", "DEVIATED", "FAILED"]},
+    "selected_action": {"enum": ["OPEN", "CLICK", "FILL", "SELECT", "UPLOAD", "SUBMIT", "ASSERT", "PROBE"]},
+    "target": {"type": "string"},
+    "locator_candidates": {"type": "array", "items": {
+      "type": "object", "required": ["strategy"], "additionalProperties": false,
+      "properties": {"strategy": {"enum": ["role", "label", "testid", "css", "text"]},
+                     "value": {"type": "string"}, "name": {"type": "string"}, "score": {"type": "number"}}}},
+    "chosen_locator": {"type": "string"},
+    "aria_snapshot_ref": {"type": "string"},
+    "dom_context_ref": {"type": "string"},
+    "network_events": {"type": "array", "items": {
+      "type": "object", "required": ["method", "path", "status"], "additionalProperties": false,
+      "properties": {"method": {"type": "string"}, "path": {"type": "string"}, "status": {"type": "integer"}}}},
+    "url": {"type": "string"},
+    "storage_changes": {"type": "array", "items": {
+      "type": "object", "required": ["origin", "key"], "additionalProperties": false,
+      "properties": {"origin": {"type": "string"}, "key": {"type": "string"}, "value": {"type": "string"}}}},
+    "observed_ui": {"type": "object"},
+    "actor": {"type": "string"},
+    "started_at": {"type": "string"},
+    "ended_at": {"type": "string"}
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "vai-adlc-verify-structured",
+  "version": "0.1.0",
+  "description": "Structured-output verification plugin for ADLC Harness sessions.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "adlc",
+    "verification"
+  ],
+  "license": "MIT"
+}

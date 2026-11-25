@@ -1,0 +1,5 @@
+- insert:
+    - id: vai-taskloop
+      name: vai-taskloop
+      config:
+        workspaceDir: ~/.dsh/taskloop

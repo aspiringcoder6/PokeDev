@@ -1,0 +1,1058 @@
+[
+ {
+  "num": "4.1.2.2",
+  "name": "Xem danh sách cán bộ đoàn, đoàn viên, thanh niên",
+  "group": "4.1.2",
+  "function_id": "FUNC-4122-XEM-DANH-SACH-CAN-BO-DOAN-DOAN-VIEN-THANH-NIEN"
+ },
+ {
+  "num": "4.1.2.3",
+  "name": "Tìm kiếm nhanh cán bộ đoàn, đoàn viên, thanh niên",
+  "group": "4.1.2",
+  "function_id": "FUNC-4123-TIM-KIEM-NHANH-CAN-BO-DOAN-DOAN-VIEN-THANH-NIEN"
+ },
+ {
+  "num": "4.1.2.4",
+  "name": "Tìm kiếm nâng cao cán bộ đoàn, đoàn viên, thanh niên",
+  "group": "4.1.2",
+  "function_id": "FUNC-4124-TIM-KIEM-NANG-CAO-CAN-BO-DOAN-DOAN-VIEN-THANH-NI"
+ },
+ {
+  "num": "4.1.2.5",
+  "name": "Xem thông tin chi tiết 1 cán bộ đoàn, đoàn viên, thanh niên",
+  "group": "4.1.2",
+  "function_id": "FUNC-4125-XEM-THONG-TIN-CHI-TIET-1-CAN-BO-DOAN-DOAN-VIEN-T"
+ },
+ {
+  "num": "4.1.2.6",
+  "name": "Thêm mới cán bộ đoàn, đoàn viên, thanh niên",
+  "group": "4.1.2",
+  "function_id": "FUNC-4126-THEM-MOI-CAN-BO-DOAN-DOAN-VIEN-THANH-NIEN"
+ },
+ {
+  "num": "4.1.2.7",
+  "name": "Sửa thông tin cán bộ đoàn, đoàn viên, thanh niên",
+  "group": "4.1.2",
+  "function_id": "FUNC-4127-SUA-THONG-TIN-CAN-BO-DOAN-DOAN-VIEN-THANH-NIEN"
+ },
+ {
+  "num": "4.1.2.8",
+  "name": "Import cán bộ đoàn, đoàn viên, thanh niên",
+  "group": "4.1.2",
+  "function_id": "FUNC-4128-IMPORT-CAN-BO-DOAN-DOAN-VIEN-THANH-NIEN"
+ },
+ {
+  "num": "4.1.2.9",
+  "name": "Export cán bộ đoàn, đoàn viên, thanh niên",
+  "group": "4.1.2",
+  "function_id": "FUNC-4129-EXPORT-CAN-BO-DOAN-DOAN-VIEN-THANH-NIEN"
+ },
+ {
+  "num": "4.1.2.10",
+  "name": "Xem thông tin lịch sử chuyển đoàn viên",
+  "group": "4.1.2",
+  "function_id": "FUNC-41210-XEM-THONG-TIN-LICH-SU-CHUYEN-DOAN-VIEN"
+ },
+ {
+  "num": "4.2.2.2",
+  "name": "Xem danh sách cơ sở Đoàn",
+  "group": "4.2.2",
+  "function_id": "FUNC-4222-XEM-DANH-SACH-CO-SO-DOAN"
+ },
+ {
+  "num": "4.2.2.3",
+  "name": "Tìm kiếm nhanh",
+  "group": "4.2.2",
+  "function_id": "FUNC-4223-TIM-KIEM-NHANH"
+ },
+ {
+  "num": "4.2.2.4",
+  "name": "Tìm kiếm nâng cao",
+  "group": "4.2.2",
+  "function_id": "FUNC-4224-TIM-KIEM-NANG-CAO"
+ },
+ {
+  "num": "4.2.2.5",
+  "name": "Xem thông tin chi tiết 1 cơ sở Đoàn",
+  "group": "4.2.2",
+  "function_id": "FUNC-4225-XEM-THONG-TIN-CHI-TIET-1-CO-SO-DOAN"
+ },
+ {
+  "num": "4.2.2.6",
+  "name": "Thêm mới cơ sở Đoàn",
+  "group": "4.2.2",
+  "function_id": "FUNC-4226-THEM-MOI-CO-SO-DOAN"
+ },
+ {
+  "num": "4.2.2.7",
+  "name": "Sửa thông tin cơ sở Đoàn",
+  "group": "4.2.2",
+  "function_id": "FUNC-4227-SUA-THONG-TIN-CO-SO-DOAN"
+ },
+ {
+  "num": "4.2.2.8",
+  "name": "Xoá thông tin cơ sở Đoàn",
+  "group": "4.2.2",
+  "function_id": "FUNC-4228-XOA-THONG-TIN-CO-SO-DOAN"
+ },
+ {
+  "num": "4.2.2.9",
+  "name": "Import",
+  "group": "4.2.2",
+  "function_id": "FUNC-4229-IMPORT"
+ },
+ {
+  "num": "4.2.2.10",
+  "name": "Export",
+  "group": "4.2.2",
+  "function_id": "FUNC-42210-EXPORT"
+ },
+ {
+  "num": "4.3.2.2",
+  "name": "Quản lý Chia tách tổ chức Đoàn",
+  "group": "4.3.2",
+  "function_id": "FUNC-4322-QUAN-LY-CHIA-TACH-TO-CHUC-DOAN"
+ },
+ {
+  "num": "4.3.2.3",
+  "name": "Quản lý sáp nhập tổ chức Đoàn",
+  "group": "4.3.2",
+  "function_id": "FUNC-4323-QUAN-LY-SAP-NHAP-TO-CHUC-DOAN"
+ },
+ {
+  "num": "4.3.2.4",
+  "name": "Quản lý giải thể đơn vị",
+  "group": "4.3.2",
+  "function_id": "FUNC-4324-QUAN-LY-GIAI-THE-DON-VI"
+ },
+ {
+  "num": "4.3.2.5",
+  "name": "Chuyển Đoàn viên sang đơn vị khác",
+  "group": "4.3.2",
+  "function_id": "FUNC-4325-CHUYEN-DOAN-VIEN-SANG-DON-VI-KHAC"
+ },
+ {
+  "num": "4.3.2.6",
+  "name": "Quản lý lịch sử biến động tổ chức Đoàn (tách, sáp nhập, giải thể, chuyển đoàn viên)",
+  "group": "4.3.2",
+  "function_id": "FUNC-4326-QUAN-LY-LICH-SU-BIEN-DONG-TO-CHUC-DOAN-TACH-SAP"
+ },
+ {
+  "num": "4.4.2.1",
+  "name": "Cán bộ đoàn các cấp tự Kiểm điểm, đánh giá",
+  "group": "4.4.2",
+  "function_id": "FUNC-4421-CAN-BO-DOAN-CAC-CAP-TU-KIEM-DIEM-DANH-GIA"
+ },
+ {
+  "num": "4.4.2.2",
+  "name": "Đoàn viên thanh niên các cấp tự nhận xét, đánh giá",
+  "group": "4.4.2",
+  "function_id": "FUNC-4422-DOAN-VIEN-THANH-NIEN-CAC-CAP-TU-NHAN-XET-DANH-GI"
+ },
+ {
+  "num": "4.4.2.3",
+  "name": "Tổ chức đánh giá, xếp loại",
+  "group": "4.4.2",
+  "function_id": "FUNC-4423-TO-CHUC-DANH-GIA-XEP-LOAI"
+ },
+ {
+  "num": "4.5.2.2",
+  "name": "Đăng ký công trình sáng tạo trẻ toàn quân",
+  "group": "4.5.2",
+  "function_id": "FUNC-4522-DANG-KY-CONG-TRINH-SANG-TAO-TRE-TOAN-QUAN"
+ },
+ {
+  "num": "4.5.2.3",
+  "name": "Tổng hợp báo cáo theo đơn vị",
+  "group": "4.5.2",
+  "function_id": "FUNC-4523-TONG-HOP-BAO-CAO-THEO-DON-VI"
+ },
+ {
+  "num": "4.5.2.4",
+  "name": "Cấp trực tiếp duyệt công trình sáng tạo trẻ toàn quân đã được đăng ký",
+  "group": "4.5.2",
+  "function_id": "FUNC-4524-CAP-TRUC-TIEP-DUYET-CONG-TRINH-SANG-TAO-TRE-TOAN"
+ },
+ {
+  "num": "4.5.2.5",
+  "name": "Hội đồng chuyên ngành đánh giá thẩm định công trình sáng tạo",
+  "group": "4.5.2",
+  "function_id": "FUNC-4525-HOI-DONG-CHUYEN-NGANH-DANH-GIA-THAM-DINH-CONG-TR"
+ },
+ {
+  "num": "4.5.2.6",
+  "name": "Hội đồng cấp bộ đánh giá thẩm định công trình sáng tạo",
+  "group": "4.5.2",
+  "function_id": "FUNC-4526-HOI-DONG-CAP-BO-DANH-GIA-THAM-DINH-CONG-TRINH-SA"
+ },
+ {
+  "num": "4.5.2.7",
+  "name": "Lịch sử xử lý",
+  "group": "4.5.2",
+  "function_id": "FUNC-4527-LICH-SU-XU-LY"
+ },
+ {
+  "num": "4.6.2.2",
+  "name": "Tìm kiếm nhanh",
+  "group": "4.6.2",
+  "function_id": "FUNC-4622-TIM-KIEM-NHANH"
+ },
+ {
+  "num": "4.6.2.3",
+  "name": "Tìm kiếm nâng cao",
+  "group": "4.6.2",
+  "function_id": "FUNC-4623-TIM-KIEM-NANG-CAO"
+ },
+ {
+  "num": "4.6.2.4",
+  "name": "Xem danh sách phát động Phong trào",
+  "group": "4.6.2",
+  "function_id": "FUNC-4624-XEM-DANH-SACH-PHAT-DONG-PHONG-TRAO"
+ },
+ {
+  "num": "4.6.2.5",
+  "name": "Chi tiết phát động Phong trào",
+  "group": "4.6.2",
+  "function_id": "FUNC-4625-CHI-TIET-PHAT-DONG-PHONG-TRAO"
+ },
+ {
+  "num": "4.6.2.6",
+  "name": "Thêm phát động Phong trào",
+  "group": "4.6.2",
+  "function_id": "FUNC-4626-THEM-PHAT-DONG-PHONG-TRAO"
+ },
+ {
+  "num": "4.6.2.7",
+  "name": "Sửa phát động Phong trào",
+  "group": "4.6.2",
+  "function_id": "FUNC-4627-SUA-PHAT-DONG-PHONG-TRAO"
+ },
+ {
+  "num": "4.6.2.8",
+  "name": "Xóa phát động phong trào",
+  "group": "4.6.2",
+  "function_id": "FUNC-4628-XOA-PHAT-DONG-PHONG-TRAO"
+ },
+ {
+  "num": "4.6.2.9",
+  "name": "Export",
+  "group": "4.6.2",
+  "function_id": "FUNC-4629-EXPORT"
+ },
+ {
+  "num": "4.6.2.10",
+  "name": "Phê duyệt phong trào",
+  "group": "4.6.2",
+  "function_id": "FUNC-46210-PHE-DUYET-PHONG-TRAO"
+ },
+ {
+  "num": "4.6.2.11",
+  "name": "Đăng ký chỉ tiêu phát động phong trào",
+  "group": "4.6.2",
+  "function_id": "FUNC-46211-DANG-KY-CHI-TIEU-PHAT-DONG-PHONG-TRAO"
+ },
+ {
+  "num": "4.6.2.12",
+  "name": "Báo cáo kết quả phát động phong trào",
+  "group": "4.6.2",
+  "function_id": "FUNC-46212-BAO-CAO-KET-QUA-PHAT-DONG-PHONG-TRAO"
+ },
+ {
+  "num": "4.6.2.13",
+  "name": "Lịch sử xử lý",
+  "group": "4.6.2",
+  "function_id": "FUNC-46213-LICH-SU-XU-LY"
+ },
+ {
+  "num": "4.7.2.1",
+  "name": "Quản lý Kế hoạch đào tạo, tập huấn",
+  "group": "4.7.2",
+  "function_id": "FUNC-4721-QUAN-LY-KE-HOACH-DAO-TAO-TAP-HUAN"
+ },
+ {
+  "num": "4.7.2.2",
+  "name": "Báo cáo đào tạo, tập tuấn",
+  "group": "4.7.2",
+  "function_id": "FUNC-4722-BAO-CAO-DAO-TAO-TAP-TUAN"
+ },
+ {
+  "num": "4.8.2.2",
+  "name": "Tìm kiếm nhanh",
+  "group": "4.8.2",
+  "function_id": "FUNC-4822-TIM-KIEM-NHANH"
+ },
+ {
+  "num": "4.8.2.3",
+  "name": "Tìm kiếm nâng cao",
+  "group": "4.8.2",
+  "function_id": "FUNC-4823-TIM-KIEM-NANG-CAO"
+ },
+ {
+  "num": "4.8.2.4",
+  "name": "Danh sách đối ngoại quốc phòng",
+  "group": "4.8.2",
+  "function_id": "FUNC-4824-DANH-SACH-DOI-NGOAI-QUOC-PHONG"
+ },
+ {
+  "num": "4.8.2.5",
+  "name": "Chi tiết đối ngoại quốc phòng",
+  "group": "4.8.2",
+  "function_id": "FUNC-4825-CHI-TIET-DOI-NGOAI-QUOC-PHONG"
+ },
+ {
+  "num": "4.8.2.6",
+  "name": "Thêm mới đối ngoại quốc phòng",
+  "group": "4.8.2",
+  "function_id": "FUNC-4826-THEM-MOI-DOI-NGOAI-QUOC-PHONG"
+ },
+ {
+  "num": "4.8.2.7",
+  "name": "Sửa đối ngoại quốc phòng",
+  "group": "4.8.2",
+  "function_id": "FUNC-4827-SUA-DOI-NGOAI-QUOC-PHONG"
+ },
+ {
+  "num": "4.8.2.8",
+  "name": "Xóa đối ngoại quốc phòng",
+  "group": "4.8.2",
+  "function_id": "FUNC-4828-XOA-DOI-NGOAI-QUOC-PHONG"
+ },
+ {
+  "num": "4.8.2.9",
+  "name": "Export",
+  "group": "4.8.2",
+  "function_id": "FUNC-4829-EXPORT"
+ },
+ {
+  "num": "4.9.2.2",
+  "name": "Tìm kiếm nhanh",
+  "group": "4.9.2",
+  "function_id": "FUNC-4922-TIM-KIEM-NHANH"
+ },
+ {
+  "num": "4.9.2.3",
+  "name": "Tìm kiếm nâng cao",
+  "group": "4.9.2",
+  "function_id": "FUNC-4923-TIM-KIEM-NANG-CAO"
+ },
+ {
+  "num": "4.9.2.4",
+  "name": "Danh sách thu đoàn phí",
+  "group": "4.9.2",
+  "function_id": "FUNC-4924-DANH-SACH-THU-DOAN-PHI"
+ },
+ {
+  "num": "4.9.2.5",
+  "name": "Chi tiết thu đoàn phí",
+  "group": "4.9.2",
+  "function_id": "FUNC-4925-CHI-TIET-THU-DOAN-PHI"
+ },
+ {
+  "num": "4.9.2.6",
+  "name": "Thêm thông tin thu đoàn phí",
+  "group": "4.9.2",
+  "function_id": "FUNC-4926-THEM-THONG-TIN-THU-DOAN-PHI"
+ },
+ {
+  "num": "4.9.2.7",
+  "name": "Sửa thông tin thu đoàn phí",
+  "group": "4.9.2",
+  "function_id": "FUNC-4927-SUA-THONG-TIN-THU-DOAN-PHI"
+ },
+ {
+  "num": "4.9.2.8",
+  "name": "Xóa thông tin thu đoàn phí",
+  "group": "4.9.2",
+  "function_id": "FUNC-4928-XOA-THONG-TIN-THU-DOAN-PHI"
+ },
+ {
+  "num": "4.9.2.9",
+  "name": "Export",
+  "group": "4.9.2",
+  "function_id": "FUNC-4929-EXPORT"
+ },
+ {
+  "num": "4.9.2.10",
+  "name": "Import",
+  "group": "4.9.2",
+  "function_id": "FUNC-49210-IMPORT"
+ },
+ {
+  "num": "4.10.1.1",
+  "name": "Tìm kiếm nâng cao",
+  "group": "4.10.1",
+  "function_id": "FUNC-41011-TIM-KIEM-NANG-CAO"
+ },
+ {
+  "num": "4.10.1.2",
+  "name": "Danh sách thu đoàn phí",
+  "group": "4.10.1",
+  "function_id": "FUNC-41012-DANH-SACH-THU-DOAN-PHI"
+ },
+ {
+  "num": "4.10.1.3",
+  "name": "Chi tiết thu đoàn phí",
+  "group": "4.10.1",
+  "function_id": "FUNC-41013-CHI-TIET-THU-DOAN-PHI"
+ },
+ {
+  "num": "4.10.1.4",
+  "name": "Phê duyệt thông tin thu đoàn phí",
+  "group": "4.10.1",
+  "function_id": "FUNC-41014-PHE-DUYET-THONG-TIN-THU-DOAN-PHI"
+ },
+ {
+  "num": "4.10.1.5",
+  "name": "Export",
+  "group": "4.10.1",
+  "function_id": "FUNC-41015-EXPORT"
+ },
+ {
+  "num": "4.11.2.2",
+  "name": "Tìm kiếm nhanh",
+  "group": "4.11.2",
+  "function_id": "FUNC-41122-TIM-KIEM-NHANH"
+ },
+ {
+  "num": "4.11.2.3",
+  "name": "Tìm kiếm nâng cao",
+  "group": "4.11.2",
+  "function_id": "FUNC-41123-TIM-KIEM-NANG-CAO"
+ },
+ {
+  "num": "4.11.2.4",
+  "name": "Danh sách chi đoàn phí",
+  "group": "4.11.2",
+  "function_id": "FUNC-41124-DANH-SACH-CHI-DOAN-PHI"
+ },
+ {
+  "num": "4.11.2.5",
+  "name": "Chi tiết chi đoàn phí",
+  "group": "4.11.2",
+  "function_id": "FUNC-41125-CHI-TIET-CHI-DOAN-PHI"
+ },
+ {
+  "num": "4.11.2.6",
+  "name": "Thêm thông tin chi đoàn phí",
+  "group": "4.11.2",
+  "function_id": "FUNC-41126-THEM-THONG-TIN-CHI-DOAN-PHI"
+ },
+ {
+  "num": "4.11.2.7",
+  "name": "Sửa thông tin chi đoàn phí",
+  "group": "4.11.2",
+  "function_id": "FUNC-41127-SUA-THONG-TIN-CHI-DOAN-PHI"
+ },
+ {
+  "num": "4.11.2.8",
+  "name": "Xóa thông tin chi đoàn phí",
+  "group": "4.11.2",
+  "function_id": "FUNC-41128-XOA-THONG-TIN-CHI-DOAN-PHI"
+ },
+ {
+  "num": "4.11.2.9",
+  "name": "Export",
+  "group": "4.11.2",
+  "function_id": "FUNC-41129-EXPORT"
+ },
+ {
+  "num": "4.12.2.2",
+  "name": "Tìm kiếm nhanh",
+  "group": "4.12.2",
+  "function_id": "FUNC-41222-TIM-KIEM-NHANH"
+ },
+ {
+  "num": "4.12.2.3",
+  "name": "Tìm kiếm nâng cao",
+  "group": "4.12.2",
+  "function_id": "FUNC-41223-TIM-KIEM-NANG-CAO"
+ },
+ {
+  "num": "4.12.2.4",
+  "name": "Danh sách báo cáo định kỳ",
+  "group": "4.12.2",
+  "function_id": "FUNC-41224-DANH-SACH-BAO-CAO-DINH-KY"
+ },
+ {
+  "num": "4.12.2.5",
+  "name": "Chi tiết báo cáo định kỳ",
+  "group": "4.12.2",
+  "function_id": "FUNC-41225-CHI-TIET-BAO-CAO-DINH-KY"
+ },
+ {
+  "num": "4.12.2.6",
+  "name": "Thêm mới báo cáo định kỳ",
+  "group": "4.12.2",
+  "function_id": "FUNC-41226-THEM-MOI-BAO-CAO-DINH-KY"
+ },
+ {
+  "num": "4.12.2.7",
+  "name": "Sửa báo cáo định kỳ",
+  "group": "4.12.2",
+  "function_id": "FUNC-41227-SUA-BAO-CAO-DINH-KY"
+ },
+ {
+  "num": "4.12.2.8",
+  "name": "Xóa báo cáo định kỳ",
+  "group": "4.12.2",
+  "function_id": "FUNC-41228-XOA-BAO-CAO-DINH-KY"
+ },
+ {
+  "num": "4.13.2.2",
+  "name": "Tìm kiếm nhanh",
+  "group": "4.13.2",
+  "function_id": "FUNC-41322-TIM-KIEM-NHANH"
+ },
+ {
+  "num": "4.13.2.3",
+  "name": "Tìm kiếm nâng cao",
+  "group": "4.13.2",
+  "function_id": "FUNC-41323-TIM-KIEM-NANG-CAO"
+ },
+ {
+  "num": "4.13.2.4",
+  "name": "Danh sách tập san",
+  "group": "4.13.2",
+  "function_id": "FUNC-41324-DANH-SACH-TAP-SAN"
+ },
+ {
+  "num": "4.13.2.5",
+  "name": "Chi tiết tập san",
+  "group": "4.13.2",
+  "function_id": "FUNC-41325-CHI-TIET-TAP-SAN"
+ },
+ {
+  "num": "4.13.2.6",
+  "name": "Thêm tập san",
+  "group": "4.13.2",
+  "function_id": "FUNC-41326-THEM-TAP-SAN"
+ },
+ {
+  "num": "4.13.2.7",
+  "name": "Sửa tập san",
+  "group": "4.13.2",
+  "function_id": "FUNC-41327-SUA-TAP-SAN"
+ },
+ {
+  "num": "4.13.2.8",
+  "name": "Xóa tập san",
+  "group": "4.13.2",
+  "function_id": "FUNC-41328-XOA-TAP-SAN"
+ },
+ {
+  "num": "4.13.2.9",
+  "name": "Đính kèm tập san",
+  "group": "4.13.2",
+  "function_id": "FUNC-41329-DINH-KEM-TAP-SAN"
+ },
+ {
+  "num": "4.13.2.10",
+  "name": "Export tập san",
+  "group": "4.13.2",
+  "function_id": "FUNC-413210-EXPORT-TAP-SAN"
+ },
+ {
+  "num": "4.13.2.11",
+  "name": "Quản lý bài viết",
+  "group": "4.13.2",
+  "function_id": "FUNC-413211-QUAN-LY-BAI-VIET"
+ },
+ {
+  "num": "4.14.2.2",
+  "name": "Tìm kiếm nhanh",
+  "group": "4.14.2",
+  "function_id": "FUNC-41422-TIM-KIEM-NHANH"
+ },
+ {
+  "num": "4.14.2.3",
+  "name": "Tìm kiếm nâng cao",
+  "group": "4.14.2",
+  "function_id": "FUNC-41423-TIM-KIEM-NANG-CAO"
+ },
+ {
+  "num": "4.14.2.4",
+  "name": "Danh sách văn bản chỉ đạo, tài liệu",
+  "group": "4.14.2",
+  "function_id": "FUNC-41424-DANH-SACH-VAN-BAN-CHI-DAO-TAI-LIEU"
+ },
+ {
+  "num": "4.14.2.5",
+  "name": "Thêm mới văn bản chỉ đạo, tài liệu",
+  "group": "4.14.2",
+  "function_id": "FUNC-41425-THEM-MOI-VAN-BAN-CHI-DAO-TAI-LIEU"
+ },
+ {
+  "num": "4.14.2.6",
+  "name": "Chỉnh sửa văn bản chỉ đạo, tài liệu",
+  "group": "4.14.2",
+  "function_id": "FUNC-41426-CHINH-SUA-VAN-BAN-CHI-DAO-TAI-LIEU"
+ },
+ {
+  "num": "4.14.2.7",
+  "name": "Xóa văn bản chỉ đạo, tài liệu",
+  "group": "4.14.2",
+  "function_id": "FUNC-41427-XOA-VAN-BAN-CHI-DAO-TAI-LIEU"
+ },
+ {
+  "num": "4.15.2.2",
+  "name": "Thống kê, tìm kiếm theo đơn vị",
+  "group": "4.15.2",
+  "function_id": "FUNC-41522-THONG-KE-TIM-KIEM-THEO-DON-VI"
+ },
+ {
+  "num": "4.15.2.3",
+  "name": "Xem Dashboard số liệu",
+  "group": "4.15.2",
+  "function_id": "FUNC-41523-XEM-DASHBOARD-SO-LIEU"
+ },
+ {
+  "num": "4.15.2.4",
+  "name": "Điều hướng danh sách",
+  "group": "4.15.2",
+  "function_id": "FUNC-41524-DIEU-HUONG-DANH-SACH"
+ },
+ {
+  "num": "4.15.2.5",
+  "name": "Kết xuất, in thống kê số lượng",
+  "group": "4.15.2",
+  "function_id": "FUNC-41525-KET-XUAT-IN-THONG-KE-SO-LUONG"
+ },
+ {
+  "num": "4.16.2.2",
+  "name": "Thống kê, tìm kiếm theo đơn vị",
+  "group": "4.16.2",
+  "function_id": "FUNC-41622-THONG-KE-TIM-KIEM-THEO-DON-VI"
+ },
+ {
+  "num": "4.16.2.3",
+  "name": "Xem Dashboard số liệu",
+  "group": "4.16.2",
+  "function_id": "FUNC-41623-XEM-DASHBOARD-SO-LIEU"
+ },
+ {
+  "num": "4.16.2.4",
+  "name": "Điều hướng danh sách",
+  "group": "4.16.2",
+  "function_id": "FUNC-41624-DIEU-HUONG-DANH-SACH"
+ },
+ {
+  "num": "4.16.2.5",
+  "name": "Kết xuất, in thống kê số lượng",
+  "group": "4.16.2",
+  "function_id": "FUNC-41625-KET-XUAT-IN-THONG-KE-SO-LUONG"
+ },
+ {
+  "num": "4.17.2.2",
+  "name": "Thống kê, tìm kiếm theo đơn vị",
+  "group": "4.17.2",
+  "function_id": "FUNC-41722-THONG-KE-TIM-KIEM-THEO-DON-VI"
+ },
+ {
+  "num": "4.17.2.3",
+  "name": "Xem Dashboard số liệu",
+  "group": "4.17.2",
+  "function_id": "FUNC-41723-XEM-DASHBOARD-SO-LIEU"
+ },
+ {
+  "num": "4.17.2.4",
+  "name": "Điều hướng danh sách",
+  "group": "4.17.2",
+  "function_id": "FUNC-41724-DIEU-HUONG-DANH-SACH"
+ },
+ {
+  "num": "4.17.2.5",
+  "name": "Kết xuất, in thống kê số lượng",
+  "group": "4.17.2",
+  "function_id": "FUNC-41725-KET-XUAT-IN-THONG-KE-SO-LUONG"
+ },
+ {
+  "num": "4.18.2.2",
+  "name": "Thống kê, tìm kiếm theo đơn vị",
+  "group": "4.18.2",
+  "function_id": "FUNC-41822-THONG-KE-TIM-KIEM-THEO-DON-VI"
+ },
+ {
+  "num": "4.18.2.3",
+  "name": "Xem Dashboard số liệu",
+  "group": "4.18.2",
+  "function_id": "FUNC-41823-XEM-DASHBOARD-SO-LIEU"
+ },
+ {
+  "num": "4.18.2.4",
+  "name": "Điều hướng danh sách",
+  "group": "4.18.2",
+  "function_id": "FUNC-41824-DIEU-HUONG-DANH-SACH"
+ },
+ {
+  "num": "4.18.2.5",
+  "name": "Kết xuất, in thống kê số lượng",
+  "group": "4.18.2",
+  "function_id": "FUNC-41825-KET-XUAT-IN-THONG-KE-SO-LUONG"
+ },
+ {
+  "num": "4.19.2.2",
+  "name": "Thống kê, tìm kiếm theo đơn vị",
+  "group": "4.19.2",
+  "function_id": "FUNC-41922-THONG-KE-TIM-KIEM-THEO-DON-VI"
+ },
+ {
+  "num": "4.19.2.3",
+  "name": "Xem Dashboard số liệu",
+  "group": "4.19.2",
+  "function_id": "FUNC-41923-XEM-DASHBOARD-SO-LIEU"
+ },
+ {
+  "num": "4.19.2.4",
+  "name": "Điều hướng danh sách",
+  "group": "4.19.2",
+  "function_id": "FUNC-41924-DIEU-HUONG-DANH-SACH"
+ },
+ {
+  "num": "4.19.2.5",
+  "name": "Kết xuất, in thống kê số lượng",
+  "group": "4.19.2",
+  "function_id": "FUNC-41925-KET-XUAT-IN-THONG-KE-SO-LUONG"
+ },
+ {
+  "num": "4.20.2.2",
+  "name": "Thống kê, tìm kiếm theo đơn vị",
+  "group": "4.20.2",
+  "function_id": "FUNC-42022-THONG-KE-TIM-KIEM-THEO-DON-VI"
+ },
+ {
+  "num": "4.20.2.3",
+  "name": "Xem Dashboard số liệu",
+  "group": "4.20.2",
+  "function_id": "FUNC-42023-XEM-DASHBOARD-SO-LIEU"
+ },
+ {
+  "num": "4.20.2.4",
+  "name": "Điều hướng danh sách",
+  "group": "4.20.2",
+  "function_id": "FUNC-42024-DIEU-HUONG-DANH-SACH"
+ },
+ {
+  "num": "4.20.2.5",
+  "name": "Kết xuất, in thống kê số lượng",
+  "group": "4.20.2",
+  "function_id": "FUNC-42025-KET-XUAT-IN-THONG-KE-SO-LUONG"
+ },
+ {
+  "num": "4.21.2.2",
+  "name": "Thống kê, tìm kiếm theo đơn vị",
+  "group": "4.21.2",
+  "function_id": "FUNC-42122-THONG-KE-TIM-KIEM-THEO-DON-VI"
+ },
+ {
+  "num": "4.21.2.3",
+  "name": "Xem Dashboard số liệu",
+  "group": "4.21.2",
+  "function_id": "FUNC-42123-XEM-DASHBOARD-SO-LIEU"
+ },
+ {
+  "num": "4.21.2.4",
+  "name": "Điều hướng danh sách",
+  "group": "4.21.2",
+  "function_id": "FUNC-42124-DIEU-HUONG-DANH-SACH"
+ },
+ {
+  "num": "4.21.2.5",
+  "name": "Kết xuất, in thống kê số lượng",
+  "group": "4.21.2",
+  "function_id": "FUNC-42125-KET-XUAT-IN-THONG-KE-SO-LUONG"
+ },
+ {
+  "num": "4.22.2.2",
+  "name": "Thống kê, tìm kiếm theo đơn vị",
+  "group": "4.22.2",
+  "function_id": "FUNC-42222-THONG-KE-TIM-KIEM-THEO-DON-VI"
+ },
+ {
+  "num": "4.22.2.3",
+  "name": "Xem Dashboard số liệu",
+  "group": "4.22.2",
+  "function_id": "FUNC-42223-XEM-DASHBOARD-SO-LIEU"
+ },
+ {
+  "num": "4.22.2.4",
+  "name": "Điều hướng danh sách",
+  "group": "4.22.2",
+  "function_id": "FUNC-42224-DIEU-HUONG-DANH-SACH"
+ },
+ {
+  "num": "4.22.2.5",
+  "name": "Kết xuất, in thống kê số lượng",
+  "group": "4.22.2",
+  "function_id": "FUNC-42225-KET-XUAT-IN-THONG-KE-SO-LUONG"
+ },
+ {
+  "num": "4.23.2.2",
+  "name": "Thống kê, tìm kiếm theo đơn vị",
+  "group": "4.23.2",
+  "function_id": "FUNC-42322-THONG-KE-TIM-KIEM-THEO-DON-VI"
+ },
+ {
+  "num": "4.23.2.3",
+  "name": "Xem Dashboard số liệu",
+  "group": "4.23.2",
+  "function_id": "FUNC-42323-XEM-DASHBOARD-SO-LIEU"
+ },
+ {
+  "num": "4.23.2.4",
+  "name": "Điều hướng danh sách",
+  "group": "4.23.2",
+  "function_id": "FUNC-42324-DIEU-HUONG-DANH-SACH"
+ },
+ {
+  "num": "4.23.2.5",
+  "name": "Kết xuất, in thống kê số lượng",
+  "group": "4.23.2",
+  "function_id": "FUNC-42325-KET-XUAT-IN-THONG-KE-SO-LUONG"
+ },
+ {
+  "num": "4.24.2.2",
+  "name": "Thống kê, tìm kiếm theo đơn vị",
+  "group": "4.24.2",
+  "function_id": "FUNC-42422-THONG-KE-TIM-KIEM-THEO-DON-VI"
+ },
+ {
+  "num": "4.24.2.3",
+  "name": "Xem Dashboard số liệu",
+  "group": "4.24.2",
+  "function_id": "FUNC-42423-XEM-DASHBOARD-SO-LIEU"
+ },
+ {
+  "num": "4.24.2.4",
+  "name": "Điều hướng danh sách",
+  "group": "4.24.2",
+  "function_id": "FUNC-42424-DIEU-HUONG-DANH-SACH"
+ },
+ {
+  "num": "4.24.2.5",
+  "name": "Kết xuất, in thống kê số lượng",
+  "group": "4.24.2",
+  "function_id": "FUNC-42425-KET-XUAT-IN-THONG-KE-SO-LUONG"
+ },
+ {
+  "num": "4.25.2.2",
+  "name": "Thống kê, tìm kiếm theo đơn vị",
+  "group": "4.25.2",
+  "function_id": "FUNC-42522-THONG-KE-TIM-KIEM-THEO-DON-VI"
+ },
+ {
+  "num": "4.25.2.3",
+  "name": "Xem Dashboard số liệu",
+  "group": "4.25.2",
+  "function_id": "FUNC-42523-XEM-DASHBOARD-SO-LIEU"
+ },
+ {
+  "num": "4.25.2.4",
+  "name": "Điều hướng danh sách",
+  "group": "4.25.2",
+  "function_id": "FUNC-42524-DIEU-HUONG-DANH-SACH"
+ },
+ {
+  "num": "4.25.2.5",
+  "name": "Kết xuất, in thống kê số lượng",
+  "group": "4.25.2",
+  "function_id": "FUNC-42525-KET-XUAT-IN-THONG-KE-SO-LUONG"
+ },
+ {
+  "num": "4.26.2.2",
+  "name": "Xem báo cáo",
+  "group": "4.26.2",
+  "function_id": "FUNC-42622-XEM-BAO-CAO"
+ },
+ {
+  "num": "4.26.2.3",
+  "name": "Tìm kiếm báo cáo",
+  "group": "4.26.2",
+  "function_id": "FUNC-42623-TIM-KIEM-BAO-CAO"
+ },
+ {
+  "num": "4.26.2.4",
+  "name": "Xuất báo báo",
+  "group": "4.26.2",
+  "function_id": "FUNC-42624-XUAT-BAO-BAO"
+ },
+ {
+  "num": "4.27.2.2",
+  "name": "Xem báo cáo",
+  "group": "4.27.2",
+  "function_id": "FUNC-42722-XEM-BAO-CAO"
+ },
+ {
+  "num": "4.27.2.3",
+  "name": "Tìm kiếm báo cáo",
+  "group": "4.27.2",
+  "function_id": "FUNC-42723-TIM-KIEM-BAO-CAO"
+ },
+ {
+  "num": "4.27.2.4",
+  "name": "Xuất báo báora file",
+  "group": "4.27.2",
+  "function_id": "FUNC-42724-XUAT-BAO-BAORA-FILE"
+ },
+ {
+  "num": "4.28.2.2",
+  "name": "Xem báo cáo",
+  "group": "4.28.2",
+  "function_id": "FUNC-42822-XEM-BAO-CAO"
+ },
+ {
+  "num": "4.28.2.3",
+  "name": "Tìm kiếm báo cáo",
+  "group": "4.28.2",
+  "function_id": "FUNC-42823-TIM-KIEM-BAO-CAO"
+ },
+ {
+  "num": "4.28.2.4",
+  "name": "Xuất báo báo ra file",
+  "group": "4.28.2",
+  "function_id": "FUNC-42824-XUAT-BAO-BAO-RA-FILE"
+ },
+ {
+  "num": "4.29.2.2",
+  "name": "Xem báo cáo",
+  "group": "4.29.2",
+  "function_id": "FUNC-42922-XEM-BAO-CAO"
+ },
+ {
+  "num": "4.29.2.3",
+  "name": "Tìm kiếm báo cáo",
+  "group": "4.29.2",
+  "function_id": "FUNC-42923-TIM-KIEM-BAO-CAO"
+ },
+ {
+  "num": "4.29.2.4",
+  "name": "Xuất báo báo ra file",
+  "group": "4.29.2",
+  "function_id": "FUNC-42924-XUAT-BAO-BAO-RA-FILE"
+ },
+ {
+  "num": "4.30.2.2",
+  "name": "Xem báo cáo",
+  "group": "4.30.2",
+  "function_id": "FUNC-43022-XEM-BAO-CAO"
+ },
+ {
+  "num": "4.30.2.3",
+  "name": "Tìm kiếm báo cáo",
+  "group": "4.30.2",
+  "function_id": "FUNC-43023-TIM-KIEM-BAO-CAO"
+ },
+ {
+  "num": "4.30.2.4",
+  "name": "Xuất báo báo ra file",
+  "group": "4.30.2",
+  "function_id": "FUNC-43024-XUAT-BAO-BAO-RA-FILE"
+ },
+ {
+  "num": "4.31.2.2",
+  "name": "Xem báo cáo",
+  "group": "4.31.2",
+  "function_id": "FUNC-43122-XEM-BAO-CAO"
+ },
+ {
+  "num": "4.31.2.3",
+  "name": "Tìm kiếm báo cáo",
+  "group": "4.31.2",
+  "function_id": "FUNC-43123-TIM-KIEM-BAO-CAO"
+ },
+ {
+  "num": "4.31.2.4",
+  "name": "Xuất báo báo ra file",
+  "group": "4.31.2",
+  "function_id": "FUNC-43124-XUAT-BAO-BAO-RA-FILE"
+ },
+ {
+  "num": "4.32.2.2",
+  "name": "Xem báo cáo",
+  "group": "4.32.2",
+  "function_id": "FUNC-43222-XEM-BAO-CAO"
+ },
+ {
+  "num": "4.32.2.3",
+  "name": "Tìm kiếm báo cáo",
+  "group": "4.32.2",
+  "function_id": "FUNC-43223-TIM-KIEM-BAO-CAO"
+ },
+ {
+  "num": "4.32.2.4",
+  "name": "Xuất báo báo ra file",
+  "group": "4.32.2",
+  "function_id": "FUNC-43224-XUAT-BAO-BAO-RA-FILE"
+ },
+ {
+  "num": "4.33.2.3",
+  "name": "Gửi yêu cầu lấy thông tin người trong độ tuổi đoàn viên sang CSDL Quân nhân",
+  "group": "4.33.2",
+  "function_id": "FUNC-43323-GUI-YEU-CAU-LAY-THONG-TIN-NGUOI-TRONG-DO-TUOI-DO"
+ },
+ {
+  "num": "4.33.2.4",
+  "name": "Ghi nhận dữ liệu trả về vào hệ thống",
+  "group": "4.33.2",
+  "function_id": "FUNC-43324-GHI-NHAN-DU-LIEU-TRA-VE-VAO-HE-THONG"
+ },
+ {
+  "num": "4.33.2.5",
+  "name": "Trả về kết quả thành công/thất bại",
+  "group": "4.33.2",
+  "function_id": "FUNC-43325-TRA-VE-KET-QUA-THANH-CONG-THAT-BAI"
+ },
+ {
+  "num": "4.34.2.3",
+  "name": "Gửi yêu cầu lấy thông tin người trong độ tuổi đoàn viên sang CSDL Cán bộ",
+  "group": "4.34.2",
+  "function_id": "FUNC-43423-GUI-YEU-CAU-LAY-THONG-TIN-NGUOI-TRONG-DO-TUOI-DO"
+ },
+ {
+  "num": "4.34.2.4",
+  "name": "Ghi nhận dữ liệu trả về vào hệ thống",
+  "group": "4.34.2",
+  "function_id": "FUNC-43424-GHI-NHAN-DU-LIEU-TRA-VE-VAO-HE-THONG"
+ },
+ {
+  "num": "4.34.2.5",
+  "name": "Trả về kết quả thành công/thất bại",
+  "group": "4.34.2",
+  "function_id": "FUNC-43425-TRA-VE-KET-QUA-THANH-CONG-THAT-BAI"
+ },
+ {
+  "num": "4.35.2.3",
+  "name": "Gửi yêu cầu lấy thông tin người trong độ tuổi đoàn viên sang CSDL Tổ chức xây dựng đảng",
+  "group": "4.35.2",
+  "function_id": "FUNC-43523-GUI-YEU-CAU-LAY-THONG-TIN-NGUOI-TRONG-DO-TUOI-DO"
+ },
+ {
+  "num": "4.35.2.4",
+  "name": "Ghi nhận dữ liệu trả về vào hệ thống",
+  "group": "4.35.2",
+  "function_id": "FUNC-43524-GHI-NHAN-DU-LIEU-TRA-VE-VAO-HE-THONG"
+ },
+ {
+  "num": "4.35.2.5",
+  "name": "Trả về kết quả thành công/thất bại",
+  "group": "4.35.2",
+  "function_id": "FUNC-43525-TRA-VE-KET-QUA-THANH-CONG-THAT-BAI"
+ },
+ {
+  "num": "4.36.2.3",
+  "name": "Gửi yêu cầu lấy thông tin",
+  "group": "4.36.2",
+  "function_id": "FUNC-43623-GUI-YEU-CAU-LAY-THONG-TIN"
+ },
+ {
+  "num": "4.36.2.4",
+  "name": "Ghi nhận dữ liệu trả về vào hệ thống",
+  "group": "4.36.2",
+  "function_id": "FUNC-43624-GHI-NHAN-DU-LIEU-TRA-VE-VAO-HE-THONG"
+ },
+ {
+  "num": "4.36.2.5",
+  "name": "Trả về kết quả thành công/thất bại",
+  "group": "4.36.2",
+  "function_id": "FUNC-43625-TRA-VE-KET-QUA-THANH-CONG-THAT-BAI"
+ }
+]

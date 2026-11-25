@@ -1,0 +1,24 @@
+[server]
+host = "0.0.0.0"
+port = 8080
+max_sandbox_timeout_seconds = 3600
+[runtime]
+type = "docker"
+execd_image = "opensandbox/execd:v1.0.22"
+[proxy]
+resolve_internal = false
+[docker]
+network_mode = "bridge"
+host_ip = "host.docker.internal"
+port_range_min = 42000
+port_range_max = 42100
+drop_capabilities = ["ALL"]
+no_new_privileges = true
+pids_limit = 128
+[storage]
+allowed_host_paths = ["/pokedev-sandbox-data"]
+[store]
+type = "sqlite"
+path = "/state/opensandbox.db"
+[ingress]
+mode = "direct"

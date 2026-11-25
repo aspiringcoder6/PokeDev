@@ -1,0 +1,24 @@
+{
+  "name": "vai-adlc-runtime",
+  "version": "0.3.0",
+  "description": "Authenticated ADLC session API with installed-plugin integrity, interaction lifecycle, verification, and durable callback outbox.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./plugin-integrity": "./lib/plugin-integrity.js",
+    "./runtime": "./lib/runtime.js",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  },
+  "keywords": [
+    "dsh-plugin",
+    "adlc",
+    "harness",
+    "integrity",
+    "outbox"
+  ],
+  "license": "MIT"
+}

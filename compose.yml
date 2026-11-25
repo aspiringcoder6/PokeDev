@@ -1,0 +1,210 @@
+name: pokedev-local
+x-python-health: &python-health
+  interval: 15s
+  timeout: 8s
+  retries: 20
+  start_period: 120s
+services:
+  app:
+    image: pokedev-app:local
+    build: .
+    env_file: .env
+    environment:
+      LANGFLOW_HOST: 0.0.0.0
+      LANGFLOW_PORT: 7862
+      LANGFLOW_DATABASE_URL: postgresql+psycopg://pokedev:${POKEDEV_DB_PASSWORD:?Run stack.py init}@postgres:5432/pokedev
+      LANGFLOW_CONFIG_DIR: /app/data/config
+      LANGFLOW_CACHE_TYPE: redis
+      LANGFLOW_REDIS_HOST: redis
+      VAI_PLATFORM_URL: http://harness:3080
+      ADLC_HARNESS_BASE_URL: http://harness:3080
+      ADLC_HARNESS_ALLOW_INSECURE_HTTP: "true"
+      POKEDEV_TESTFORGE_TARGET_URL: http://host.docker.internal:7862/work
+    ports: ["127.0.0.1:7862:7862"]
+    volumes: ["app-state:/app/data", "app-runtime:/app/adlc-flow/data"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    healthcheck:
+      <<: *python-health
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:7862/health_check', timeout=5)"]
+    restart: unless-stopped
+    mem_limit: 3g
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: pokedev
+      POSTGRES_DB: pokedev
+      POSTGRES_PASSWORD: ${POKEDEV_DB_PASSWORD:?Run stack.py init}
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U pokedev -d pokedev"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+    mem_limit: 512m
+
+  redis:
+    image: redis:7-alpine
+    command: [redis-server, --appendonly, "yes"]
+    volumes: ["redis-data:/data"]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+    mem_limit: 256m
+
+  harness:
+    image: pokedev-harness:local
+    build: {context: ., dockerfile: deploy/local/harness.Dockerfile}
+    ports: ["127.0.0.1:3082:3080"]
+    cap_add: [SYS_ADMIN, NET_ADMIN]
+    security_opt: ["seccomp:unconfined", "apparmor:unconfined"]
+    environment:
+      NODE_ENV: production
+      POKEDEV_HARNESS_PROVIDER: ${POKEDEV_HARNESS_PROVIDER:-}
+      POKEDEV_HARNESS_MODEL: ${POKEDEV_HARNESS_MODEL:-}
+      ADLC_HARNESS_API_TOKEN: ${ADLC_HARNESS_API_TOKEN:?Run stack.py init}
+      ADLC_HARNESS_CALLBACK_SECRET: ${ADLC_HARNESS_CALLBACK_SECRET:?Run stack.py init}
+      ADLC_HARNESS_CALLBACK_URL: http://app:7862/api/v1/adlc/harness/callbacks/session-results
+      VAI_SANDBOX_BROKER_URL: http://sandbox:8000
+      VAI_SANDBOX_TOKEN: ${ADLC_SANDBOX_BROKER_TOKEN}
+      TESTFORGE_BROKER_URL: http://testforge:9099
+      TESTFORGE_BROKER_TOKEN: ${TESTFORGE_BROKER_TOKEN}
+      POKEDEV_TESTFORGE_TARGET_URL: http://host.docker.internal:7862/work
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    volumes:
+      - harness-data:/app/data
+      - harness-workspace:/app/workspace
+      - type: bind
+        source: ${POKEDEV_PROJECT_REPO:-./adlc-flow/data/local/project-source}
+        target: /app/project-source
+        read_only: true
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3080/api/v1/adlc-harness/health',{headers:{Authorization:'Bearer '+process.env.ADLC_HARNESS_API_TOKEN}}).then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 8s
+      retries: 20
+      start_period: 90s
+    restart: unless-stopped
+    mem_limit: 2g
+
+  opensandbox:
+    image: opensandbox/server:latest
+    ports: ["127.0.0.1:8082:8080"]
+    environment:
+      SANDBOX_CONFIG_PATH: /etc/opensandbox/config.toml
+      OPENSANDBOX_SERVER_API_KEY: ${OPENSANDBOX_API_KEY:?Run stack.py init}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./deploy/local/opensandbox.toml:/etc/opensandbox/config.toml:ro
+      - opensandbox-state:/state
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    restart: unless-stopped
+    mem_limit: 512m
+
+  vfs:
+    image: pokedev-vfs:local
+    build: {context: ., dockerfile: deploy/local/vfs.Dockerfile}
+    volumes: ["sandbox-vfs:/app/data"]
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:8001/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    mem_limit: 512m
+
+  sandbox:
+    image: pokedev-sandbox:local
+    build: {context: ., dockerfile: deploy/local/sandbox.Dockerfile}
+    ports: ["127.0.0.1:8002:8000"]
+    environment:
+      SANDBOX_PROVIDER: opensandbox
+      SANDBOX_DEFAULT_IMAGE: python:3.12-alpine
+      SANDBOX_DEFAULT_ENTRYPOINT: '["/bin/sh","-c","mkdir -p /workspace && exec tail -f /dev/null"]'
+      OPEN_SANDBOX_API_KEY: ${OPENSANDBOX_API_KEY}
+      OPEN_SANDBOX_DOMAIN: opensandbox:8080
+      OPENSANDBOX_USE_SERVER_PROXY: "1"
+      VFS_SERVICE_URL: http://vfs:8001
+      ADLC_SANDBOX_BROKER_TOKEN: ${ADLC_SANDBOX_BROKER_TOKEN:?Run stack.py init}
+    volumes: ["sandbox-auth:/app/broker-state"]
+    depends_on: {opensandbox: {condition: service_started}, vfs: {condition: service_healthy}}
+    healthcheck:
+      <<: *python-health
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)"]
+    restart: unless-stopped
+    mem_limit: 768m
+
+  memory:
+    image: pokedev-memory:local
+    build: {context: ., dockerfile: deploy/local/memory.Dockerfile}
+    ports: ["127.0.0.1:8012:8000"]
+    environment: &memory-env
+      DEBUG: "false"
+      ENV: production
+      LOG_LEVEL: INFO
+      SYSTEM_ROOT_DIRECTORY: /cognee-storage/system
+      DATA_ROOT_DIRECTORY: /cognee-storage/data
+      HF_HOME: /cognee-storage/system/huggingface
+      FASTEMBED_CACHE_PATH: /cognee-storage/system/fastembed
+      XDG_CACHE_HOME: /cognee-storage/system/xdg-cache
+      CORS_ALLOWED_ORIGINS: http://localhost:7862,http://127.0.0.1:7862
+      DEFAULT_USER_PASSWORD: ${POKEDEV_MEMORY_PASSWORD:?Run stack.py init}
+      AUTO_FEEDBACK: "false"
+      GRAPH_EXTRACTOR: gliner_demo
+    volumes: ["memory-system:/cognee-storage/system", "memory-data:/cognee-storage/data"]
+    healthcheck:
+      <<: *python-health
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)"]
+    restart: unless-stopped
+    stop_grace_period: 120s
+    mem_limit: 2g
+
+  memory-mcp:
+    image: pokedev-memory:local
+    ports: ["127.0.0.1:8013:8000"]
+    entrypoint: [python, /app/cognee-mcp/src/server.py]
+    command: [--transport, http, --host, 0.0.0.0, --port, "8000", --no-migration]
+    environment:
+      <<: *memory-env
+      TRANSPORT_MODE: http
+    volumes: ["memory-system:/cognee-storage/system", "memory-data:/cognee-storage/data"]
+    depends_on: {memory: {condition: service_healthy}}
+    restart: unless-stopped
+    mem_limit: 1g
+
+  testforge:
+    image: pokedev-testforge:local
+    build: {context: ., dockerfile: deploy/local/testforge.Dockerfile}
+    ports: ["127.0.0.1:9092:9099"]
+    environment:
+      TESTFORGE_BROKER_TOKEN: ${TESTFORGE_BROKER_TOKEN:?Run stack.py init}
+      TESTFORGE_ALLOWED_ORIGINS: http://localhost:7862,http://127.0.0.1:7862
+      TESTFORGE_JOB_TIMEOUT: "120"
+      AGENT_MEMORY_API_URL: http://memory:8000/api/v1
+    volumes: ["testforge-artifacts:/app/artifacts"]
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    healthcheck:
+      <<: *python-health
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:9099/api/v1/health', timeout=5)"]
+    restart: unless-stopped
+    mem_limit: 1536m
+
+volumes:
+  app-state:
+  app-runtime:
+  postgres-data:
+  redis-data:
+  harness-data:
+  harness-workspace:
+  opensandbox-state:
+  sandbox-vfs:
+  sandbox-auth:
+  memory-system:
+  memory-data:
+  testforge-artifacts:

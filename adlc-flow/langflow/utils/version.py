@@ -24,6 +24,7 @@ def _get_version_info():
         ValueError: If the package is not found from the list of package names.
     """
     package_options = [
+        ("pokedev-platform", "PokeDev"),
         ("langflow", "Langflow"),
         ("langflow-base", "Langflow"),
         ("langflow-nightly", "Langflow Nightly"),

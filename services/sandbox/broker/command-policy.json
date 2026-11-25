@@ -1,0 +1,37 @@
+{
+  "version": "1.0.0",
+  "description": "Command Policy Engine — Tier 1 DENY (destructive/escape), Tier 2 file-mutation fencing (block-redirect vs warn), toolchain whitelist. Loaded by broker/services/command_policy.py.",
+  "mode": "enforce",
+  "deny": {
+    "description": "Hard-blocked command patterns (regex, case-insensitive). Applied to every shell segment regardless of whitelist.",
+    "patterns": [
+      "\\brm\\s+(?:-{1,2}[a-zA-Z-]+\\s+)*(?:--\\s+)?/(?!tmp\\b|scratch\\b|workspace\\b|dev/null\\b)",
+      "\\brm\\s+(?:-{1,2}[a-zA-Z-]+\\s+)*(?:--\\s+)?(~|\\$HOME|\\.\\.(/|\\s|$))",
+      "\\bdd\\b[^;&|]*\\bof=/dev/",
+      "\\bmkfs(?:\\.\\w+)?\\b",
+      "\\b(shutdown|reboot|halt|poweroff)\\b",
+      ":\\s*\\(\\s*\\)\\s*\\{\\s*:\\s*\\|\\s*:\\s*&\\s*\\}\\s*;\\s*:",
+      "\\b(curl|wget)\\b[^;&|]*\\|\\s*(?:sudo\\s+)?(?:ba|z|da|fi|k)?sh\\b",
+      "\\bchmod\\s+-R\\s+777\\s+/(?:\\s|$)",
+      "\\b(sudo|nsenter|unshare|chroot|mount)\\b",
+      "(?:>{1,2}\\s*|&>\\s*|\\btee\\s+)/?(?:etc|usr|bin|sbin|boot|proc|sys)\\b",
+      ">\\s*/dev/(?:sd|nvme|vd)"
+    ]
+  },
+  "fileMutation": {
+    "description": "Commands that create/modify workspace files bypass the VFS dual-write contract (runWriteFile/runEditFile). 'block' = rejected with a redirect hint; 'warn' = executed with a specWarning in the response. A segment whose first word is in toolchainFirstWords skips Tier 2.",
+    "blockFirstWords": ["touch", "tee", "truncate"],
+    "warnFirstWords": ["cp", "mv", "mkdir", "rmdir", "ln", "rsync", "sed"],
+    "redirectTargetAllowlist": ["/dev/null", "/dev/tty", "/dev/stdout", "/dev/stderr"],
+    "toolchainFirstWords": [
+      "npm", "npx", "pnpm", "yarn", "node", "tsc",
+      "pip", "pip3", "python", "python3", "pytest",
+      "go", "cargo", "rustc",
+      "make", "cmake", "gcc", "g++", "cc", "java", "javac", "mvn", "gradle",
+      "git", "curl", "wget", "tar", "unzip", "zip"
+    ]
+  },
+  "suggestion": {
+    "fileMutation": "File creation/modification inside the workspace must use the runWriteFile / runEditFile actions (POST /api/v1/agent/execute) — they dual-write to VFS and the sandbox. Shell-created files exist only in the ephemeral container: invisible in the project tree, excluded from git commit/push, and lost when the container dies."
+  }
+}

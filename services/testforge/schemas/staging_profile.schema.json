@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Reviewed staging profile v1",
+  "type": "object",
+  "required": ["version", "base_url", "api_url", "actors"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {"const": 1},
+    "base_url": {"type": "string", "minLength": 1},
+    "api_url": {"type": "string", "minLength": 1},
+    "timeout_ms": {"type": "integer", "minimum": 1000, "maximum": 180000},
+    "fixture_headers_env": {"type": "object", "additionalProperties": {"type": "string", "minLength": 1}},
+    "db_sqlite_path_env": {"type": "string", "minLength": 1},
+    "routes": {"type": "object", "additionalProperties": {"type": "string"}},
+    "locators": {"type": "object", "additionalProperties": {
+      "type": "object", "required": ["by", "value"], "additionalProperties": false,
+      "properties": {
+        "by": {"enum": ["role", "label", "text", "testid", "css"]},
+        "value": {"type": "string", "minLength": 1},
+        "name": {"type": "string"}, "scope_testid": {"type": "string"},
+        "scope_css": {"type": "string"}
+      },
+      "allOf": [{"if": {"properties": {"by": {"const": "role"}}}, "then": {"required": ["name"]}}]
+    }},
+    "actors": {"type": "object", "minProperties": 1, "additionalProperties": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "anonymous": {"type": "boolean"}, "storage_state_env": {"type": "string"},
+        "login": {"type": "object", "required": ["email_env", "password_env"],
+          "properties": {"email_env": {"type": "string", "minLength": 1},
+                         "password_env": {"type": "string", "minLength": 1},
+                         "path": {"type": "string"}}, "additionalProperties": false},
+        "identity": {"type": "object", "required": ["path", "expected_payload"],
+          "properties": {"path": {"type": "string"}, "expected_status": {"type": "integer"},
+                         "method": {"enum": ["GET", "POST"]}, "body": {"type": "object"},
+                         "expected_payload": {"type": "object", "minProperties": 1}}, "additionalProperties": false}
+      }
+    }}
+  }
+}

@@ -1,0 +1,57 @@
+- insert:
+  - id: hmr
+    name: '@deepseek-ai/cordis-plugin-hmr'
+    config:
+      root: [/app/plugins]
+  - id: vai-adlc-artifacts-git
+    name: /app/plugins/vai-adlc-artifacts-git/lib/index.js
+    config:
+      dataDir: /app/data/artifacts
+      workspaceDir: /app/workspace/runs
+      profiles:
+        harness-profile:adlc-coding-artifacts/0.1.0:
+          repository: /app/project-source
+          allowedPaths: ['*']
+  - id: vai-adlc-driver-deepseek
+    name: /app/plugins/vai-adlc-driver-deepseek/lib/index.js
+    config:
+      profiles:
+        harness-profile:adlc-coding/0.1.0:
+          cwd: /app/workspace
+          workspaceRoot: /app/workspace
+          agentPreset: standard
+          provider: "__POKEDEV_PROVIDER__"
+          model: "__POKEDEV_MODEL__"
+        harness-profile:adlc-coding-artifacts/0.1.0:
+          cwd: /app/workspace/runs
+          workspaceRoot: /app/workspace/runs
+          agentPreset: standard
+          provider: "__POKEDEV_PROVIDER__"
+          model: "__POKEDEV_MODEL__"
+  - id: vai-adlc-verify-structured
+    name: /app/plugins/vai-adlc-verify-structured/lib/index.js
+  - id: vai-adlc-runtime
+    name: /app/plugins/vai-adlc-runtime/lib/index.js
+    config:
+      callbackRef: pokedev-local
+      dataDir: /app/data/adlc-harness
+      pluginRoot: /app/plugins
+      # GENERATED_PLUGIN_LOCK
+  - id: vai-taskloop
+    name: /app/plugins/vai-taskloop/lib/index.js
+    config:
+      workspaceDir: /app/workspace/taskloop
+  - id: vai-sandbox
+    name: /app/plugins/vai-sandbox/lib/index.js
+    config:
+      defaultImage: python:3.12-alpine
+  - id: testforge-ai
+    name: /app/plugins/testforge-ai/lib/index.js
+  - id: pokedev-services
+    name: /app/plugins/vai-pokedev-services/lib/index.js
+    config:
+      allowedTargets:
+      - http://host.docker.internal:7862/work
+      loopModel:
+        provider: "__POKEDEV_PROVIDER__"
+        model: "__POKEDEV_MODEL__"

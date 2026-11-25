@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.testing.agent/schemas/execution_result.schema.json",
+  "title": "ExecutionResult",
+  "description": "Output schema representing runtime execution result of an automation script",
+  "type": "object",
+  "required": [
+    "test_case_id",
+    "status",
+    "duration_ms"
+  ],
+  "properties": {
+    "test_case_id": {
+      "type": "string",
+      "description": "Identifier of the executed test case"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "ERROR",
+        "SIMULATED",
+        "SKIPPED"
+      ],
+      "description": "Execution status"
+    },
+    "duration_ms": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Execution time in milliseconds"
+    },
+    "failed_step": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Step order number that triggered the failure, if applicable"
+    },
+    "error": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Error message or stack trace snippet"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "File paths or URIs to screenshots, traces, video recordings, or console logs"
+    },
+    "network_events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "method",
+          "url",
+          "status"
+        ],
+        "properties": {
+          "method": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "HTTP responses observed during execution (M3.1 evidence enrichment)"
+    },
+    "ui_evidence": {
+      "type": "object",
+      "properties": {
+        "visible_messages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Scoped UI status messages visible at failure time (not full page dump)"
+        },
+        "dom_probe": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "tag",
+              "text",
+              "visible"
+            ],
+            "properties": {
+              "tag": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              },
+              "testid": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "visible": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          },
+          "description": "Compact interactive-element probe distinguishing element missing vs hidden vs drifted (M3.1)"
+        },
+        "failed_locator": {
+          "type": "string"
+        },
+        "target_context": {
+          "type": "string"
+        },
+        "page_url": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "description": "Structured UI evidence captured at end of test (M3.1)"
+    },
+    "verification_details": {
+      "type": "object",
+      "properties": {
+        "ui_verified": {
+          "type": "boolean"
+        },
+        "api_verified": {
+          "type": "boolean"
+        },
+        "db_verified": {
+          "type": "boolean"
+        },
+        "details": {
+          "type": "string"
+        }
+      }
+    },
+    "execution_mode": {
+      "enum": [
+        "local",
+        "sandbox",
+        "simulated"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

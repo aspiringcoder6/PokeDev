@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent 3 Optimization Recommendation",
+  "description": "Kết quả phân tích của Agent 3 khi Agent 2 FAIL threshold (docs/architecture/06_agent3_optimization.md). Dùng 'Likely Cause' + confidence — KHÔNG khẳng định root cause, KHÔNG auto-fix code trong MVP.",
+  "type": "object",
+  "required": ["rec_id", "perf_run_id", "generated_at", "llm_model", "llm_prompt_version", "issue_summary", "evidence", "likely_causes", "recommendations", "limitations", "next_steps"],
+  "additionalProperties": false,
+  "properties": {
+    "rec_id": {"type": "string", "pattern": "^REC-[A-Za-z0-9_-]+$"},
+    "perf_run_id": {"type": "string", "pattern": "^PRUN-[A-Za-z0-9_-]+$"},
+    "perf_req_id": {"type": "string"},
+    "generated_at": {"type": "string"},
+    "llm_model": {"type": "string", "minLength": 1},
+    "llm_prompt_version": {"type": "string", "minLength": 1},
+    "trigger_action": {"type": "string"},
+    "issue_summary": {
+      "type": "object",
+      "required": ["metric", "observed", "threshold", "deviation_percent"],
+      "additionalProperties": false,
+      "properties": {
+        "metric": {"type": "string"},
+        "observed": {"type": "string"},
+        "threshold": {"type": "string"},
+        "deviation_percent": {"type": "number"}
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string"}
+    },
+    "likely_causes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["rank", "cause", "confidence", "evidence"],
+        "additionalProperties": false,
+        "properties": {
+          "rank": {"type": "integer", "minimum": 1},
+          "cause": {"type": "string", "minLength": 1},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "evidence": {"type": "array", "items": {"type": "string"}},
+          "supporting_code_ref": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["priority", "action", "target", "expected_impact", "effort_estimate", "validation_plan"],
+        "additionalProperties": false,
+        "properties": {
+          "priority": {"enum": ["HIGH", "MEDIUM", "LOW"]},
+          "action": {"type": "string", "minLength": 1},
+          "target": {"type": "string"},
+          "expected_impact": {"type": "string"},
+          "effort_estimate": {"type": "string"},
+          "validation_plan": {"type": "string"}
+        }
+      }
+    },
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "next_steps": {"type": "array", "items": {"type": "string"}}
+  }
+}

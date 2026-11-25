@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://adlc.testing.agent/schemas/standard_test_input.schema.json",
+  "title": "StandardTestInput",
+  "description": "Formal 5-field contract between ADLC/Memory and Test Design Agent",
+  "type": "object",
+  "required": [
+    "function_id",
+    "feature",
+    "precondition",
+    "steps",
+    "expected_result"
+  ],
+  "properties": {
+    "function_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique identifier tracing back to the feature requirement (e.g., FUNC-USER-ADD)"
+    },
+    "feature": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable name of the feature to test (e.g., Add User)"
+    },
+    "precondition": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Prerequisite state or environment conditions required before execution"
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      },
+      "description": "Ordered high-level business steps"
+    },
+    "expected_result": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      },
+      "description": "Expected outcomes or assertions defining success"
+    },
+    "business_rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Optional domain business rules associated with this function"
+    },
+    "validation_rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Optional form or field validation constraints"
+    }
+  },
+  "additionalProperties": false
+}
