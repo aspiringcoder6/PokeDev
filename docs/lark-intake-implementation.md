@@ -2,6 +2,8 @@
 
 Cập nhật ngày 25/11/2026. LI-01 đã có backend và giao diện desktop để tạo, sửa và xem lịch sử yêu cầu. LI-00 đã qua kiểm tra offline; còn thử nghiệm trên tenant Lark thật. Các slice LI-02 trở đi vẫn theo [kế hoạch](plans/lark-intake-slices.md).
 
+Đã rà và tích hợp phần source access/readiness từ `Phuc/specification` sau 280 kiểm tra kết hợp. Các module này là nền cho LI-04/LI-06, còn tắt mặc định và chưa nối với intake hoặc Lark HumanBridge. Xem [biên bản tích hợp](operations/branch-integration-20261125.md).
+
 ## Chạy và xem hồ sơ
 
 Đặt `POKEDEV_INTAKE_ENABLED=true` trong `.env`, khởi động backend theo [README](../Readme.md), rồi mở [Tiếp nhận yêu cầu](http://127.0.0.1:7862/intake). Mẫu `.env.example` đã bật phần này; backend mặc định tắt khi không có cấu hình.

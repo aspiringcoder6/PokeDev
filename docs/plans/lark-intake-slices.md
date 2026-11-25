@@ -1,6 +1,8 @@
 # Kế hoạch tích hợp LarkSuite vào giai đoạn nhận yêu cầu
 
-Ngày lập và cập nhật: 25/11/2026. Trạng thái: **LI-01 đã triển khai; LI-00 đã kiểm tra offline, chờ tenant thật; LI-02 trở đi chưa triển khai**. Xem [kết quả và cách chạy](../lark-intake-implementation.md).
+Ngày lập và cập nhật: 25/11/2026. Trạng thái: **LI-01 đã triển khai; LI-00 đã kiểm tra offline, chờ tenant thật; LI-02 trở đi chưa hoàn tất**. Xem [kết quả và cách chạy](../lark-intake-implementation.md).
+
+Source access và requirement readiness từ `Phuc/specification` đã được tích hợp làm nền cho các slice sau, với feature flag readiness tắt mặc định. Chưa có binding từ intake tới readiness hoặc kênh Lark. Xem [phạm vi tích hợp và kiểm tra](../operations/branch-integration-20261125.md).
 
 Mục tiêu là để người dùng giao việc bằng hội thoại, tài liệu hoặc file; agent tự tìm phần đã có căn cứ, hỏi những điểm còn thiếu, ghi nhận câu trả lời và cùng người dùng chốt phạm vi trước khi tạo Spec. Lark là một kênh giao tiếp của PokeDev. Trạng thái yêu cầu, quyền quyết định và điều phối agent thuộc control plane vAIPlatform.
 
@@ -160,7 +162,7 @@ Nghiệm thu:
 
 ### LI-04 — Agent chủ động hỏi và tiếp tục cùng yêu cầu
 
-Xây `IntakeAgentPort` với adapter native Harness. Mỗi lượt nhận snapshot có version và trả kết quả có cấu trúc: câu hỏi, đề xuất brief, mâu thuẫn cần người quyết hoặc không cần hành động. Service lưu câu hỏi trước khi gửi. Agent không trực tiếp quyết định đích gửi hoặc tự đánh dấu người dùng đã phê duyệt.
+Xây adapter từ hồ sơ intake tới `ReadinessService`/`DshAgentRunner` native đã tích hợp trong `requirement_readiness`, cùng HumanBridge cho Lark/web. Mỗi lượt nhận snapshot có version và trả kết quả có cấu trúc: câu hỏi, đề xuất brief, mâu thuẫn cần người quyết hoặc không cần hành động. Service lưu câu hỏi trước khi gửi. Agent không trực tiếp quyết định đích gửi hoặc tự đánh dấu người dùng đã phê duyệt.
 
 Nghiệm thu:
 
@@ -181,7 +183,7 @@ Nghiệm thu:
 
 ### LI-06 — Tài liệu có quyền, phiên bản và trích dẫn
 
-Thêm `SourceProvider` cho link Lark Docs/Wiki và danh mục nguồn của project. Bắt đầu bằng đọc link trực tiếp; sau đó tìm tài liệu liên quan trong thư viện đã được project cho phép. Khi API cần danh tính user, phải có ủy quyền đúng người. Trích dẫn giữ URL, phiên bản/hash, block/đoạn và phần nội dung làm căn cứ.
+Nối `SourceGateway` và các reader GitHub/Lark trong `source_access` vào hồ sơ intake, danh mục nguồn và quyền project. Bắt đầu bằng đọc link trực tiếp; sau đó tìm tài liệu liên quan trong thư viện đã được project cho phép. Khi API cần danh tính user, phải có ủy quyền đúng người. Trích dẫn giữ URL, phiên bản/hash, block/đoạn và phần nội dung làm căn cứ.
 
 Nghiệm thu:
 
