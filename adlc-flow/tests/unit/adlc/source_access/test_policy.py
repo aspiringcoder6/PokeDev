@@ -269,3 +269,52 @@ def test_related_work_kind_routes_to_its_own_reader(github_grant):
 def test_source_ref_cannot_embed_a_grant():
     with pytest.raises(ValidationError, match="extra_forbidden"):
         SourceRef(kind="github_file", connection_id="gh", resource_id="org/private", grant={})
+
+
+def test_source_ref_cannot_reuse_another_connection_locator_key():
+    grant = SourceGrant(
+        project_id="p1",
+        run_id="r1",
+        principal_id="normalizer",
+        resources={"lark": {"shared:base"}},
+        locator_allowlists={"lark:shared:base": {"table_id": ("table-1",)}},
+    )
+    reader = RecordingReader()
+    gateway = SourceGateway({("lark", "lark_base_record"): reader})
+    valid_ref = SourceRef(
+        kind="lark_base_record",
+        connection_id="lark",
+        resource_id="shared:base",
+        locator={"table_id": "table-1"},
+    )
+
+    evidence = asyncio.run(gateway.read(grant, [valid_ref]))
+    assert [item.source for item in evidence] == [valid_ref]
+
+    with pytest.raises(SourceError, match="SOURCE_SCOPE_DENIED"):
+        asyncio.run(
+            gateway.read(
+                grant,
+                [valid_ref.model_copy(update={"locator": {"table_id": "table-2"}})],
+            )
+        )
+    assert reader.calls == [valid_ref]
+
+    with pytest.raises(ValidationError, match="connection_id"):
+        SourceRef(
+            kind="lark_base_record",
+            connection_id="lark:shared",
+            resource_id="base",
+            locator={"table_id": "table-1"},
+        )
+
+
+def test_server_grant_rejects_a_connection_id_that_collides_with_a_locator_key():
+    with pytest.raises(ValidationError, match="resources"):
+        SourceGrant(
+            project_id="p1",
+            run_id="r1",
+            principal_id="normalizer",
+            resources={"lark": {"shared:base"}, "lark:shared": {"base"}},
+            locator_allowlists={"lark:shared:base": {"table_id": ("table-1",)}},
+        )

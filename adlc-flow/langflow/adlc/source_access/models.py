@@ -1,9 +1,12 @@
 from collections.abc import Mapping
 from datetime import datetime
 from types import MappingProxyType
-from typing import Literal, Protocol
+from typing import Annotated, Literal, Protocol
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+# The first colon in a locator allowlist key separates the connection from the resource.
+ConnectionId = Annotated[str, Field(min_length=1, pattern=r"^[^:]+$")]
 
 Kind = Literal[
     "github_file",
@@ -28,7 +31,7 @@ class Closed(BaseModel):
 
 class SourceRef(Closed):
     kind: Kind
-    connection_id: str = Field(min_length=1)
+    connection_id: ConnectionId
     resource_id: str = Field(min_length=1)
     locator: dict[str, str] = Field(default_factory=dict)
     revision: str | None = None
@@ -50,7 +53,7 @@ class SourceGrant(Closed):
     project_id: str
     run_id: str
     principal_id: str
-    resources: Mapping[str, frozenset[str]]
+    resources: Mapping[ConnectionId, frozenset[str]]
     locator_allowlists: Mapping[str, Mapping[str, tuple[str, ...]]] = Field(
         default_factory=dict, validate_default=True
     )
@@ -59,7 +62,7 @@ class SourceGrant(Closed):
 
     @field_validator("resources")
     @classmethod
-    def freeze_resources(cls, resources: Mapping[str, frozenset[str]]) -> Mapping[str, frozenset[str]]:
+    def freeze_resources(cls, resources: Mapping[ConnectionId, frozenset[str]]) -> Mapping[ConnectionId, frozenset[str]]:
         return MappingProxyType(dict(resources))
 
     @field_validator("locator_allowlists")
