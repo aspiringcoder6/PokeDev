@@ -1,7 +1,10 @@
+import hashlib
+import json
+import re
 from collections.abc import Mapping
-from datetime import datetime
+from datetime import datetime, timezone
 from types import MappingProxyType
-from typing import Annotated, Literal, Protocol
+from typing import Annotated, Literal, Protocol, TypeGuard, runtime_checkable
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -47,6 +50,26 @@ class Evidence(Closed):
     complete: bool = True
 
 
+def is_git_sha(value: object) -> TypeGuard[str]:
+    return isinstance(value, str) and re.fullmatch(r"[0-9a-fA-F]{40}", value) is not None
+
+
+def make_evidence(ref: SourceRef, body: str, version: str, *, complete: bool = True) -> Evidence:
+    source = ref.model_copy(deep=True)
+    canonical_ref = json.dumps(source.model_dump(mode="json"), sort_keys=True, separators=(",", ":"))
+    content_hash = hashlib.sha256(body.encode()).hexdigest()
+    identity = hashlib.sha256(f"{canonical_ref}\n{version}\n{content_hash}".encode()).hexdigest()
+    return Evidence(
+        id=identity,
+        source=source,
+        version=version,
+        fetched_at=datetime.now(timezone.utc),
+        body=body,
+        sha256=content_hash,
+        complete=complete,
+    )
+
+
 class SourceGrant(Closed):
     """Access for a run, constructed from the current server-owned project binding."""
 
@@ -54,15 +77,15 @@ class SourceGrant(Closed):
     run_id: str
     principal_id: str
     resources: Mapping[ConnectionId, frozenset[str]]
-    locator_allowlists: Mapping[str, Mapping[str, tuple[str, ...]]] = Field(
-        default_factory=dict, validate_default=True
-    )
+    locator_allowlists: Mapping[str, Mapping[str, tuple[str, ...]]] = Field(default_factory=dict, validate_default=True)
     max_reads: int = Field(default=24, ge=1, le=200)
     max_bytes: int = Field(default=500_000, ge=1, le=2_000_000)
 
     @field_validator("resources")
     @classmethod
-    def freeze_resources(cls, resources: Mapping[ConnectionId, frozenset[str]]) -> Mapping[ConnectionId, frozenset[str]]:
+    def freeze_resources(
+        cls, resources: Mapping[ConnectionId, frozenset[str]]
+    ) -> Mapping[ConnectionId, frozenset[str]]:
         return MappingProxyType(dict(resources))
 
     @field_validator("locator_allowlists")
@@ -75,3 +98,8 @@ class SourceGrant(Closed):
 
 class Reader(Protocol):
     async def read(self, ref: SourceRef) -> Evidence: ...
+
+
+@runtime_checkable
+class RevisionReader(Reader, Protocol):
+    async def resolve_revision(self, repository: str, ref: str) -> str: ...
