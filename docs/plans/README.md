@@ -1,11 +1,16 @@
-# docs/plans/ — Kế hoạch triển khai ADLC
+# docs/plans/ — Kế hoạch PokeDev và tài liệu nền ADLC
 
-Thư mục này chứa tài liệu kế hoạch tiếng Việt cho dự án ADLC (Agent Development Life Cycle), tổng hợp từ các tài liệu kế hoạch slice bản gốc tiếng Anh (lưu trữ trên nhánh git `agentHarness`, đọc bằng `git show agentHarness:docs/<tên-file>.md`).
+Kế hoạch mới cho PokeDev nằm cùng các tài liệu nền kế thừa từ ADLC. Các trạng thái hoàn thành trong tài liệu ADLC phản ánh baseline của dự án nguồn; cần đối chiếu khi áp dụng vào PokeDev.
+
+Kế hoạch hiện tại: [LarkSuite và giai đoạn nhận yêu cầu](./lark-intake-slices.md), gồm LI-00 → LI-10 cho pilot và các adapter mở rộng LI-11 → LI-13. Đây là kế hoạch đề xuất, chưa phải phần đã triển khai.
+
+Các tài liệu tổng hợp ADLC bên dưới tham chiếu nhánh `agentHarness` của repository nguồn, không phải nhánh có sẵn trong lịch sử Git mới của PokeDev.
 
 ## Nội dung thư mục
 
 | File | Nội dung |
 |---|---|
+| [`lark-intake-slices.md`](./lark-intake-slices.md) | Hồ sơ yêu cầu trước Spec, agent chủ động hỏi lại, tương tác Lark/web, tài liệu/file, chốt brief và bàn giao native Harness; có phụ thuộc và tiêu chí nghiệm thu cho từng slice. |
 | [`ke-hoach-slice.md`](./ke-hoach-slice.md) | **Tài liệu lõi** (~900 dòng). Kể lại toàn bộ lộ trình slice 2 → 10: nền tảng blueprint → kế hoạch → runtime, Planner proposal, Blueprint UI và Plan Preview, materialization vào mock runtime, định tuyến thực thi, regeneration/supersession, phân quyền package, observability, tích hợp OpenCode (6A/6B/6C), và orchestrator control plane theo các đợt P0 → P3 (slice 7 → 10). Mỗi phần có mục tiêu, phạm vi, thiết kế quan trọng, deliverable + test chính và dòng trạng thái. |
 | `lo-trinh-san-pham.md` | Lộ trình sản phẩm (đang được soạn song song bởi agent khác — bổ sung đường dẫn khi sẵn sàng). |
 
