@@ -56,6 +56,9 @@ class SourceRef(Closed):
     def freeze_locator(cls, value):
         return FrozenDict(value)
 
+    def model_copy(self, *, update=None, deep=False):
+        return type(self).model_validate(self.model_dump() | (update or {}))
+
 
 class Evidence(Closed):
     id: str

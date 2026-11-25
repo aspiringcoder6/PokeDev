@@ -33,6 +33,14 @@ class NativeReceipt:
     runtime_version: str
     exit_code: int
     observed_at: str
+    run_id: str = ""
+    output_digest: str = ""
+
+
+class NativeAuthorizationRequired(ValueError):
+    def __init__(self, request):
+        super().__init__("READINESS_NATIVE_AUTHORIZATION_REQUIRED")
+        self.request = request
 
 
 class SkillCatalog:
@@ -40,6 +48,7 @@ class SkillCatalog:
         self.root = Path(root).resolve()
         self.manifest = json.loads(json.dumps(native_manifest))
         self.store = store
+        self.artifact_workspace = Path(self.manifest.get("artifact_workspace", self.root)).resolve()
 
     @property
     def digest(self):
@@ -76,6 +85,7 @@ class SkillCatalog:
 
     def _instructions(self, entries, files):
         seen, chunks = set(), []
+
         def load(relative):
             relative = self.path(relative).relative_to(self.root).as_posix()
             if relative in seen:
@@ -85,12 +95,14 @@ class SkillCatalog:
                 raise ValueError("READINESS_NATIVE_DEPENDENCY_MISSING")
             text = self.checked(relative, files[relative])
             chunks.append(f"\nTrusted file: {relative}\n{text}")
-            for link in re.findall(r'\]\(([^)\s]+\.md)(?:#[^)]*)?\)', text):
+            prose = re.sub(r"```.*?```", "", text, flags=re.S)
+            for link in re.findall(r"\]\(([^)\s]+\.md)(?:#[^)]*)?\)", prose):
                 if "://" not in link:
                     candidate = (self.path(relative).parent / link).resolve()
                     if not candidate.is_relative_to(self.root):
                         raise ValueError("READINESS_NATIVE_DEPENDENCY_MISSING")
                     load(candidate.relative_to(self.root).as_posix())
+
         for entry in entries:
             load(entry)
         return "\n".join(chunks)
@@ -104,7 +116,7 @@ class SkillCatalog:
             self.verify()
             instructions = self._instructions((row["entry"], *row.get("dependencies", ())), package["files"])
             overlay = self.checked(self.manifest["host_policy_file"], self.manifest["host_policy_sha256"])
-            return NativePrerequisites(True, instruction_text=instructions+"\nTrusted host overlay:\n"+overlay)
+            return NativePrerequisites(True, instruction_text=instructions + "\nTrusted host overlay:\n" + overlay)
         except (ValueError, KeyError, OSError):
             return NativePrerequisites(False, "READINESS_NATIVE_DEPENDENCY_MISSING")
 
@@ -118,21 +130,40 @@ class SkillCatalog:
                 command = self.manifest["commands"][step]
                 if not command.get("argv") or not shutil.which(command["argv"][0]):
                     raise ValueError("READINESS_NATIVE_DEPENDENCY_MISSING")
-            return NativePrerequisites(True, skill_names=tuple(row["skills"]), instruction_text=instructions,
-                                       required_receipt_kinds=tuple(row["required_steps"]))
+            return NativePrerequisites(
+                True,
+                skill_names=tuple(row["skills"]),
+                instruction_text=instructions,
+                required_receipt_kinds=tuple(row["required_steps"]),
+            )
         except (ValueError, KeyError, OSError):
             return NativePrerequisites(False, "READINESS_NATIVE_DEPENDENCY_MISSING")
 
-    def validate_receipts(self, ids, snapshot_digest, artifacts):
-        if not self.store or not ids or not artifacts:
+    def validate_receipts(self, ids, snapshot_digest, artifacts, route=None, run_id=None):
+        if not self.store or not ids:
             return False
         try:
-            digests = {name: hashlib.sha256(self.path(name).read_bytes()).hexdigest() for name in artifacts}
+            digests = {}
+            for name in artifacts:
+                path = (self.artifact_workspace / name).resolve()
+                if not path.is_relative_to(self.artifact_workspace) or not path.is_file():
+                    return False
+                digests[name] = hashlib.sha256(path.read_bytes()).hexdigest()
             receipts = [self.store.receipt(identity) for identity in ids]
-            if any(not row or row["snapshot_digest"] != snapshot_digest or row["exit_code"] != 0
-                   or row["artifact_digests"] != digests for row in receipts):
+            if any(
+                not row
+                or row["snapshot_digest"] != snapshot_digest
+                or row["exit_code"] != 0
+                or row["artifact_digests"] != digests
+                or row.get("run_id") != run_id
+                or row["command_digest"] != canonical_digest(self.manifest["commands"][row["step_name"]])
+                or not self.store.observe_operation(row["operation_id"])
+                or self.store.observe_operation(row["operation_id"]).run_id != run_id
+                or self.store.observe_operation(row["operation_id"]).role not in {"reviewer-a", "reviewer-b"}
+                for row in receipts
+            ):
                 return False
-            required = {step for row in self.manifest.get("routes", {}).values() for step in row.get("required_steps", ())}
+            required = set(self.manifest.get("routes", {}).get(route, {}).get("required_steps", ()))
             return bool(required) and required <= {row["step_name"] for row in receipts}
         except (ValueError, KeyError, OSError):
             return False
@@ -143,12 +174,32 @@ class NativeCommandRunner:
         self.catalog, self.store = catalog, store
         self.workspace = Path(artifact_workspace).resolve()
 
-    def execute(self, step_name, snapshot_digest, artifact_bindings):
+    def execute(self, step_name, snapshot_digest, artifact_bindings, *, operation_id=None):
         row = self.catalog.manifest.get("commands", {}).get(step_name)
         if not row:
             raise ValueError("READINESS_NATIVE_DEPENDENCY_MISSING")
+        operation = self.store.observe_operation(operation_id) if operation_id else None
+        if not operation or operation.role not in {"reviewer-a", "reviewer-b"}:
+            raise ValueError("READINESS_OPERATION_BINDING_INVALID")
+        request = {
+            "step_name": step_name,
+            "snapshot_digest": snapshot_digest,
+            "operation_id": operation_id,
+            "artifact_bindings": dict(artifact_bindings),
+            "command_digest": canonical_digest(row),
+        }
+        authorization_id = canonical_digest(request)
+        request["authorization_id"] = authorization_id
         if row.get("mode") != "read-only":
-            raise ValueError("READINESS_NATIVE_AUTHORIZATION_REQUIRED")
+            allowed = self.store.observe_operation(authorization_id)
+            if (
+                row.get("mode") != "requires-authorization"
+                or not allowed
+                or allowed.state != "COMPLETED"
+                or allowed.result.get("decision") != "allowed-once"
+                or allowed.result.get("request") != request
+            ):
+                raise NativeAuthorizationRequired(request)
         argv = list(row["argv"])
         digests = {}
         for name, relative in artifact_bindings.items():
@@ -156,12 +207,44 @@ class NativeCommandRunner:
             if not path.is_relative_to(self.workspace) or not path.is_file():
                 raise ValueError("READINESS_NATIVE_ARTIFACT_INVALID")
             digests[relative] = hashlib.sha256(path.read_bytes()).hexdigest()
-            argv = [arg.replace("{"+name+"}", str(path)) for arg in argv]
+            argv = [arg.replace("{" + name + "}", str(path)) for arg in argv]
         if any("{" in arg or "}" in arg for arg in argv):
             raise ValueError("READINESS_NATIVE_ARTIFACT_INVALID")
+        if not row.get("version_argv"):
+            raise ValueError("READINESS_NATIVE_DEPENDENCY_MISSING")
+        observed_version = subprocess.run(
+            row["version_argv"], shell=False, cwd=self.workspace, timeout=30, capture_output=True
+        )
+        version = observed_version.stdout.decode("utf-8").strip()
+        if observed_version.returncode or version != row["version"]:
+            raise ValueError("READINESS_RUNTIME_CHANGED")
+        native_key = authorization_id + ":execution"
+        native = self.store.begin_operation(operation.run_id, native_key, "native-command", native_key)
+        if native.state == "COMPLETED":
+            saved = self.store.receipt(native.result["receipt_id"])
+            return NativeReceipt(**saved)
+        if not native.is_new:
+            raise ValueError("READINESS_AGENT_UNCONFIRMED")
         result = subprocess.run(argv, shell=False, cwd=self.workspace, timeout=30, capture_output=True)
-        receipt = NativeReceipt(str(uuid4()), step_name, snapshot_digest, digests, step_name,
-                                canonical_digest({"argv":argv,"output":hashlib.sha256(result.stdout+result.stderr).hexdigest()}),
-                                row["version"], result.returncode, datetime.now(timezone.utc).isoformat())
+        # A claimed read-only check must leave its artifacts intact.
+        if row.get("mode") == "read-only" and any(
+            hashlib.sha256((self.workspace / name).read_bytes()).hexdigest() != digest
+            for name, digest in digests.items()
+        ):
+            raise ValueError("READINESS_NATIVE_ARTIFACT_INVALID")
+        receipt = NativeReceipt(
+            str(uuid4()),
+            operation_id,
+            snapshot_digest,
+            digests,
+            step_name,
+            canonical_digest(row),
+            version,
+            result.returncode,
+            datetime.now(timezone.utc).isoformat(),
+            operation.run_id,
+            hashlib.sha256(result.stdout + result.stderr).hexdigest(),
+        )
         self.store.save_receipt(asdict(receipt))
+        self.store.finish_operation(native_key, {"receipt_id": receipt.id})
         return receipt

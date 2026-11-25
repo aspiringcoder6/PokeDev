@@ -1,0 +1,6 @@
+# Pinned upstream instruction hashes cover original bytes on every platform.
+.agents/skills/vendor/** -text
+.agents/skills/specification-router/** -text
+.agents/skills/grill-me/** -text
+.agents/skills/grilling/** -text
+.agents/skills/host/** -text

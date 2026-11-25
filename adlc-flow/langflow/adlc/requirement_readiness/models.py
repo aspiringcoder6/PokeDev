@@ -11,8 +11,9 @@ from langflow.adlc.source_access.models import Closed, Evidence, SourceRef
 
 
 def canonical_digest(value):
-    return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True,
-                                     separators=(",", ":"), allow_nan=False).encode()).hexdigest()
+    return hashlib.sha256(
+        json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+    ).hexdigest()
 
 
 class PipelineConfig(Closed):
@@ -36,14 +37,18 @@ class ContextSnapshot(Closed):
     @classmethod
     def from_input(cls, request, evidence):
         ordered = tuple(sorted(evidence, key=lambda item: item.id))
-        payload = {"request": request.model_dump(mode="json"),
-                   "evidence": [item.model_dump(mode="json") for item in ordered]}
+        payload = {
+            "request": request.model_dump(mode="json"),
+            "evidence": [item.model_dump(mode="json") for item in ordered],
+        }
         return cls(request=request, evidence=ordered, digest=canonical_digest(payload))
 
     @model_validator(mode="after")
     def validate_digest(self):
-        payload = {"request": self.request.model_dump(mode="json"),
-                   "evidence": [item.model_dump(mode="json") for item in sorted(self.evidence, key=lambda e: e.id)]}
+        payload = {
+            "request": self.request.model_dump(mode="json"),
+            "evidence": [item.model_dump(mode="json") for item in sorted(self.evidence, key=lambda e: e.id)],
+        }
         if canonical_digest(payload) != self.digest:
             raise ValueError("READINESS_SNAPSHOT_INVALID")
         return self
@@ -75,9 +80,11 @@ class ReviewResult(Closed):
     reviewer_id: Literal["a", "b"]
     snapshot_digest: str
     route: Literal["spec-kit", "openspec", "unresolved"]
-    status: Literal["ready_for_spec", "spec_ready", "needs_context", "needs_clarification",
-                    "awaiting_authorization", "blocked"]
+    status: Literal[
+        "ready_for_spec", "spec_ready", "needs_context", "needs_clarification", "awaiting_authorization", "blocked"
+    ]
     route_reason: str
+    next_action: str = ""
     evidence: tuple[str, ...] = ()
     native_steps: tuple[dict, ...] = ()
     artifacts: tuple[str, ...] = ()
@@ -101,6 +108,8 @@ class HumanRound(Closed):
     answers: dict[str, str] = Field(default_factory=dict)
     confirmed: bool = False
     answered: bool = False
+    responder_id: str | None = None
+    summary: str = ""
 
 
 class OperationState(str, Enum):
@@ -120,6 +129,19 @@ class ImpactReport(Closed):
     blocking_findings: tuple[str, ...]
     material_uncertainties: tuple[str, ...]
     requires_authorization: bool = Field(strict=True)
+    retrieve_refs: tuple[SourceRef, ...] = ()
+
+
+class ContextRequest(Closed):
+    type: Literal["needs_context"]
+    missing_refs: tuple[SourceRef, ...]
+    reasons: tuple[str, ...] = Field(min_length=1)
+
+
+class ContextNeeded(ValueError):
+    def __init__(self, request):
+        super().__init__("READINESS_CONTEXT_NEEDED")
+        self.request = ContextRequest.model_validate(request)
 
 
 class Option(Closed):
@@ -150,8 +172,9 @@ class Assessment(Closed):
 
     @model_validator(mode="after")
     def choices(self):
-        if (len({o.id for o in self.options}) != len(self.options)
-                or len({o.approach.strip().casefold() for o in self.options}) != len(self.options)):
+        if len({o.id for o in self.options}) != len(self.options) or len(
+            {o.approach.strip().casefold() for o in self.options}
+        ) != len(self.options):
             raise ValueError("READINESS_OPTIONS_NOT_DISTINCT")
         if self.recommended_option_id not in {o.id for o in self.options}:
             raise ValueError("READINESS_RECOMMENDATION_INVALID")
@@ -173,10 +196,25 @@ class OptionDecision(Closed):
     reason: str
 
 
-Status = Literal["created", "collecting", "verifying_context", "context_ready", "reviewing",
-                 "requirements_ready", "impact_analyzing", "assessing", "waiting_option", "waiting_human",
-                 "needs_context", "needs_clarification", "awaiting_authorization", "blocked", "ready",
-                 "cancelled", "failed"]
+Status = Literal[
+    "created",
+    "collecting",
+    "verifying_context",
+    "context_ready",
+    "reviewing",
+    "requirements_ready",
+    "impact_analyzing",
+    "assessing",
+    "waiting_option",
+    "waiting_human",
+    "needs_context",
+    "needs_clarification",
+    "awaiting_authorization",
+    "blocked",
+    "ready",
+    "cancelled",
+    "failed",
+]
 
 
 class ReadinessRun(Closed):
@@ -209,6 +247,7 @@ class ReadinessRun(Closed):
     pending_selection: dict | None = None
     selection_commands: dict = Field(default_factory=dict)
     verdict: ContextVerdict | None = None
+    authorization_request: dict | None = None
 
 
 class ReadinessPackage(Closed):

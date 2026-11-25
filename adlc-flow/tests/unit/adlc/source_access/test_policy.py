@@ -328,3 +328,10 @@ def test_source_locator_cannot_be_mutated_after_validation():
     ref = SourceRef(kind="github_file", connection_id="gh", resource_id="org/repo", locator={"path": "a"})
     with pytest.raises(TypeError):
         ref.locator["path"] = "b"
+
+
+def test_copied_source_locator_remains_immutable():
+    ref = SourceRef(kind="github_file",connection_id="gh",resource_id="org/repo")
+    copied = ref.model_copy(update={"locator":{"path":"a"}})
+    with pytest.raises(TypeError):
+        copied.locator["path"]="b"
