@@ -48,6 +48,7 @@ from langflow.api.v1.adlc_harness_demo import router as adlc_harness_demo_router
 from langflow.api.v1.adlc_harness_workflow import router as adlc_harness_workflow_router
 from langflow.api.v1.adlc_project_memory import router as adlc_project_memory_router
 from langflow.api.v1.adlc_replay import router as adlc_replay_router
+from langflow.api.v1.adlc_requirement_readiness import router as adlc_requirement_readiness_router
 from langflow.api.v1.adlc_team_access import router as adlc_team_access_router
 from langflow.api.v1.adlc_test_extensions import router as adlc_test_extensions_router
 from langflow.api.v1.adlc_verification import router as adlc_verification_router
@@ -118,6 +119,7 @@ router_v1.include_router(adlc_workloop_router)
 router_v1.include_router(adlc_tnqd_demo_router)
 router_v1.include_router(adlc_live_router)
 router_v1.include_router(adlc_replay_router)
+router_v1.include_router(adlc_requirement_readiness_router)
 router_v1.include_router(adlc_project_memory_router)
 router_v1.include_router(adlc_harness_demo_router)
 router_v1.include_router(adlc_harness_workflow_router)
