@@ -7,7 +7,7 @@ import time
 from collections.abc import Mapping
 from http import HTTPStatus
 from typing import Protocol
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 import httpx
 
@@ -50,11 +50,21 @@ def _repo_path(repository: str) -> str:
 
 
 def _path_parts(path: str) -> list[str]:
-    parts = path.split("/")
-    if len(path) > _MAX_PATH_LENGTH or "\\" in path or "%" in path or _CONTROL.search(path):
+    if len(path) > _MAX_PATH_LENGTH or "\\" in path or _CONTROL.search(path):
         raise SourceError(_ARGUMENTS_INVALID)
+    parts = path.split("/")
     if any(part in {"", ".", ".."} for part in parts):
         raise SourceError(_ARGUMENTS_INVALID)
+
+    # Inspect encoded traversal without changing the components sent to GitHub.
+    probe = path
+    while "%" in probe:
+        decoded = unquote(probe)
+        if decoded == probe:
+            break
+        if any(part in {".", ".."} for part in decoded.replace("\\", "/").split("/")):
+            raise SourceError(_ARGUMENTS_INVALID)
+        probe = decoded
     return parts
 
 

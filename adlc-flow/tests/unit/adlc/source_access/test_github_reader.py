@@ -85,7 +85,15 @@ def comment(comment_id, body):
     return {"id": comment_id, "body": body, "user": {"login": "reviewer"}, "updated_at": STAMP}
 
 
-def test_file_read_uses_pinned_commit_without_checkout(monkeypatch):
+@pytest.mark.parametrize(
+    ("path", "quoted_path"),
+    [
+        ("docs/Read me.md", "docs/Read%20me.md"),
+        pytest.param("docs/100%.md", "docs/100%25.md", id="literal-percent"),
+        pytest.param("docs/Read%20me.md", "docs/Read%2520me.md", id="escape-like-percent"),
+    ],
+)
+def test_file_read_uses_pinned_commit_without_checkout(monkeypatch, path, quoted_path):
     def no_subprocess(*_args, **_kwargs):
         pytest.fail("remote source reads must not spawn Git or other subprocesses")
 
@@ -93,12 +101,12 @@ def test_file_read_uses_pinned_commit_without_checkout(monkeypatch):
 
     def respond(request):
         assert request.method == "GET"
-        assert request.url.raw_path == f"{REPO_PATH}/contents/docs/Read%20me.md?ref={COMMIT}".encode()
+        assert request.url.raw_path == f"{REPO_PATH}/contents/{quoted_path}?ref={COMMIT}".encode()
         assert request.headers["Authorization"] == "Bearer test-installation-token"
         assert "Cookie" not in request.headers
         return file_response()
 
-    ref = source(locator={"path": "docs/Read me.md"}, revision=COMMIT)
+    ref = source(locator={"path": path}, revision=COMMIT)
     evidence = run_reader(respond, lambda reader: reader.read(ref))
 
     assert evidence.source == ref
@@ -108,7 +116,14 @@ def test_file_read_uses_pinned_commit_without_checkout(monkeypatch):
     assert evidence.complete
 
 
-@pytest.mark.parametrize(("requested", "encoded"), [("feature/readiness", "feature%2Freadiness"), (None, "HEAD")])
+@pytest.mark.parametrize(
+    ("requested", "encoded"),
+    [
+        ("feature/readiness", "feature%2Freadiness"),
+        pytest.param("release/90%", "release%2F90%25", id="branch-percent"),
+        (None, "HEAD"),
+    ],
+)
 def test_gateway_resolves_requested_ref_to_commit(requested, encoded):
     def respond(request):
         assert request.url.raw_path == f"{REPO_PATH}/commits/{encoded}".encode()
@@ -168,6 +183,8 @@ def test_make_evidence_has_canonical_identity_and_body_hash():
         source(locator={"path": "../secret"}, revision=COMMIT),
         source(locator={"path": "docs//README"}, revision=COMMIT),
         source(locator={"path": "docs/%2e%2e/secret"}, revision=COMMIT),
+        source(locator={"path": "docs/%252e%252e/secret"}, revision=COMMIT),
+        source(locator={"path": "docs/a%2F..%5Csecret"}, revision=COMMIT),
         source(locator={"path": "docs\\README"}, revision=COMMIT),
         source(locator={"path": "docs", "tree": "1"}, revision=COMMIT),
         source(locator={"tree": "true"}, revision=COMMIT),
