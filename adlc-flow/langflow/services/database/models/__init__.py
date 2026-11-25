@@ -1,5 +1,6 @@
 from .a2a import A2ACheckpoint, A2ATask
 from .adlc_delivery import AdlcDelivery
+from .adlc_intake import AdlcIntakeCommand, AdlcIntakeRequest, AdlcIntakeRevision
 from .adlc_product_cycle import (
     AdlcCycleFeedback,
     AdlcCycleHead,
@@ -59,6 +60,9 @@ from .variable import Variable
 
 __all__ = [
     "AdlcDelivery",
+    "AdlcIntakeCommand",
+    "AdlcIntakeRequest",
+    "AdlcIntakeRevision",
     "AdlcProductCycle",
     "AdlcCycleHead",
     "AdlcCycleSpec",

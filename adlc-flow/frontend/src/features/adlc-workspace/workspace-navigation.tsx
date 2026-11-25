@@ -40,6 +40,12 @@ export default function WorkspaceNavigation() {
     `/work${view || project ? "?" : ""}${view ? `view=${view}` : ""}${view && project ? "&" : ""}${project ? `project=${project}` : ""}`;
   const links = [
     {
+      label: "Tiếp nhận yêu cầu",
+      path: "/intake",
+      icon: Inbox,
+      active: pathname.startsWith("/intake"),
+    },
+    {
       label: "Tổng quan workspace",
       path: "/work",
       icon: LayoutDashboard,

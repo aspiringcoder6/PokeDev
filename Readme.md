@@ -159,6 +159,12 @@ Dùng các lệnh `setup` ở trên thay cho `uv sync` trong `adlc-flow`: metada
 
 ## Cấu hình và dữ liệu
 
+### Tiếp nhận yêu cầu và Lark
+
+Mở [Tiếp nhận yêu cầu](http://127.0.0.1:7862/intake) để tạo hồ sơ, sửa nội dung và xem lịch sử phiên bản. Đặt `POKEDEV_INTAKE_ENABLED=true` trong `.env` rồi khởi động lại backend. Phần này hoạt động độc lập với model; hồ sơ thuộc riêng người tạo và chưa tự chạy agent.
+
+Tích hợp Lark đang ở bước kiểm chứng SDK và transport. Bộ thử nằm trong [services/lark-connector](services/lark-connector/README.md); chưa bật nhận DM vào hồ sơ hoặc hỏi–đáp tự động. Theo dõi [kết quả triển khai](docs/lark-intake-implementation.md) và [các slice tiếp theo](docs/plans/lark-intake-slices.md).
+
 | Đường dẫn | Nội dung |
 |---|---|
 | `.env.example` | Mẫu cấu hình có thể commit |

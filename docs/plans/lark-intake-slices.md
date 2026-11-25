@@ -1,6 +1,6 @@
 # Kế hoạch tích hợp LarkSuite vào giai đoạn nhận yêu cầu
 
-Ngày lập: 25/11/2026. Trạng thái: **đề xuất triển khai; các slice dưới đây chưa được thực hiện**.
+Ngày lập và cập nhật: 25/11/2026. Trạng thái: **LI-01 đã triển khai; LI-00 đã kiểm tra offline, chờ tenant thật; LI-02 trở đi chưa triển khai**. Xem [kết quả và cách chạy](../lark-intake-implementation.md).
 
 Mục tiêu là để người dùng giao việc bằng hội thoại, tài liệu hoặc file; agent tự tìm phần đã có căn cứ, hỏi những điểm còn thiếu, ghi nhận câu trả lời và cùng người dùng chốt phạm vi trước khi tạo Spec. Lark là một kênh giao tiếp của PokeDev. Trạng thái yêu cầu, quyền quyết định và điều phối agent thuộc control plane vAIPlatform.
 
@@ -112,6 +112,8 @@ Mỗi slice là một thay đổi có thể demo và rollback bằng feature fla
 
 ### LI-00 — Kiểm chứng Lark trước khi chốt transport
 
+Trạng thái: có [probe nhận sự kiện và biên bản offline](../../services/lark-connector/README.md), khóa SDK và 6 kiểm tra đã đạt. Chưa kết nối tenant thật; transport card, quyền và các bài thử live còn chờ xác nhận.
+
 Tạo app thử hoặc dùng app được phép thử; ghi lại tenant, app type, domain, phiên bản SDK và capability matrix. Ưu tiên thử outbound WebSocket để phù hợp môi trường local/VPN. Không tự mở tunnel hoặc đổi routing VPN.
 
 Nghiệm thu:
@@ -124,6 +126,8 @@ Nghiệm thu:
 Đầu ra: ADR ngắn, ma trận quyền/capability, fixture đã loại token/nội dung riêng tư và biên bản chạy. Slice này chưa gọi agent để thực hiện công việc nghiệp vụ.
 
 ### LI-01 — Hồ sơ yêu cầu trước Spec
+
+Trạng thái: đã triển khai model, migration, API và trang desktop `/intake`; đã kiểm tra SQLite, PostgreSQL, API đồng thời và thao tác lưu/sửa/tải lại trên giao diện. Hồ sơ hiện thuộc riêng người tạo; chia sẻ và câu trả lời qua Lark thuộc các slice sau.
 
 Thêm model, migration, service và API intake mới dưới namespace ổn định `/api/v1/adlc/...`; thêm màn hình desktop nhập yêu cầu và xem hồ sơ. Project context dùng catalog/quyền native đã cấu hình, không cần tạo Gitea repo hoặc Workloop để nhận một yêu cầu. Tách mô tả ban đầu, thông tin đã xác nhận, giả định và tiêu chí nghiệm thu.
 

@@ -46,6 +46,7 @@ from langflow.api.v1.adlc_cycle_planning import router as adlc_cycle_planning_ro
 from langflow.api.v1.adlc_delivery import router as adlc_delivery_router
 from langflow.api.v1.adlc_harness_demo import router as adlc_harness_demo_router
 from langflow.api.v1.adlc_harness_workflow import router as adlc_harness_workflow_router
+from langflow.api.v1.adlc_intake import router as adlc_intake_router
 from langflow.api.v1.adlc_project_memory import router as adlc_project_memory_router
 from langflow.api.v1.adlc_replay import router as adlc_replay_router
 from langflow.api.v1.adlc_team_access import router as adlc_team_access_router
@@ -110,6 +111,7 @@ router_v1.include_router(mcp_router)
 router_v1.include_router(voice_mode_router)
 router_v1.include_router(mcp_projects_router)
 router_v1.include_router(adlc_router)
+router_v1.include_router(adlc_intake_router)
 router_v1.include_router(adlc_contracts_router)
 router_v1.include_router(adlc_verification_router)
 router_v1.include_router(adlc_vai_services_router)

@@ -60,6 +60,9 @@ const DeliveryWorkspacePage = lazy(
   () => import("./features/delivery-workspace/workspace-page"),
 );
 const HarnessDemoPage = lazy(() => import("./pages/HarnessDemoPage"));
+const RequirementIntakePage = lazy(
+  () => import("./features/requirement-intake/intake-page"),
+);
 const TeamAccessPage = lazy(
   () => import("./features/team-access/team-access-page"),
 );
@@ -110,6 +113,10 @@ const router = createBrowserRouter(
                 element={<ContractHarnessPage />}
               />
               <Route path="" element={<CustomDashboardWrapperPage />}>
+                <Route
+                  path="intake/:requestId?"
+                  element={<RequirementIntakePage />}
+                />
                 <Route
                   path="work/:deliveryId?"
                   element={<DeliveryWorkspacePage />}

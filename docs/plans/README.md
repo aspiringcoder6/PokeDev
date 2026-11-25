@@ -2,7 +2,7 @@
 
 Kế hoạch mới cho PokeDev nằm cùng các tài liệu nền kế thừa từ ADLC. Các trạng thái hoàn thành trong tài liệu ADLC phản ánh baseline của dự án nguồn; cần đối chiếu khi áp dụng vào PokeDev.
 
-Kế hoạch hiện tại: [LarkSuite và giai đoạn nhận yêu cầu](./lark-intake-slices.md), gồm LI-00 → LI-10 cho pilot và các adapter mở rộng LI-11 → LI-13. Đây là kế hoạch đề xuất, chưa phải phần đã triển khai.
+Kế hoạch hiện tại: [LarkSuite và giai đoạn nhận yêu cầu](./lark-intake-slices.md), gồm LI-00 → LI-10 cho pilot và các adapter mở rộng LI-11 → LI-13. LI-01 đã triển khai; LI-00 đã kiểm tra offline và còn chờ tenant thật. Xem [kết quả và cách chạy](../lark-intake-implementation.md).
 
 Các tài liệu tổng hợp ADLC bên dưới tham chiếu nhánh `agentHarness` của repository nguồn, không phải nhánh có sẵn trong lịch sử Git mới của PokeDev.
 
