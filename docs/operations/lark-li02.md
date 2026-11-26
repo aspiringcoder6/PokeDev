@@ -1,6 +1,6 @@
 # Chạy LI-02 nhận yêu cầu qua Lark
 
-Cập nhật 26/11/2026. LI-02 có backend, connector và giao diện desktop để liên kết tài khoản, chuyển DM text thành hồ sơ riêng và gửi biên nhận tự động. Kiểm tra offline, PostgreSQL và build đã đạt; kiểm tra liên kết và DM thật đang chuẩn bị. Các quyết định nằm trong [ADR 0023](../adr/0023-verified-lark-dm-intake-and-delivery-receipts.md).
+Cập nhật 26/11/2026. LI-02 có backend, connector và giao diện desktop để liên kết tài khoản, chuyển DM text thành hồ sơ riêng và gửi biên nhận tự động. Kiểm tra offline, PostgreSQL, build và luồng liên kết/DM trên tenant thật đã đạt. Các quyết định nằm trong [ADR 0023](../adr/0023-verified-lark-dm-intake-and-delivery-receipts.md).
 
 ## Cài và chạy local
 
@@ -74,7 +74,23 @@ Ghi chú "chưa triển khai runtime" trong tài liệu nguồn phản ánh th�
 - 22 kiểm tra connector/probe đã đạt: journal, retry ingress, kết quả gửi, process interruption, receipt replay và contract dùng chung.
 - 7 kiểm tra UI đã đạt; build production thành công.
 - PostgreSQL: migration/adoption, liên kết, DM dedupe, outbox và receipt đã đạt trong schema thử được rollback toàn bộ.
-- Desktop local: đã mở biểu mẫu liên kết, đối chiếu đúng tài khoản native và trường xác nhận mật khẩu. Liên kết/DM thật: chờ xác nhận của người dùng; không suy từ bài thử giả lập thành live acceptance.
+- Desktop local: đã kiểm tra biểu mẫu liên kết, trạng thái sau liên kết và hồ sơ tạo từ DM sau khi tải lại trang.
+- Tenant thật: người dùng đã liên kết tài khoản và gửi một DM thử; cả biên nhận liên kết lẫn biên nhận tạo hồ sơ đều được Lark chấp nhận, backend ghi DELIVERED và connector đã đối soát xong.
+
+### Biên bản thử thật ngày 26/11/2026
+
+Thời gian dưới đây theo Asia/Saigon. Đây là pilot một tài khoản, chưa gắn project, trên bot PokeDev của tenant Test ADLC.
+
+| Bước | Kết quả quan sát |
+|---|---|
+| 08:20, người dùng gửi lệnh liên kết | Tài khoản native `langflow` đã liên kết; digest mã đã được tiêu thụ, không còn mã chờ |
+| Biên nhận liên kết | Outbox DELIVERED, có provider message receipt và connector xác nhận backend đã nhận kết quả |
+| 08:22, DM mới `[Demo LI-02] Kiểm tra nhận yêu cầu từ Lark` | Một hồ sơ NEW, revision 1, thuộc `langflow`; mô tả khớp nguồn DM, giữ tham chiếu nguồn, chưa gắn project |
+| Biên nhận yêu cầu | Outbox DELIVERED, có provider message receipt; nội dung chứa link đúng hồ sơ vừa tạo |
+| Đối soát transport | Hai sự kiện ACCEPTED; hai lần gửi có kết quả DELIVERED và đã được backend xác nhận |
+| Kiểm tra desktop | Tải lại trang, danh sách có hai hồ sơ gồm demo LI-01 cũ và demo LI-02 mới; mở demo mới thấy đúng tiêu đề, mô tả và lịch sử phiên bản 1 |
+
+Ảnh minh chứng lưu riêng trên máy tại `adlc-flow/data/local/evidence/lark-li02-linked.jpg` và `lark-li02-live-intake.jpg`, không đưa credential hoặc journal vào Git. Biên nhận provider xác nhận Lark nhận tin; đợt kiểm tra này không mở lại Lark Web để kiểm tra trực quan tin đã hiển thị. Chưa đo độ trễ end-to-end, chưa chứng minh redelivery của SDK bằng lỗi thật; các mục mention, callback/card, tài liệu và phục hồi của LI-00 vẫn riêng. Vòng agent hỏi lại thuộc LI-04.
 
 Lệnh backend:
 

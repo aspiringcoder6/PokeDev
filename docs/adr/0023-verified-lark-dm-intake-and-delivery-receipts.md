@@ -1,7 +1,7 @@
 # ADR 0023 Verified Lark DM intake and delivery receipts
 
 Date: 2026-11-26
-Status: Accepted (automated and desktop checks; live linking pending)
+Status: Accepted (automated, PostgreSQL, desktop and live DM intake checks)
 Deciders: PokeDev maintainer request and implementation decisions within LI-02
 
 ## Context
@@ -33,4 +33,6 @@ Add new tables after `li01a2b3c4d5`. Deploy the shared contract and backend befo
 
 ## Validation
 
-Backend regression (295 cases), connector/probe checks (22 cases), desktop component checks (7 cases), the production frontend build and an isolated PostgreSQL migration/pairing/delivery check passed. The local desktop form exposes the actual native account and requires its password. Live identity linking and a new intake DM remain pending the user's confirmation; these results do not establish SDK redelivery behavior or a measured end-to-end latency target. See the [LI-02 runbook](../operations/lark-li02.md).
+Backend regression (295 cases), connector/probe checks (22 cases), desktop component checks (7 cases), the production frontend build and an isolated PostgreSQL migration/pairing/delivery check passed. The local desktop form exposes the actual native account and requires its password.
+
+On 2026-11-26 the user completed native reauthentication and sent the pairing command from Lark. The link was persisted with its one-time digest consumed. A subsequent user-sent test DM created exactly one private revision-1 intake owned by that linked account, retained the original source and matched the saved description. The connector journal accepted both events; both the linking confirmation and intake receipt have provider message receipts, DELIVERED state and backend acknowledgements. Reloading the desktop page displayed the new request and its content. These results do not establish SDK redelivery behavior or a measured end-to-end latency target. See the [LI-02 runbook](../operations/lark-li02.md).

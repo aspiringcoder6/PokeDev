@@ -1,6 +1,6 @@
 # Kế hoạch tích hợp LarkSuite vào giai đoạn nhận yêu cầu
 
-Ngày lập: 25/11/2026; cập nhật: 26/11/2026. Trạng thái: **LI-01 đã triển khai; LI-02 đã có backend/connector/UI và kiểm tra tự động, còn chờ xác nhận liên kết để thử DM thật; LI-00 đã kiểm tra offline và DM hai chiều thật, còn chờ mention/callback/tài liệu/phục hồi**. LI-03 trở đi chưa nối vào luồng live. Xem [kết quả và cách chạy](../lark-intake-implementation.md).
+Ngày lập: 25/11/2026; cập nhật: 26/11/2026. Trạng thái: **LI-01 đã triển khai; luồng DM của LI-02 đã qua kiểm tra tự động, PostgreSQL, desktop và thử liên kết/tạo hồ sơ trên tenant thật; LI-00 đã kiểm tra offline và DM hai chiều thật, còn chờ mention/callback/tài liệu/phục hồi**. LI-03 trở đi chưa nối vào luồng live. Xem [kết quả và cách chạy](../lark-intake-implementation.md).
 
 Source access và requirement readiness từ `Phuc/specification` đã được tích hợp làm nền cho các slice sau, với feature flag readiness tắt mặc định. Chưa có binding từ intake tới readiness hoặc kênh Lark. Xem [phạm vi tích hợp và kiểm tra](../operations/branch-integration-20261125.md).
 
@@ -141,7 +141,7 @@ Nghiệm thu:
 
 ### LI-02 — DM Lark có danh tính và biên nhận
 
-Trạng thái ngày 26/11/2026: đã triển khai và qua 295 kiểm tra backend, 22 kiểm tra connector/probe, 7 kiểm tra UI, PostgreSQL và build production. Biểu mẫu desktop đã mở trên bản local. Liên kết danh tính thật và DM tạo hồ sơ đang chờ người dùng xác nhận. Xem [kế hoạch thực hiện](li02-implementation.md), [runbook](../operations/lark-li02.md) và [ADR 0023](../adr/0023-verified-lark-dm-intake-and-delivery-receipts.md). Chưa có số đo để công bố mục tiêu biên nhận 2 giây đã đạt.
+Trạng thái ngày 26/11/2026: đã triển khai và qua 295 kiểm tra backend, 22 kiểm tra connector/probe, 7 kiểm tra UI, PostgreSQL và build production. Người dùng đã thực hiện liên kết thật và gửi DM: backend tạo đúng một hồ sơ riêng, lưu nguồn và gửi biên nhận có link đúng hồ sơ; cả hai outbox liên kết/tạo hồ sơ đều DELIVERED và đã đối soát với connector. Tải lại desktop mở được nội dung và phiên bản 1. Luồng DM LI-02 đã nghiệm thu trong pilot một tài khoản chưa gắn project. Xem [kế hoạch thực hiện](li02-implementation.md), [runbook](../operations/lark-li02.md) và [ADR 0023](../adr/0023-verified-lark-dm-intake-and-delivery-receipts.md). Chưa có số đo để công bố mục tiêu biên nhận 2 giây đã đạt.
 
 Thêm connector Lark nhẹ, cấu hình credential riêng, liên kết external identity với user PokeDev qua quy trình đã xác minh. Nhận DM vào durable journal/inbox, chuyển vào LI-01 và gửi biên nhận/link hồ sơ qua outbox. Chưa liên kết thì chỉ hướng dẫn liên kết, không liệt kê project hoặc đưa ngữ cảnh riêng tư ra chat.
 
