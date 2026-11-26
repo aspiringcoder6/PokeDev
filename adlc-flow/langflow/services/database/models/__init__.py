@@ -2,6 +2,7 @@ from .a2a import A2ACheckpoint, A2ATask
 from .adlc_delivery import AdlcDelivery
 from .adlc_intake import AdlcIntakeCommand, AdlcIntakeRequest, AdlcIntakeRevision
 from .adlc_lark import AdlcLarkInbound, AdlcLarkLink, AdlcLarkOutbox
+from .adlc_lark_conversation import AdlcLarkConversation, AdlcLarkDeliveryRoute, AdlcLarkMessageAlias
 from .adlc_product_cycle import (
     AdlcCycleFeedback,
     AdlcCycleHead,
@@ -67,6 +68,9 @@ __all__ = [
     "AdlcLarkInbound",
     "AdlcLarkLink",
     "AdlcLarkOutbox",
+    "AdlcLarkConversation",
+    "AdlcLarkDeliveryRoute",
+    "AdlcLarkMessageAlias",
     "AdlcProductCycle",
     "AdlcCycleHead",
     "AdlcCycleSpec",

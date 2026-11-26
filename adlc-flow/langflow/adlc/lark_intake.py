@@ -2,20 +2,23 @@
 
 import asyncio
 import hashlib
+import json
 import os
 import secrets
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urlsplit
 from uuid import NAMESPACE_URL, UUID, uuid4, uuid5
 
 import sqlalchemy as sa
-from pokedev_lark_contracts import Delivery, DeliveryBatch, DeliveryResult, InboundMessage, IngestReceipt
+from pokedev_lark_contracts import Delivery, DeliveryBatch, DeliveryResult, InboundMessage, IngestReceipt, v2
+from pydantic import TypeAdapter, ValidationError
 from sqlmodel import col, select
 
 from langflow.adlc import intake
 from langflow.adlc.intake_models import CreateIntake, IntakeContent
 from langflow.services.database.models.adlc_lark import AdlcLarkInbound, AdlcLarkLink, AdlcLarkOutbox
+from langflow.services.database.models.adlc_lark_conversation import AdlcLarkDeliveryRoute
 from langflow.services.database.models.user.model import User
 
 
@@ -33,6 +36,9 @@ class Settings:
     tenant_key: str
     secret: str
     public_url: str
+    conversations_enabled: bool = False
+    bot_open_id: str = ""
+    groups: dict[str, v2.GroupPolicy] = field(default_factory=dict)
 
 
 def settings():
@@ -58,19 +64,30 @@ def settings():
         or parsed.fragment
     ):
         raise intake.IntakeError("LARK_CONFIGURATION_REQUIRED", 503)
-    return Settings(*values, url)
+    conversations = os.getenv("POKEDEV_LARK_CONVERSATIONS_ENABLED", "false").lower() in {"1", "true", "yes", "on"}
+    groups, bot = {}, os.getenv("POKEDEV_LARK_BOT_OPEN_ID", "")
+    if conversations and os.getenv("POKEDEV_LARK_GROUPS_ENABLED", "false").lower() in {"1", "true", "yes", "on"}:
+        try:
+            groups = TypeAdapter(dict[v2.Identifier, v2.GroupPolicy]).validate_python(
+                json.loads(os.getenv("POKEDEV_LARK_GROUPS_JSON", "{}"))
+            )
+            TypeAdapter(v2.Identifier).validate_python(bot)
+        except (ValueError, ValidationError):
+            raise intake.IntakeError("LARK_GROUP_CONFIGURATION_REQUIRED", 503) from None
+    return Settings(*values, url, conversations, bot, groups)
 
 
 async def link_status(session, actor, config):
     row = await session.get(AdlcLarkLink, actor.id)
     user = await session.get(User, actor.id)
-    linked = bool(row and row.app_id == config.app_id and row.open_id)
+    linked = bool(row and row.app_id == config.app_id and row.tenant_key == config.tenant_key and row.open_id)
     return {
         "enabled": True,
         "username": user.username,
         "linked": linked,
         "project_id": str(row.project_id) if linked and row.project_id else None,
         "linked_at": intake.timestamp(row.linked_at) if linked else None,
+        "conversations_enabled": config.conversations_enabled,
     }
 
 
@@ -198,9 +215,19 @@ async def ingest(session, message: InboundMessage, config):
         )
     ).first()
     if previous:
-        if previous.content_digest != fingerprint:
+        compatible = previous.source.get("version") == "2" and previous.source.get("chat_type") == "p2p"
+        legacy_source = {key: value for key, value in previous.source.items() if key in InboundMessage.model_fields}
+        legacy_source["version"] = "1"
+        compatible = (
+            compatible
+            and intake.digest({key: value for key, value in legacy_source.items() if key != "event_id"}) == fingerprint
+        )
+        if previous.content_digest != fingerprint and not compatible:
             raise intake.IntakeError("LARK_EVENT_CONFLICT")
-        return IngestReceipt.model_validate({**previous.result, "event_id": message.event_id, "replayed": True})
+        result = {key: value for key, value in previous.result.items() if key in IngestReceipt.model_fields}
+        if result["status"] not in {"LINKED", "LINK_REQUIRED", "CREATED", "IGNORED", "DENIED", "PAIR_REJECTED"}:
+            result.update(status="IGNORED", request_id=None)
+        return IngestReceipt.model_validate({**result, "event_id": message.event_id, "replayed": True})
     status, request_id, owner, revision, text = "IGNORED", None, None, None, None
     if message.parent_id or message.kind == "unsupported":
         text = "Bước này chỉ nhận yêu cầu bằng tin nhắn văn bản mới trong DM. Bạn gửi một tin mới để tạo hồ sơ."
@@ -288,21 +315,37 @@ async def ingest(session, message: InboundMessage, config):
     session.add(row)
     await session.flush()
     if text:
-        session.add(
-            AdlcLarkOutbox(
-                inbound_id=row.id,
-                owner_id=owner,
-                link_revision=revision,
-                chat_id=message.chat_id,
-                reply_to=message.message_id,
-                text=text,
-            )
+        delivery = AdlcLarkOutbox(
+            inbound_id=row.id,
+            owner_id=owner,
+            link_revision=revision,
+            chat_id=message.chat_id,
+            reply_to=message.message_id,
+            text=text,
         )
+        session.add(delivery)
         await session.flush()
+        if status == "CREATED":
+            from langflow.adlc import lark_conversations
+
+            conversation = await lark_conversations.bind(session, message, request_id, owner, revision)
+            await lark_conversations.alias(session, conversation, message.message_id)
+            session.add(
+                AdlcLarkDeliveryRoute(
+                    delivery_id=delivery.id,
+                    conversation_id=conversation.id,
+                    wire_version=1,
+                    chat_type="p2p",
+                    reply_in_thread=False,
+                )
+            )
+            await session.flush()
     return receipt
 
 
-async def claim(session, config):
+async def claim(session, config, *, version=1):
+    from langflow.adlc import lark_conversations
+
     cutoff = now() - timedelta(seconds=60)
     scoped = select(AdlcLarkInbound.id).where(
         AdlcLarkInbound.app_id == config.app_id, AdlcLarkInbound.tenant_key == config.tenant_key
@@ -316,22 +359,30 @@ async def claim(session, config):
         )
         .values(state="UNCONFIRMED", error_code="LEASE_EXPIRED")
     )
-    rows = (
-        await session.exec(
-            select(AdlcLarkOutbox)
-            .where(
-                AdlcLarkOutbox.state == "PENDING",
-                col(AdlcLarkOutbox.inbound_id).in_(scoped),
-                AdlcLarkOutbox.next_attempt_at <= now(),
+    eligible = [
+        AdlcLarkOutbox.state == "PENDING",
+        col(AdlcLarkOutbox.inbound_id).in_(scoped),
+        AdlcLarkOutbox.next_attempt_at <= now(),
+    ]
+    if version == 1:
+        eligible.append(
+            ~sa.exists().where(
+                AdlcLarkDeliveryRoute.delivery_id == AdlcLarkOutbox.id,
+                AdlcLarkDeliveryRoute.wire_version == 2,
             )
-            .order_by(AdlcLarkOutbox.next_attempt_at)
-            .limit(1)
         )
+    rows = (
+        await session.exec(select(AdlcLarkOutbox).where(*eligible).order_by(AdlcLarkOutbox.next_attempt_at).limit(1))
     ).all()
     items = []
     for row in rows:
         source = await session.get(AdlcLarkInbound, row.inbound_id)
         if source.app_id != config.app_id or source.tenant_key != config.tenant_key:
+            continue
+        route = await session.get(AdlcLarkDeliveryRoute, row.id)
+        if route and not await lark_conversations.delivery_allowed(session, row, route, config):
+            row.state, row.error_code = "BLOCKED", "CONVERSATION_AUTHORIZATION_CHANGED"
+            session.add(row)
             continue
         if row.owner_id:
             try:
@@ -355,11 +406,26 @@ async def claim(session, config):
         )
         if result.rowcount == 1:
             items.append(
-                Delivery(
-                    id=row.id, lease_id=lease, chat_id=row.chat_id, reply_to=row.reply_to, text=row.text, uuid=row.id
+                v2.Delivery(
+                    id=row.id,
+                    lease_id=lease,
+                    chat_id=row.chat_id,
+                    reply_to=row.reply_to,
+                    text=row.text,
+                    uuid=row.id,
+                    reply_in_thread=bool(route and route.reply_in_thread),
+                )
+                if version == 2
+                else Delivery(
+                    id=row.id,
+                    lease_id=lease,
+                    chat_id=row.chat_id,
+                    reply_to=row.reply_to,
+                    text=row.text,
+                    uuid=row.id,
                 )
             )
-    return DeliveryBatch(items=items)
+    return v2.DeliveryBatch(items=items) if version == 2 else DeliveryBatch(items=items)
 
 
 async def delivery_result(session, config, identity, result: DeliveryResult):
@@ -400,5 +466,9 @@ async def delivery_result(session, config, identity, result: DeliveryResult):
     )
     if updated.rowcount != 1:
         raise intake.IntakeError("INTAKE_REVISION_CONFLICT")
+    if state == "DELIVERED":
+        from langflow.adlc import lark_conversations
+
+        await lark_conversations.delivered_alias(session, row.id, result.provider_message_id)
     await session.flush()
     return {"state": state, "replayed": False}

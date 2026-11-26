@@ -1,6 +1,6 @@
 # Hồ sơ yêu cầu và kiểm chứng Lark
 
-Cập nhật ngày 26/11/2026. LI-01 đã có backend và giao diện desktop để tạo, sửa và xem lịch sử yêu cầu. LI-02 đã có liên kết danh tính, DM intake và biên nhận tự động; kiểm tra tự động/PostgreSQL/build cùng thử liên kết, tạo hồ sơ và đối soát biên nhận trên tenant thật đã đạt. Xem [runbook LI-02](operations/lark-li02.md) và [ADR 0023](adr/0023-verified-lark-dm-intake-and-delivery-receipts.md). LI-00 đã qua kiểm tra offline và DM hai chiều trên tenant thật; các bài thử mention, callback, tài liệu và phục hồi còn chờ. Xem [biên bản pilot](operations/lark-pilot-20261125.md) và [kế hoạch các slice tiếp theo](plans/lark-intake-slices.md).
+Cập nhật ngày 26/11/2026. LI-01 có hồ sơ và lịch sử phiên bản trên desktop. LI-02 đã nghiệm thu liên kết danh tính, DM intake và biên nhận tự động. LI-03 đã nghiệm thu định tuyến hai thread nhóm có @, chọn hồ sơ bằng ID và reply vào biên nhận DM cũ trên tenant thật. Các bài thử callback, tài liệu và phục hồi lỗi thật của LI-00 còn chờ. Xem [runbook LI-02](operations/lark-li02.md), [runbook LI-03](operations/lark-li03.md) và [kế hoạch các slice tiếp theo](plans/lark-intake-slices.md).
 
 Đã rà và tích hợp phần source access/readiness từ `Phuc/specification` sau 280 kiểm tra kết hợp. Các module này là nền cho LI-04/LI-06, còn tắt mặc định và chưa nối với intake hoặc Lark HumanBridge. Xem [biên bản tích hợp](operations/branch-integration-20261125.md).
 
@@ -61,4 +61,8 @@ Bản đã thử trực tiếp dùng SQLite riêng của PokeDev. App image Dock
 
 ## Bước tiếp theo
 
-Luồng DM LI-02 đã nghiệm thu trên tenant thật. Tiếp tục các bài thử LI-00 còn lại. LI-03 bổ sung định tuyến nhóm/thread. LI-04 sẽ nối native Harness để agent đặt câu hỏi và tiếp tục từ câu trả lời đã lưu. Tài liệu `inputTakingNotes.md` được dùng để giữ ranh giới normalization/human transport và readiness; đối chiếu cụ thể nằm trong runbook LI-02.
+LI-03 thêm Nguồn hội thoại riêng trên trang hồ sơ. DM gốc hoặc @bot gốc trong nhóm đã cấu hình tạo hồ sơ; reply vào nguồn/biên nhận đã biết bổ sung đúng hồ sơ. `/intake <UUID> <nội dung>` chọn hồ sơ tường minh, `/new <nội dung>` tạo hồ sơ độc lập. Trong nhóm pilot luôn @bot khi gửi hoặc reply. Các lời bổ sung chưa thay đổi brief hoặc tạo phiên bản mới.
+
+Migration LI-03 giữ nội dung LI-02 và backfill binding/alias từ nguồn cùng biên nhận đã lưu. Contract v1 giữ nguyên, v2 đi qua endpoint riêng; nguồn hội thoại được đọc tại `/api/v1/adlc/intake/lark/requests/{id}/conversation` bằng quyền native. Feature flag hội thoại/nhóm mặc định tắt. Kiểm tra LI-03 đạt 316 backend, 34 connector/probe, 12 UI, PostgreSQL và production build. Kết quả tenant thật, cấu hình và rollback nằm trong [runbook LI-03](operations/lark-li03.md); quyết định nằm trong [ADR 0024](adr/0024-explicit-lark-conversation-routing.md).
+
+Tiếp theo là LI-04: nối native Harness để agent đặt câu hỏi và tiếp tục từ câu trả lời đã lưu, đồng thời hoàn tất các bài thử LI-00 còn lại khi cần capability tương ứng. Tài liệu `inputTakingNotes.md` được dùng để giữ ranh giới normalization/human transport và readiness; đối chiếu nằm trong runbook LI-02 và kế hoạch LI-03.

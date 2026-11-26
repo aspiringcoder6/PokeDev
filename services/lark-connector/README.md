@@ -2,6 +2,8 @@
 
 LI-02 có thêm `connector.py` cho nhận DM vào hồ sơ và biên nhận tự động qua backend. Xem [hướng dẫn LI-02](../../docs/operations/lark-li02.md). Nội dung bên dưới dành cho probe LI-00; dừng probe trước khi bật connector cho cùng app.
 
+LI-03 dùng wire v2 cho nhóm/thread, source history và `/probe` khám phá nhóm tường minh. Xem [hướng dẫn LI-03](../../docs/operations/lark-li03.md). Giữ journal hiện có để connector đối soát receipt v1; không chạy hai consumer cho cùng app.
+
 Trạng thái ngày 25/11/2026: đã kiểm tra offline, phát hành bot PokeDev 0.1.0 cho một thành viên pilot và kiểm chứng DM hai chiều trên Lark thật. Tin nhắn của người dùng đã vào journal; một biên nhận thử đã được gửi vào đúng DM và đối chiếu trên Lark Web. `probe.py` vẫn chỉ nhận sự kiện, chưa tự phản hồi, tạo hồ sơ PokeDev hay gọi agent. Xem [biên bản pilot](../../docs/operations/lark-pilot-20261125.md).
 
 ## Cài và chạy trên máy

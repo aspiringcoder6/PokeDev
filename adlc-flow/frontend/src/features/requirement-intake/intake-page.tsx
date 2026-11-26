@@ -9,6 +9,7 @@ import {
 } from "./api";
 import "./intake.css";
 import LarkLinkPanel from "./lark-link-panel";
+import LarkConversationPanel from "./lark-conversation-panel";
 
 const empty = (): IntakeContent => ({
   title: "",
@@ -401,6 +402,13 @@ export default function IntakePage() {
                 </div>
               </form>
             )
+          )}
+          {current && (
+            <LarkConversationPanel
+              key={current.id}
+              requestId={current.id}
+              closed={closed}
+            />
           )}
           {!!history.length && (
             <section className="intake-panel" aria-label="Lịch sử yêu cầu">

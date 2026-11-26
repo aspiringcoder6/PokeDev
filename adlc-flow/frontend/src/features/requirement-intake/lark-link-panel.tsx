@@ -8,6 +8,7 @@ type LinkStatus = {
   linked?: boolean;
   project_id?: string | null;
   linked_at?: string | null;
+  conversations_enabled?: boolean;
 };
 const base = `${getBaseUrl()}adlc/intake/lark`;
 export const larkLinkApi = {
@@ -123,8 +124,10 @@ export default function LarkLinkPanel({
       </div>
       {status.linked && (
         <p className="intake-muted">
-          Mỗi DM văn bản mới gửi bot PokeDev sẽ tạo một hồ sơ riêng. Hội thoại
-          làm rõ sẽ được bổ sung ở bước tiếp theo.
+          Mỗi DM văn bản mới gửi bot PokeDev sẽ tạo một hồ sơ riêng.{" "}
+          {status.conversations_enabled
+            ? "Reply vào đúng tin hoặc biên nhận để bổ sung cho hồ sơ đó. Trong nhóm đã được cấu hình, hãy @bot khi gửi hoặc reply. Agent làm rõ sẽ được nối ở bước tiếp theo."
+            : "Hội thoại làm rõ sẽ được bổ sung ở bước tiếp theo."}
         </p>
       )}
       {open && (

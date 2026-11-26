@@ -4,6 +4,7 @@ import asyncio
 import hashlib
 import importlib.util
 import os
+from dataclasses import replace
 from pathlib import Path
 from uuid import UUID, uuid4
 
@@ -11,10 +12,16 @@ import sqlalchemy as sa
 from alembic.migration import MigrationContext
 from alembic.operations import Operations
 from langflow.adlc import intake
+from langflow.adlc import lark_conversations as conversations
 from langflow.adlc import lark_intake as lark
 from langflow.adlc.intake_models import CreateIntake, IntakeContent, UpdateIntake
+from langflow.services.database.models.adlc_lark_conversation import (
+    AdlcLarkConversation,
+    AdlcLarkDeliveryRoute,
+    AdlcLarkMessageAlias,
+)
 from langflow.services.database.models.user.model import User
-from pokedev_lark_contracts import DeliveryResult, InboundMessage
+from pokedev_lark_contracts import DeliveryResult, InboundMessage, v2
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -37,6 +44,12 @@ async def check():
     )
     lark_migration = importlib.util.module_from_spec(next_spec)
     next_spec.loader.exec_module(lark_migration)
+    conversation_spec = importlib.util.spec_from_file_location(
+        "conversation_migration",
+        path.with_name("li03a2b3c4d5_add_lark_conversations.py"),
+    )
+    conversation_migration = importlib.util.module_from_spec(conversation_spec)
+    conversation_spec.loader.exec_module(conversation_migration)
     engine = create_async_engine(url)
     async with engine.connect() as connection:
         transaction = await connection.begin()
@@ -50,12 +63,17 @@ async def check():
                 with Operations.context(MigrationContext.configure(sync)):
                     migration.upgrade()
                     lark_migration.upgrade()
+                    conversation_migration.upgrade()
                 assert all(
                     migration._compatible(sync, table) for table in migration.tables()
                 )
                 assert all(
                     lark_migration._compatible(sync, table)
                     for table in lark_migration.tables()
+                )
+                assert all(
+                    conversation_migration._compatible(sync, table)
+                    for table in conversation_migration.tables()
                 )
 
             await connection.run_sync(adopt)
@@ -149,8 +167,115 @@ async def check():
                 assert (
                     await lark.delivery_result(session, config, claimed.id, result)
                 )["replayed"]
+                # Finish the remaining legacy DM receipt, then exercise the
+                # frozen migration's backfill only inside this disposable schema.
+                dm_delivery = (await lark.claim(session, config)).items[0]
+                await session.commit()
+                await lark.delivery_result(
+                    session,
+                    config,
+                    dm_delivery.id,
+                    DeliveryResult(
+                        lease_id=dm_delivery.lease_id,
+                        state="DELIVERED",
+                        provider_message_id="om_pg_dm_ack",
+                    ),
+                )
+                await session.commit()
+                for model in (
+                    AdlcLarkDeliveryRoute,
+                    AdlcLarkMessageAlias,
+                    AdlcLarkConversation,
+                ):
+                    await session.execute(sa.delete(model))
+                await session.commit()
+                await connection.run_sync(conversation_migration.backfill)
+                native_config = replace(
+                    config,
+                    conversations_enabled=True,
+                    bot_open_id="ou_bot",
+                    groups={"oc_group": v2.GroupPolicy()},
+                )
+                reply = v2.InboundMessage.model_validate(
+                    {
+                        **dm.model_dump(mode="json"),
+                        "version": "2",
+                        "event_id": "ev_dm_reply",
+                        "message_id": "om_dm_reply",
+                        "parent_id": "om_pg_dm_ack",
+                        "text": "Additional DM source",
+                    }
+                )
+                appended = await conversations.ingest(session, reply, native_config)
+                await session.commit()
+                assert (
+                    appended.status == "APPENDED"
+                    and appended.request_id == first.request_id
+                )
+                assert (
+                    await conversations.history(session, actor, first.request_id)
+                ).total == 2
+                roots = []
+                for suffix in ("alpha", "beta"):
+                    root = v2.InboundMessage(
+                        app_id=config.app_id,
+                        tenant_key=config.tenant_key,
+                        event_id="ev_group_" + suffix,
+                        message_id="om_group_" + suffix,
+                        chat_id="oc_group",
+                        chat_type="group",
+                        open_id="ou_test",
+                        mentioned_open_ids=["ou_bot"],
+                        kind="text",
+                        text="Group root " + suffix,
+                    )
+                    created = await conversations.ingest(session, root, native_config)
+                    await session.commit()
+                    roots.append(created)
+                assert roots[0].request_id != roots[1].request_id
+                group_reply = root.model_copy(
+                    update={
+                        "event_id": "ev_group_reply",
+                        "message_id": "om_group_reply",
+                        "parent_id": "om_group_alpha",
+                        "root_id": "om_group_alpha",
+                        "thread_id": "omt_alpha",
+                        "text": "Alpha source",
+                    }
+                )
+                routed = await conversations.ingest(session, group_reply, native_config)
+                await session.commit()
+                assert routed.request_id == roots[0].request_id
+                assert (
+                    await conversations.ingest(session, group_reply, native_config)
+                ).replayed
+                page = await conversations.history(session, actor, roots[0].request_id)
+                assert [item.text for item in page.items] == [
+                    "Group root alpha",
+                    "Alpha source",
+                ]
+                while True:
+                    batch = await lark.claim(session, native_config, version=2)
+                    await session.commit()
+                    if not batch.items:
+                        break
+                    for delivery in batch.items:
+                        assert delivery.version == "2"
+                        if delivery.chat_id == "oc_group":
+                            assert delivery.reply_in_thread
+                        await lark.delivery_result(
+                            session,
+                            native_config,
+                            delivery.id,
+                            DeliveryResult(
+                                lease_id=delivery.lease_id,
+                                state="DELIVERED",
+                                provider_message_id="om_pg_ack_" + delivery.id.hex,
+                            ),
+                        )
+                        await session.commit()
                 print(
-                    "POSTGRES_INTAKE_AND_LARK_OK: migrations, intake, pairing, DM dedupe, outbox, receipt"
+                    "POSTGRES_INTAKE_AND_LARK_CONVERSATIONS_OK: migrations, legacy backfill, scoped threads, DM replies, dedupe, outbox and receipts"
                 )
         finally:
             await transaction.rollback()

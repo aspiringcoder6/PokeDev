@@ -4,11 +4,12 @@ import hmac
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
-from pokedev_lark_contracts import DeliveryBatch, DeliveryResult, InboundMessage, IngestReceipt
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
+from pokedev_lark_contracts import DeliveryBatch, DeliveryResult, InboundMessage, IngestReceipt, v2
 from pydantic import BaseModel, ConfigDict, Field, SecretStr
 
 from langflow.adlc import intake
+from langflow.adlc import lark_conversations as conversations
 from langflow.adlc import lark_intake as service
 from langflow.api.utils import DbSession
 from langflow.api.v1.adlc_intake import CurrentIntakeActor, read, write
@@ -103,3 +104,45 @@ async def claim(session: DbSession, response: Response, config: Connector):
 @router.post("/deliveries/{delivery_id}/result")
 async def result(delivery_id: UUID, command: DeliveryResult, session: DbSession, response: Response, config: Connector):
     return await write(lambda: service.delivery_result(session, config, delivery_id, command), session, response)
+
+
+def conversation_connector(config: Connector):
+    try:
+        conversations.require_enabled(config)
+    except intake.IntakeError as exc:
+        raise HTTPException(exc.status, detail={"code": exc.code}, headers={"Cache-Control": "no-store"}) from None
+    return config
+
+
+ConversationConnector = Annotated[service.Settings, Depends(conversation_connector)]
+
+
+@router.post("/v2/events", response_model=v2.IngestReceipt)
+async def receive_v2(command: v2.InboundMessage, session: DbSession, response: Response, config: ConversationConnector):
+    return await write(lambda: conversations.ingest(session, command, config), session, response)
+
+
+@router.post("/v2/deliveries/claim", response_model=v2.DeliveryBatch)
+async def claim_v2(session: DbSession, response: Response, config: ConversationConnector):
+    return await write(lambda: service.claim(session, config, version=2), session, response)
+
+
+@router.post("/v2/deliveries/{delivery_id}/result")
+async def result_v2(
+    delivery_id: UUID, command: v2.DeliveryResult, session: DbSession, response: Response, config: ConversationConnector
+):
+    # Keep the durable result fingerprint identical across protocol versions.
+    legacy = DeliveryResult.model_validate(command.model_dump(mode="json", exclude={"version"}))
+    return await write(lambda: service.delivery_result(session, config, delivery_id, legacy), session, response)
+
+
+@router.get("/requests/{request_id}/conversation", response_model=v2.ConversationPage)
+async def conversation_history(
+    request_id: UUID,
+    session: DbSession,
+    user: CurrentIntakeActor,
+    response: Response,
+    limit: int = Query(default=50, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+):
+    return await read(conversations.history(session, user, request_id, limit=limit, offset=offset), session, response)

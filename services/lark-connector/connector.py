@@ -22,6 +22,7 @@ from pokedev_lark_contracts import (
     DeliveryResult,
     InboundMessage,
     IngestReceipt,
+    v2,
 )
 from probe import DOMAIN, ROOT, credentials
 
@@ -66,8 +67,8 @@ def normalize(payload):
         "message_id": message.get("message_id"),
         "chat_id": message.get("chat_id"),
         "open_id": (sender.get("sender_id") or {}).get("open_id"),
-        "parent_id": message.get("parent_id"),
-        "root_id": message.get("root_id"),
+        "parent_id": message.get("parent_id") or None,
+        "root_id": message.get("root_id") or None,
         "kind": "unsupported",
     }
     if message.get("message_type") == "text":
@@ -85,6 +86,102 @@ def normalize(payload):
             elif not content.strip().startswith("/link"):
                 body.update(kind="text", text=content)
     return InboundMessage.model_validate(body)
+
+
+def normalize_v2(payload, *, bot_open_id, group_ids=()):
+    header, event = payload.get("header") or {}, payload.get("event") or {}
+    message, sender = event.get("message") or {}, event.get("sender") or {}
+    if (
+        header.get("event_type") != "im.message.receive_v1"
+        or sender.get("sender_type") != "user"
+    ):
+        return None
+    chat_type = message.get("chat_type")
+    if chat_type not in {"p2p", "group"}:
+        return None
+    mentions = message.get("mentions") or []
+    ids = list(
+        dict.fromkeys(
+            item["id"]["open_id"]
+            for item in mentions
+            if isinstance(item, dict)
+            and isinstance(item.get("id"), dict)
+            and item["id"].get("open_id")
+        )
+    )
+    mentioned = bool(bot_open_id and bot_open_id in ids)
+    try:
+        content = json.loads(message.get("content") or "{}")
+        text = content.get("text")
+    except (ValueError, AttributeError):
+        text = None
+    if isinstance(text, str) and mentioned:
+        for item in mentions:
+            if (item.get("id") or {}).get("open_id") == bot_open_id:
+                key = item.get("key", "")
+                if re.fullmatch(r"@_user_\d+", key):
+                    text = re.sub(re.escape(key) + r"(?![A-Za-z0-9_])", "", text)
+        text = text.strip()
+    discovery = (
+        chat_type == "group"
+        and mentioned
+        and message.get("message_type") == "text"
+        and text == "/probe"
+    )
+    if chat_type == "group":
+        if not discovery and message.get("chat_id") not in group_ids:
+            return None
+        if not mentioned and not (
+            message.get("parent_id")
+            or message.get("root_id")
+            or message.get("thread_id")
+        ):
+            return None
+    normalized = normalize(
+        {
+            **payload,
+            "event": {
+                **event,
+                "message": {
+                    **message,
+                    "chat_type": "p2p",
+                    "content": json.dumps({"text": text})
+                    if isinstance(text, str)
+                    else message.get("content"),
+                },
+            },
+        }
+    )
+    if normalized is None:
+        return None
+    body = normalized.model_dump(mode="json", exclude={"version"})
+    if discovery:
+        body.update(kind="unsupported", text=None, pair_digest=None)
+    return v2.InboundMessage(
+        **body,
+        chat_type=chat_type,
+        thread_id=message.get("thread_id") or None,
+        mentioned_open_ids=ids,
+        discovery=discovery,
+    )
+
+
+def load_message(payload):
+    body = json.loads(payload)
+    return (
+        v2.InboundMessage if body.get("version") == "2" else InboundMessage
+    ).model_validate(body)
+
+
+def load_delivery(payload):
+    body = json.loads(payload)
+    return (v2.Delivery if body.get("version") == "2" else Delivery).model_validate(
+        body
+    )
+
+
+def result_type(delivery):
+    return v2.DeliveryResult if isinstance(delivery, v2.Delivery) else DeliveryResult
 
 
 class Journal:
@@ -127,7 +224,7 @@ class Journal:
     def pending(self):
         with self.connect() as db:
             return [
-                (key, InboundMessage.model_validate_json(payload))
+                (key, load_message(payload))
                 for key, payload in db.execute(
                     "SELECT key,payload FROM inbox WHERE state='PENDING' ORDER BY rowid LIMIT 20"
                 )
@@ -166,16 +263,16 @@ class Journal:
                 "SELECT delivery,result FROM sends WHERE acked=0"
             ).fetchall()
         for raw, result in rows:
-            delivery = Delivery.model_validate_json(raw)
+            delivery = load_delivery(raw)
             if result is None:
-                result = DeliveryResult(
+                result = result_type(delivery)(
                     lease_id=delivery.lease_id,
                     state="UNCONFIRMED",
                     error_code="PROCESS_INTERRUPTED",
                 )
                 self.finish_send(delivery, result)
             else:
-                result = DeliveryResult.model_validate_json(result)
+                result = result_type(delivery).model_validate_json(result)
             yield delivery, result
 
     def reported(self, delivery):
@@ -187,7 +284,7 @@ class Journal:
 
 
 class Backend:
-    def __init__(self, url, secret, *, client=None):
+    def __init__(self, url, secret, *, client=None, version=1):
         parsed = urlsplit(url)
         if (
             parsed.scheme not in {"https", "http"}
@@ -208,6 +305,7 @@ class Backend:
             raise ValueError("LARK_CONNECTOR_SECRET_REQUIRED")
         self.base = url.rstrip("/") + "/api/v1/adlc/intake/lark"
         self.secret = secret
+        self.version = version
         self.client = client or httpx.Client(
             timeout=10, follow_redirects=False, trust_env=False
         )
@@ -223,15 +321,23 @@ class Backend:
         return response.json()
 
     def ingest(self, message):
-        return IngestReceipt.model_validate(
-            self.post("/events", message.model_dump(mode="json"))
+        current = isinstance(message, v2.InboundMessage)
+        return (v2.IngestReceipt if current else IngestReceipt).model_validate(
+            self.post(
+                ("/v2" if current else "") + "/events", message.model_dump(mode="json")
+            )
         )
 
     def claim(self):
-        return DeliveryBatch.model_validate(self.post("/deliveries/claim")).items
+        prefix = "/v2" if self.version == 2 else ""
+        batch = v2.DeliveryBatch if self.version == 2 else DeliveryBatch
+        return batch.model_validate(self.post(prefix + "/deliveries/claim")).items
 
     def result(self, delivery, result):
-        self.post(f"/deliveries/{delivery.id}/result", result.model_dump(mode="json"))
+        prefix = "/v2" if isinstance(delivery, v2.Delivery) else ""
+        self.post(
+            prefix + f"/deliveries/{delivery.id}/result", result.model_dump(mode="json")
+        )
 
 
 class LarkSender:
@@ -265,9 +371,31 @@ class LarkSender:
         self.expires_at = time.monotonic() + int(payload["expire"])
         return self.token
 
+    def bot_identity(self):
+        try:
+            response = self.client.get(
+                DOMAIN + "/open-apis/bot/v3/info",
+                headers={"Authorization": "Bearer " + self.access_token()},
+            )
+            payload = response.json()
+        except (httpx.HTTPError, ValueError):
+            raise ValueError("LARK_BOT_IDENTITY_UNAVAILABLE") from None
+        bot = payload.get("bot") if isinstance(payload, dict) else None
+        if (
+            not isinstance(payload, dict)
+            or not response.is_success
+            or type(payload.get("code")) is not int
+            or payload.get("code") != 0
+            or not isinstance(bot, dict)
+            or not isinstance(bot.get("open_id"), str)
+            or not re.fullmatch(r"[A-Za-z0-9_-]{1,256}", bot["open_id"])
+        ):
+            raise ValueError("LARK_BOT_IDENTITY_UNAVAILABLE")
+        return bot["open_id"]
+
     def send(self, delivery):
         def outcome(state, code=None, **kwargs):
-            return DeliveryResult(
+            return result_type(delivery)(
                 lease_id=delivery.lease_id, state=state, error_code=code, **kwargs
             )
 
@@ -285,7 +413,7 @@ class LarkSender:
                 json={
                     "msg_type": "text",
                     "content": json.dumps({"text": delivery.text}, ensure_ascii=False),
-                    "reply_in_thread": False,
+                    "reply_in_thread": getattr(delivery, "reply_in_thread", False),
                     "uuid": str(delivery.uuid),
                 },
             )
@@ -369,8 +497,36 @@ def run(args):
     backend = Backend(
         config.get("POKEDEV_LARK_BACKEND_URL", "http://127.0.0.1:7862"),
         config.get("POKEDEV_LARK_CONNECTOR_SECRET", ""),
+        version=2
+        if config.get("POKEDEV_LARK_CONVERSATIONS_ENABLED", "false").lower()
+        in {"1", "true", "yes", "on"}
+        else 1,
     )
     sender = LarkSender(app, secret)
+    group_ids, bot_id = set(), ""
+    if backend.version == 2 and not args.once:
+        bot_id = sender.bot_identity()
+        if (
+            config.get("POKEDEV_LARK_BOT_OPEN_ID")
+            and config["POKEDEV_LARK_BOT_OPEN_ID"] != bot_id
+        ):
+            raise ValueError("LARK_BOT_IDENTITY_MISMATCH")
+        if config.get("POKEDEV_LARK_GROUPS_ENABLED", "false").lower() in {
+            "1",
+            "true",
+            "yes",
+            "on",
+        }:
+            group_config = json.loads(config.get("POKEDEV_LARK_GROUPS_JSON", "{}"))
+            if not isinstance(group_config, dict):
+                raise ValueError("LARK_GROUP_CONFIGURATION_INVALID")
+            for identity, policy in group_config.items():
+                v2.GroupPolicy.model_validate(policy)
+                if not isinstance(identity, str) or not re.fullmatch(
+                    r"[A-Za-z0-9_-]{1,256}", identity
+                ):
+                    raise ValueError("LARK_GROUP_CONFIGURATION_INVALID")
+                group_ids.add(identity)
     worker = Worker(journal, backend, sender)
     if args.once:
         worker.once()
@@ -381,11 +537,19 @@ def run(args):
     stop = threading.Event()
 
     def receive(data):
-        message = normalize(json.loads(lark.JSON.marshal(data)))
+        payload = json.loads(lark.JSON.marshal(data))
+        message = (
+            normalize_v2(payload, bot_open_id=bot_id, group_ids=group_ids)
+            if backend.version == 2
+            else normalize(payload)
+        )
         if message is None or message.app_id != app or message.tenant_key != tenant:
             return
         journal.record(message)
-        print(json.dumps({"received": True, "kind": message.kind}), flush=True)
+        metadata = {"received": True, "kind": message.kind}
+        if getattr(message, "discovery", False):
+            metadata.update(group_probe=True, chat_id=message.chat_id)
+        print(json.dumps(metadata), flush=True)
 
     def work():
         while not stop.is_set():
@@ -408,7 +572,7 @@ def run(args):
     )
     try:
         print(
-            "PokeDev Lark connector starting; DM intake and receipts enabled.",
+            f"PokeDev Lark connector starting; wire v{backend.version}, DM intake and receipts enabled.",
             flush=True,
         )
         lark.ws.Client(
@@ -427,6 +591,11 @@ def run(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--bot-info",
+        action="store_true",
+        help="Read the dedicated bot open_id without starting a consumer or printing credentials",
+    )
     parser.add_argument("--journal", type=Path, default=DEFAULT_JOURNAL)
     parser.add_argument(
         "--once",
@@ -434,6 +603,14 @@ def main():
         help="Drain local work without starting a WebSocket",
     )
     args = parser.parse_args()
+    if args.bot_info:
+        app, secret = credentials()
+        sender = LarkSender(app, secret)
+        try:
+            print(json.dumps({"bot_open_id": sender.bot_identity()}))
+        finally:
+            sender.client.close()
+        return
     args.journal.parent.mkdir(parents=True, exist_ok=True)
     with exclusive_worker(args.journal):
         run(args)

@@ -2,7 +2,7 @@
 
 Kế hoạch mới cho PokeDev nằm cùng các tài liệu nền kế thừa từ ADLC. Các trạng thái hoàn thành trong tài liệu ADLC phản ánh baseline của dự án nguồn; cần đối chiếu khi áp dụng vào PokeDev.
 
-Kế hoạch hiện tại: [LarkSuite và giai đoạn nhận yêu cầu](./lark-intake-slices.md), gồm LI-00 → LI-10 cho pilot và các adapter mở rộng LI-11 → LI-13. LI-01 đã triển khai. LI-02 đã có backend, connector, UI, kiểm tra tự động và nghiệm thu liên kết/DM tạo hồ sơ trên tenant thật. LI-00 đã kiểm tra offline và DM hai chiều trên tenant thật, còn các bài thử mention/callback/tài liệu/phục hồi. Xem [kết quả và cách chạy](../lark-intake-implementation.md).
+Kế hoạch hiện tại: [LarkSuite và giai đoạn nhận yêu cầu](./lark-intake-slices.md), gồm LI-00 → LI-10 cho pilot và các adapter mở rộng LI-11 → LI-13. LI-01 và LI-02 đã nghiệm thu web và DM intake. LI-03 đã nghiệm thu hai thread nhóm có @ và bổ sung đúng hồ sơ DM cũ qua ID hoặc reply vào biên nhận bot. Nhóm vẫn yêu cầu @bot; agent hỏi lại thuộc LI-04. LI-00 còn các bài thử callback/tài liệu/phục hồi lỗi thật. Xem [kết quả và cách chạy](../lark-intake-implementation.md).
 
 Các tài liệu tổng hợp ADLC bên dưới tham chiếu nhánh `agentHarness` của repository nguồn, không phải nhánh có sẵn trong lịch sử Git mới của PokeDev.
 
@@ -12,6 +12,7 @@ Các tài liệu tổng hợp ADLC bên dưới tham chiếu nhánh `agentHarnes
 |---|---|
 | [`lark-intake-slices.md`](./lark-intake-slices.md) | Hồ sơ yêu cầu trước Spec, agent chủ động hỏi lại, tương tác Lark/web, tài liệu/file, chốt brief và bàn giao native Harness; có phụ thuộc và tiêu chí nghiệm thu cho từng slice. |
 | [`li02-implementation.md`](./li02-implementation.md) | Phạm vi ảnh hưởng, nghiệm thu, kiểm tra và đối chiếu diff cho liên kết danh tính và DM intake. |
+| [`li03-implementation.md`](./li03-implementation.md) | Phạm vi nhóm/thread, định tuyến tường minh và nghiệm thu LI03-01 → LI03-08; lệnh downstream trong [regression ledger](../REGRESSION.md). |
 | [`ke-hoach-slice.md`](./ke-hoach-slice.md) | **Tài liệu lõi** (~900 dòng). Kể lại toàn bộ lộ trình slice 2 → 10: nền tảng blueprint → kế hoạch → runtime, Planner proposal, Blueprint UI và Plan Preview, materialization vào mock runtime, định tuyến thực thi, regeneration/supersession, phân quyền package, observability, tích hợp OpenCode (6A/6B/6C), và orchestrator control plane theo các đợt P0 → P3 (slice 7 → 10). Mỗi phần có mục tiêu, phạm vi, thiết kế quan trọng, deliverable + test chính và dòng trạng thái. |
 | `lo-trinh-san-pham.md` | Lộ trình sản phẩm (đang được soạn song song bởi agent khác — bổ sung đường dẫn khi sẵn sàng). |
 

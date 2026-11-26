@@ -1,8 +1,8 @@
 # ADLC contracts
 
-## Lark intake v0.1 (PokeDev LI-02)
+## Lark intake (PokeDev LI-02/LI-03)
 
-The additive [`lark-intake/v0.1/`](lark-intake/v0.1/README.md) Python package defines the normalized DM, ingestion receipt, delivery lease and delivery result shared by the optional Lark connector and PokeDev backend. It does not change the execution contracts below.
+The additive [`lark-intake/v0.1/`](lark-intake/v0.1/README.md) Python package defines the normalized messages, ingestion receipts, delivery leases and results shared by the optional Lark connector and PokeDev backend. Package 0.2.0 retains the wire-v1 models and adds a separate wire-v2 module for scoped group/thread routing. It does not change the execution contracts below.
 
 ## Unified Coding Agent contract verification v0.1
 

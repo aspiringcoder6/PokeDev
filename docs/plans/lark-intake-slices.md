@@ -1,6 +1,6 @@
 # Kế hoạch tích hợp LarkSuite vào giai đoạn nhận yêu cầu
 
-Ngày lập: 25/11/2026; cập nhật: 26/11/2026. Trạng thái: **LI-01 đã triển khai; luồng DM của LI-02 đã qua kiểm tra tự động, PostgreSQL, desktop và thử liên kết/tạo hồ sơ trên tenant thật; LI-00 đã kiểm tra offline và DM hai chiều thật, còn chờ mention/callback/tài liệu/phục hồi**. LI-03 trở đi chưa nối vào luồng live. Xem [kết quả và cách chạy](../lark-intake-implementation.md).
+Ngày lập: 25/11/2026; cập nhật: 26/11/2026. LI-01 và LI-02 đã triển khai, nghiệm thu web và DM intake. LI-03 đã qua kiểm tra tự động, PostgreSQL, desktop và pilot thật cho hai thread nhóm có @, chọn hồ sơ tường minh và reply vào biên nhận DM cũ. LI-00 đã kiểm tra offline, DM hai chiều và mention/reply nhóm; callback, tài liệu và phục hồi lỗi thật còn chờ. LI-04 trở đi chưa nối vào luồng live. Xem [kết quả và cách chạy](../lark-intake-implementation.md).
 
 Source access và requirement readiness từ `Phuc/specification` đã được tích hợp làm nền cho các slice sau, với feature flag readiness tắt mặc định. Chưa có binding từ intake tới readiness hoặc kênh Lark. Xem [phạm vi tích hợp và kiểm tra](../operations/branch-integration-20261125.md).
 
@@ -114,7 +114,7 @@ Mỗi slice là một thay đổi có thể demo và rollback bằng feature fla
 
 ### LI-00 — Kiểm chứng Lark trước khi chốt transport
 
-Trạng thái: có [probe nhận sự kiện và biên bản offline](../../services/lark-connector/README.md), khóa SDK và 6 kiểm tra đã đạt. Bot PokeDev 0.1.0 đã phát hành cho một thành viên pilot với đúng ba quyền tenant. Đã xác minh WebSocket Connected, một DM vào journal và một biên nhận thử trong đúng cuộc trò chuyện. Mention, callback, tài liệu và phục hồi còn chờ; xem [biên bản pilot](../operations/lark-pilot-20261125.md).
+Trạng thái: có [probe nhận sự kiện và biên bản offline](../../services/lark-connector/README.md), khóa SDK và 6 kiểm tra ban đầu đã đạt. Bot PokeDev 0.1.0 đã phát hành cho một thành viên pilot với đúng ba quyền tenant. Đã xác minh WebSocket Connected, DM hai chiều, mention/reply nhóm và biên nhận trong đúng thread qua LI-03. Reply không @ chưa được xác minh. Callback, tài liệu và phục hồi lỗi thật còn chờ; xem [biên bản pilot ban đầu](../operations/lark-pilot-20261125.md) và [kết quả LI-03](../operations/lark-li03.md).
 
 Tạo app thử hoặc dùng app được phép thử; ghi lại tenant, app type, domain, phiên bản SDK và capability matrix. Ưu tiên thử outbound WebSocket để phù hợp môi trường local/VPN. Không tự mở tunnel hoặc đổi routing VPN.
 
@@ -153,6 +153,8 @@ Nghiệm thu:
 - Mục tiêu UX đề xuất: biên nhận thường xuất hiện trong 2 giây khi không bị rate limit; ACK/callback tuân thủ deadline đã xác nhận ở LI-00 và không đợi LLM.
 
 ### LI-03 — Hội thoại trong nhóm và thread
+
+Trạng thái ngày 26/11/2026: đã triển khai và nghiệm thu trong pilot một tài khoản. Hai root nhóm tạo hai hồ sơ riêng; reply có @ gắn đúng A/B. Trong DM, `/intake` và Reply vào biên nhận bot LI-02 đều bổ sung đúng hồ sơ cũ. Lời bổ sung xuất hiện trong Nguồn hội thoại, không tự sửa brief hoặc tạo agent run. Đã đạt 316 kiểm tra backend, 34 connector/probe, 12 UI, PostgreSQL và production build. Nhóm vẫn yêu cầu @bot; không có bằng chứng event cho reply không @ và không mở rộng scope đọc nhóm. Xem [kế hoạch](li03-implementation.md), [runbook](../operations/lark-li03.md) và [ADR 0024](../adr/0024-explicit-lark-conversation-routing.md).
 
 Mở @mention trong nhóm đã được cấu hình, giữ `message_id`, root/parent/thread identifiers theo payload thật. Gắn reply vào đúng hồ sơ và có cách chọn project/hồ sơ khi mơ hồ. Link một hồ sơ sang web hoặc kênh khác phải qua kiểm tra quyền và thao tác liên kết rõ ràng.
 

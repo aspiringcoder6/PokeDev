@@ -165,6 +165,8 @@ Mở [Tiếp nhận yêu cầu](http://127.0.0.1:7862/intake) để tạo hồ s
 
 Bot PokeDev đã được thử DM hai chiều trên Lark thật. LI-02 bổ sung liên kết tài khoản có xác thực lại, chuyển DM text thành hồ sơ và biên nhận tự động. Chạy `python deploy/local/stack.py lark-setup`, cấu hình theo [hướng dẫn LI-02](docs/operations/lark-li02.md), rồi mở terminal riêng chạy `python deploy/local/stack.py lark`. Vòng hỏi–đáp agent thuộc slice sau. Bộ probe LI-00 vẫn nằm trong [services/lark-connector](services/lark-connector/README.md).
 
+LI-03 bổ sung binding nhóm/thread và nguồn hội thoại trên desktop, với contract v2 giữ tương thích journal LI-02. Cách cấu hình nhóm pilot và giới hạn @mention nằm trong [hướng dẫn LI-03](docs/operations/lark-li03.md); các flag mới tắt mặc định.
+
 Source access GitHub/Lark và workflow requirement readiness đã được tích hợp từ `Phuc/specification`. Readiness mặc định tắt (`ADLC_REQUIREMENT_READINESS_ENABLED=false`), cần source bindings, tài khoản dịch vụ, presets/model Harness và HumanBridge trước khi dùng thật. Xem [biên bản tích hợp](docs/operations/branch-integration-20261125.md) và [hướng dẫn cấu hình](docs/operations/requirement-readiness.md).
 
 | Đường dẫn | Nội dung |
